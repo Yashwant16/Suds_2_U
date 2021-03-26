@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, 
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import {MoreHeader} from '../../Components/CustomeHeader';
+import { ScrollView } from 'react-native';
 export default class SignUpUser extends React.Component {
     constructor(props) {
         super(props);
@@ -25,7 +26,7 @@ export default class SignUpUser extends React.Component {
 
                           <Header
                     statusBarProps={{ barStyle: 'light-content' }}
-                  height={82}
+                  height={78}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
                     backgroundColor={Colors.blue_color}
                     placement={"left"}
@@ -36,18 +37,23 @@ export default class SignUpUser extends React.Component {
                  </TouchableOpacity> 
                     }
                   centerComponent={
-                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>Register</Text>
+                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>REGISTER</Text>
                 }
                 />
                   <View style={{flex:1,}}> 
-                <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
+                  <ScrollView>
+                <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/imageBG.png')}>
                 <SafeAreaView/>
                 <Image  style={{width:'100%',height:95,resizeMode:'contain',marginTop:30}} source={require('../../Assets/logo_icon.png')}></Image>
                 <Image  style={{width:'100%',height:65,resizeMode:'contain',marginTop:5}} source={require('../../Assets/logo2.png')}></Image>
-                <View style={{ flex: 1, justifyContent:'flex-end', padding: 21,alignItems:'center' }}>
+                <View style={{  padding: 21,alignItems:'center' ,justifyContent:'flex-end',flex:1}}>
                            
                 <Text style={{fontWeight:'bold',marginTop:5,color:'#fff',fontSize:16,marginBottom:8}}>Create an Account</Text>
-            <View  style={{width:'95%',height:350,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center',shadowColor:'#bbb',shadowOpacity:0.6,}}>
+            <View  style={{width:'96%',height:350,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center',shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.5, borderRadius:15, 
+    elevation: 5}}>
    
 
                    <Text style={{color:'#bbb',textAlign:'left',width:'100%',marginLeft:17,marginTop:4,marginBottom:-8}}>Full Name</Text>
@@ -103,7 +109,7 @@ export default class SignUpUser extends React.Component {
                         onChangeText={(password) => this.setState({ password })}
                         value={this.state.password}
                       
-                        secureTextEntry='true'
+                        // secureTextEntry='true'
                         placeholderTextColor={Colors.text_color}
                         autoCapitalize='none' />
                                         <Image
@@ -122,7 +128,7 @@ export default class SignUpUser extends React.Component {
                         <Text style={{ fontSize: 15, textAlign: 'center', color:Colors.buton_label ,fontWeight:'bold'}}>Sign Up </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
+                        onPress={() => { this.props.navigation.navigate('DriverApp'); }}
                         style={{marginTop:10,marginBottom:10}}
                         underlayColor='gray'
                         activeOpacity={0.8}
@@ -145,7 +151,9 @@ export default class SignUpUser extends React.Component {
                     </TouchableOpacity>
                 
                 </View>
+            
                 </ImageBackground>
+                </ScrollView>
                 </View>
             </View>
         )

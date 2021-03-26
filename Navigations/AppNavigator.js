@@ -12,8 +12,9 @@ import ForgotPassword from '../src/CommonScreen/ForgotPassword';
 import ChooseScreen from '../src/CommonScreen/ChooseScreen';
 import UserTypeScreen from '../src/CommonScreen/UserTypeScreen';
 import OtpVerification from '../src/CommonScreen/OtpVerification';
-//Drawer
-
+import AddLicence from '../src/CommonScreen/AddLicence'
+import TermsConditions from '../src/CommonScreen/TermsConditions'
+//Drawer CUSTOMER
 
 import HomeScreen from '../src/CustomerScreen/HomeScreen';
 import EditProfile from '../src/CustomerScreen/EditProfile';
@@ -23,8 +24,20 @@ import Promotions from '../src/CustomerScreen/Promotions';
 import Rewairds_History from '../src/CustomerScreen/Rewairds_History';
 import ChangePassword from '../src/CustomerScreen/ChangePassword';
 import HelpScreen from '../src/CustomerScreen/HelpScreen';
-
+import Logout from '../src/CustomerScreen/Logout';
+//drawer under screen
 import AddCard from '../src/CustomerScreen/AddCard';
+import AddNewVehicle from '../src/CustomerScreen/AddNewVehicle';
+import SelectPackage from '../src/CustomerScreen/SelectPackage';
+import SelectAddOns from '../src/CustomerScreen/SelectAddOns';
+import BookingDetails from '../src/CustomerScreen/BookingDetails';
+import ScheduleBook from '../src/CustomerScreen/ScheduleBook';
+//DRIVER SCREEN
+import DashBoard from '../src/DriverScreen/DashBoard';
+import Earning from '../src/DriverScreen/Earning';
+import BookingHistory from '../src/DriverScreen/BookingHistory';
+import ReviewRating from '../src/DriverScreen/ReviewRating';
+import { ScrollView } from 'react-native';
 const SplashStack = createStackNavigator(
     {
       Splash: {
@@ -89,6 +102,18 @@ const SplashStack = createStackNavigator(
           header: null,
         }) 
       },
+      AddLicence: {
+        screen: AddLicence,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },
+      TermsConditions: {
+        screen: TermsConditions,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },
       initialRouteName: 'Login'
     })
     
@@ -100,13 +125,43 @@ const SplashStack = createStackNavigator(
           header: null,
         }) 
       },
-      initialRouteName: 'Payments'
+      AddNewVehicle: {
+        screen: AddNewVehicle,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },
+      SelectPackage: {
+        screen: SelectPackage,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },
+      SelectAddOns: {
+        screen: SelectAddOns,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },  
+        BookingDetails: {
+        screen: BookingDetails,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },
+      ScheduleBook: {
+        screen: ScheduleBook,
+        navigationOptions:()=>({
+          header: null,
+        }) 
+      },
     })
     const CustomDrawerContentComponent = (props) => (
 
     <View style={{flex:1,backgroundColor:'#182245'}}> 
+    <ScrollView>
     <SafeAreaView/>
-    <View style={{width:90,height:90,borderColor:'#fff',borderRadius:5,borderWidth:3,alignItems:'center',alignSelf:'center'}}> 
+    <View style={{marginTop:22, width:90,height:90,borderColor:'#fff',borderRadius:5,borderWidth:3,alignItems:'center',alignSelf:'center'}}> 
             <Image
               style={{width:88,height:85,alignItems:'center',alignSelf:'center',resizeMode:'stretch'}}
               source={require('../Assets/images.jpeg')} />
@@ -123,8 +178,11 @@ const SplashStack = createStackNavigator(
           <View style={{width:'100%',height:1,backgroundColor:'#fff'}}/>
           
           </DrawerItems>
+
+      
           {/* <View style={{width:'100%',height:1,backgroundColor:'#fff'}}/> */}
           <SafeAreaView/>
+          </ScrollView>
           </View>
     
     );
@@ -156,7 +214,9 @@ const SplashStack = createStackNavigator(
       HelpScreen: {
         screen: HelpScreen
       },
-   
+      Logout: {
+        screen: Logout
+      },
     },
 
       {
@@ -176,6 +236,68 @@ activeBackgroundColor: Colors.blue_color,
       }
       );
     
+
+      const DriverDrawerContentComponent = (props) => (
+
+        <View style={{flex:1,backgroundColor:'#182245'}}> 
+        <SafeAreaView/>
+        <View style={{width:90,height:90,borderColor:'#fff',borderRadius:5,borderWidth:3,alignItems:'center',alignSelf:'center'}}> 
+                <Image
+                  style={{width:88,height:85,alignItems:'center',alignSelf:'center',resizeMode:'stretch'}}
+                  source={require('../Assets/images.jpeg')} />
+             </View>
+             <Text style={{color:Colors.blue_color,fontSize:18,fontWeight:'bold',textAlign:'center',marginTop:10}}>Randy Orton</Text>
+             <Text style={{color:'#fff',textAlign:'center',fontSize:16}}>san fracisco usa</Text>
+           
+           <View style={{alignItems:'center'}}> 
+            <View style={{width:150,height:45,backgroundColor:'orange',alignItems:'center',borderRadius:22,justifyContent:'center',marginTop:5}}>
+              <Text style={{fontWeight:'bold'}}>08 DROP</Text>
+            </View>
+            </View>
+              <DrawerItems {...props} >
+              <View style={{width:'100%',height:1,backgroundColor:'#fff'}}/>
+              
+              </DrawerItems>
+              {/* <View style={{width:'100%',height:1,backgroundColor:'#fff'}}/> */}
+              <SafeAreaView/>
+              </View>
+        
+        );
+        
+        const DriverApp = createDrawerNavigator({
+        
+          // For each screen that you can navigate to, create a new entry like this:
+          DashBoard: {
+            screen: DashBoard,
+          },
+          BookingHistory: {
+            screen: BookingHistory
+          },
+        ReviewRating:{
+          screen:ReviewRating
+        },
+          Earning: {
+            screen: Earning
+          },
+        },
+    
+          {
+            initialRouteName: 'DashBoard',
+            drawerPosition: 'left',
+            contentComponent: DriverDrawerContentComponent,
+            contentOptions:{
+    activeTintColor:'#fff',
+    inactiveTintColor:'#ccc',
+    activeBackgroundColor: Colors.blue_color,
+    
+            },
+            labelStyle:{fontSize:16, },
+            drawerOpenRoute: 'DrawerOpen',
+            drawerCloseRoute: 'DrawerClose',
+            drawerToggleRoute: 'DrawerToggle'
+          }
+          );
+        
     
 
     export default createAppContainer(createSwitchNavigator({
@@ -184,8 +306,8 @@ activeBackgroundColor: Colors.blue_color,
       
         // App: AppStack,
         CustomerApp:MyApp,
-        drawerScreen:drawerScreen
-        // Service: ServiceStack,
+        drawerScreen:drawerScreen,
+        DriverApp:DriverApp
         // RealStateService: RealStateServiceStack
       }),
         {

@@ -28,18 +28,18 @@ export default class MyNotificationsScreen extends React.Component {
                           <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
                           <Header
                     statusBarProps={{ barStyle: 'light-content' }}
-                  height={82}
+                  height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
                     backgroundColor={Colors.blue_color}
                     placement={"left"}
                     leftComponent={
                         <TouchableOpacity  onPress={() => {this.props.navigation.openDrawer();}}>
-                        <Image style={{width:25,height:25,tintColor:'#fff'}} source={require('../../Assets/menu.png')}/>
+                        <Image style={{width:25,height:25,tintColor:'#fff',marginTop:5}} source={require('../../Assets/menu.png')}/>
 
                    </TouchableOpacity> 
                     }
                   centerComponent={
-                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>Change Password</Text>
+                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>CHANGE PASSWORD</Text>
                 }
                 />
                 <SafeAreaView/>
@@ -48,7 +48,7 @@ export default class MyNotificationsScreen extends React.Component {
                 <SafeAreaView/>
          
                 <View style={{ flex: 1, justifyContent:'flex-end', padding: 21,alignItems:'center' }}>
-            <View   style={{width:'90%',height:280,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center',shadowColor:'#ccc',shadowOpacity:0.7,borderRadius:15}}>
+            <View   style={{width:'90%',height:280,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center',shadowColor:'#ccc',shadowOpacity:0.5,borderRadius:15}}>
                    
             <Text style={{color:'#bbb',textAlign:'left',width:'100%',marginLeft:17,marginTop:4,marginBottom:-8}}>Old Password</Text>
                    <View style={{width:'95%',flexDirection:'row'}}>
@@ -57,7 +57,7 @@ export default class MyNotificationsScreen extends React.Component {
                         onChangeText={(password) => this.setState({ password })}
                         value={this.state.password}
                         
-                        secureTextEntry='true'
+                        // secureTextEntry='true'
                         placeholderTextColor={Colors.text_color}
                         autoCapitalize='none' />
                                    <Image
@@ -72,7 +72,7 @@ export default class MyNotificationsScreen extends React.Component {
                         onChangeText={(password) => this.setState({ password })}
                         value={this.state.password}
                         
-                        secureTextEntry='true'
+                        // secureTextEntry='true'
                         placeholderTextColor={Colors.text_color}
                         autoCapitalize='none' />
                                    <Image
@@ -87,7 +87,7 @@ export default class MyNotificationsScreen extends React.Component {
                         onChangeText={(password) => this.setState({ password })}
                         value={this.state.password}
                         
-                        secureTextEntry='true'
+                        // secureTextEntry='true'
                         placeholderTextColor={Colors.text_color}
                         autoCapitalize='none' />
                                    <Image

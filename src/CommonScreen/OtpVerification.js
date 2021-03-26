@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Button, Alert, TextInput,SafeAreaView,StatusBar,ImageBackground,Image,TouchableOpacity} from 'react-native';
-
+import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import {MoreHeader} from '../../Components/CustomeHeader';
 import OTPTextView from 'react-native-otp-textinput';
+import { ScrollView } from 'react-native';
 
 
 export default class App extends Component {
@@ -17,20 +18,34 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar translucent backgroundColor="transparent" barStyle='light-content' />
-                  <MoreHeader title='ENTER OTP' onBackPress={()=>{
-                      this.props.navigation.navigate('UserTypeScreen');
-                  }} />
+      <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
+                          <Header
+                    statusBarProps={{ barStyle: 'light-content' }}
+                  height={78}
+                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
+                    backgroundColor={Colors.blue_color}
+                    placement={"left"}
+                    leftComponent={
+                      <TouchableOpacity      onPress={() => this.props.navigation.goBack()}>
+                      <Image style={{width:25,height:25,tintColor:'#fff',marginLeft:10}} source={require('../../Assets/back_arrow.png')}/>
+
+                 </TouchableOpacity> 
+                    }
+                  centerComponent={
+                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>ENTER OTP</Text>
+                }
+                />
                   <View style={{flex:1,}}> 
-                <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
+                  <ScrollView>
+                <ImageBackground style={{width:'100%',height:'67%',flex:1, }} source={require('../../Assets/imageBG.png')}>
                 <SafeAreaView/>
                 <Image  style={{width:'100%',height:95,resizeMode:'contain',marginTop:30}} source={require('../../Assets/logo_icon.png')}></Image>
                 <Image  style={{width:'100%',height:65,resizeMode:'contain',marginTop:5}} source={require('../../Assets/logo2.png')}></Image>
                 <View style={{ flex: 1, justifyContent:'flex-end', padding: 21,alignItems:'center' }}>
 
-            <View  style={{width:'95%',height:320,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center',shadowColor:'#bbb',shadowOpacity:0.4,borderRadius:15}}>
+            <View  style={{width:'95%',height:320,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center',shadowColor:'#000',shadowOpacity:0.5,borderRadius:15}}>
             <Text style={{fontWeight:'bold',marginTop:5,color:'#000',fontSize:16,marginBottom:8}}>Enter OTP</Text>
-            <Text style={{marginTop:5,color:'#000',fontSize:16,marginBottom:8}}>Enter 4 digits OTP Code that you have received on phone.</Text>
+            <Text style={{marginTop:5,color:'#000',fontSize:16,marginBottom:8,textAlign:'center'}}>Enter 4 digits OTP Code that you have received on phone.</Text>
         <OTPTextView
           handleTextChange={(e) => {}}
           containerStyle={styles.textInputContainer}
@@ -41,13 +56,13 @@ export default class App extends Component {
                   
                     <TouchableOpacity
                     elevation={5} 
-                        onPress={() => { this.props.navigation.navigate('Login'); }}
+                        onPress={() => { this.props.navigation.navigate('TermsConditions'); }}
                         style={styles.auth_btn}
                         underlayColor='gray'
                         activeOpacity={0.8}
                     // disabled={this.state.disableBtn}
                     >
-                        <Text style={{ fontSize: 15, textAlign: 'center', color:Colors.buton_label ,fontWeight:'bold'}}>Sign Up </Text>
+                        <Text style={{ fontSize: 15, textAlign: 'center', color:Colors.buton_label ,fontWeight:'bold'}}>Confirm OTP </Text>
                     </TouchableOpacity>
                     <Text style={{fontWeight:'bold',marginTop:10,color:Colors.blue_color,fontSize:16,marginBottom:8}}>Login with Password</Text>
         </View>
@@ -58,10 +73,11 @@ export default class App extends Component {
                         activeOpacity={0.8}
                     // disabled={this.state.disableBtn}
                     >
-                        <Text style={{ fontSize: 16, textAlign: 'center', color:'#000' ,}}>Don't have an account <Text style={{color:'#4193F7',fontWeight:'bold',fontSize:16}}>Sign Up</Text></Text>
+                        <Text style={{ fontSize: 16, textAlign: 'center', color:'#000' ,}}>Don't have an account- <Text style={{color:'#4193F7',fontWeight:'bold',fontSize:16}}>Sign Up</Text></Text>
                     </TouchableOpacity>
         </View>
         </ImageBackground>
+        </ScrollView>
         </View>
       </View>
     );

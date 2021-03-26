@@ -22,7 +22,7 @@ export default class SignUpUser extends React.Component {
 
 <Header
 statusBarProps={{ barStyle: 'light-content' }}
-height={82}
+height={78}
 containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
 backgroundColor={Colors.blue_color}
 placement={"left"}
@@ -33,23 +33,24 @@ leftComponent={
 </TouchableOpacity> 
 }
 centerComponent={
-<Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>Register</Text>
+<Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>FORGOT PASSWORD</Text>
 }
 />
-                  <View style={{flex:1,}}> 
-                <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
+                  <View style={{flex:1,backgroundColor:'#fff'}}> 
+                <ImageBackground  style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/imageBG.png')}>
                 <SafeAreaView/>
               
                 <View style={{ flex: 1, justifyContent:'flex-end', padding: 21,alignItems:'center' }}>
             <View  style={{width:'90%',height:250,backgroundColor:'#fff',justifyContent:'flex-end',alignItems:'center', shadowColor: '#000',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
-    shadowRadius: 3.5,  
+    shadowRadius: 3.5, borderRadius:15, 
     elevation: 5}}>
                    
                   <View style={{width:'100%',padding:7,alignItems:'center',justifyContent:'center',marginBottom:15}}> 
                    <Text style={{fontWeight:'bold',marginTop:5}}>Reset Your Password</Text>
-                   <Text style={{}}>Please enter your username or email address you will receive a link to create a new password via email</Text>
+                   <Text style={{textAlign:'center',marginTop:5,marginBottom:5,color:'7#47678'}}>Please enter your username or email address you will receive a link to create a new password via email</Text>
+               <View style={{width:'90%',height:1,backgroundColor:'#000',marginVertical:5,marginRight:17}}/>
                 <View style={{flexDirection:'row',width:'95%'}}>
               
           

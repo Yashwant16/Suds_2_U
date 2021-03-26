@@ -17,7 +17,7 @@ class MoreHeader extends Component {
                 <Header
                     statusBarProps={{ barStyle: 'dark-content' }}
                     barStyle="dark-content" // or directly
-                    height={82}
+                    height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
                     backgroundColor={"transparent"}
                     placement={"left"}

@@ -22,7 +22,7 @@ export default class SignUpUser2 extends React.Component {
                 <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
                           <Header
                     statusBarProps={{ barStyle: 'light-content' }}
-                  height={82}
+                  height={78}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
                     backgroundColor={Colors.blue_color}
                     placement={"left"}
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         borderRadius: 25, marginTop: 5,
         width: '90%',
         height: 50,
-        
+        marginTop:10,
         justifyContent: 'center',
      
     },
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         borderRadius: 25, marginTop: 5,
         width: '90%',
         height: 50,
-       
+       marginTop:10,
         justifyContent: 'center',
      
     },

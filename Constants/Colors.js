@@ -8,6 +8,7 @@ const dark_theme = {
       background_color: '#4193F7',
       blue_color:'#4193F7',
 text_white:'#fff',
+dark_orange:'#e28c39',
 
       image_tincolor:'red',
       buttom_color:'#4193F7',

@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         borderRadius: 25, marginTop: 5,
         width: '90%',
         height: 50,
-        
+        marginTop:10,
         justifyContent: 'center',
      
     },
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         borderRadius: 25, marginTop: 5,
         width: '90%',
         height: 50,
-       
+       marginTop:10,
         justifyContent: 'center',
      
     },
