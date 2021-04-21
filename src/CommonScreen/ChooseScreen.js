@@ -4,6 +4,7 @@ import {MoreHeader} from '../../Components/CustomeHeader';
 import {Header, Icon, Avatar} from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import {types} from '@babel/core';
+import CustomHeader from '../Components/CustomHeader';
 export default class SignUpUser2 extends React.Component {
   constructor(props) {
     super(props);
@@ -20,20 +21,8 @@ export default class SignUpUser2 extends React.Component {
           flexDirection: 'column',
         }}>
         <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-        <Header
-          statusBarProps={{barStyle: 'light-content'}}
-          height={78}
-          containerStyle={{elevation: 0, justifyContent: 'center', borderBottomWidth: 0}}
-          backgroundColor={Colors.blue_color}
-          placement={'left'}
-          leftComponent={
-            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-              <Image style={{width: 25, height: 25, tintColor: '#fff', marginLeft: 10}} source={require('../../Assets/back_arrow.png')} />
-            </TouchableOpacity>
-          }
-          centerComponent={<Text style={{width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30}}>GET STARTED NOW</Text>}
-        />
-
+        <CustomHeader title="GET STARTED NOW" onLeftButtonPress={() => this.props.navigation.goBack()} />
+        
         <View style={{flex: 1}}>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1}} source={require('../../Assets/bg_img.png')}>
             <SafeAreaView />

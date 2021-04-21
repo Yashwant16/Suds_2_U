@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground} from 'react-native';
 import {MoreHeader} from '../../Components/CustomeHeader';
+import CustomHeader from '../Components/CustomHeader';
 // import { SubmitButton } from '../src/components/Buttons';
 // import Fonts from '../../constants/Fonts';
 export default class SignUpUser2 extends React.Component {
@@ -20,7 +21,7 @@ export default class SignUpUser2 extends React.Component {
         }}>
         <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-        <MoreHeader title="GET STARTED NOW" />
+        <CustomHeader title="GET STARTED NOW" onLeftButtonPress={() => this.props.navigation.goBack()} />
 
         <View style={{flex: 1}}>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1}} source={require('../../Assets/bg_img.png')}>

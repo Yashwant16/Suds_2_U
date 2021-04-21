@@ -1,4 +1,6 @@
 import React from 'react';
+import { Platform } from 'react-native';
+import { StatusBar } from 'react-native';
 import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 
 import {Header} from 'react-native-elements';
@@ -31,6 +33,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderBottomWidth: 0,
     position: 'relative',
+    flexDirection:'row',
+    paddingTop:Platform.OS=="android"?StatusBar.currentHeight:0,
+    alignItems:'center',
+    // borderWidth: 2,
+    // borderColor : 'red',
+    // backgroundColor:'green'
   },
   title: {
     width: '100%',
@@ -38,15 +46,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     textAlign: 'center',
-    marginTop: 5,
+    alignSelf:'flex-start',
+    // marginTop: 5,
     marginLeft: 0,
-    height: 30,
+    // height: 30,
   },
   left_container: {
     position: 'absolute',
     left: 0,
-    paddingTop:33,
-    paddingBottom: 6,
+    // paddingTop:33,
+    // paddingBottom: 6,
+    alignSelf:'center',
     zIndex:5,
 
   },
