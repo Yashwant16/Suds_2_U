@@ -23,9 +23,9 @@ export default class SignUpUser extends React.Component {
         style={{
           flex: 1,
         }}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content"/>
+        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-        <CustomHeader title="LOGIN" onBackPress={() => this.props.navigation.goBack()}/>
+        <CustomHeader title="LOGIN" onLeftButtonPress={() => this.props.navigation.goBack()} />
 
         <View style={{flex: 1, backgroundColor: '#FFF'}}>
           <ImageBackground style={{width: '100%', flex: 1, height: '100%'}} source={require('../../Assets/imageBG.png')}>
@@ -34,20 +34,14 @@ export default class SignUpUser extends React.Component {
               <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>
               <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}} source={require('../../Assets/logo2.png')}></Image>
               <View style={{padding: 21, justifyContent: 'flex-end', flex: 1}}>
-                <View style={styles.body}>
+                <View style={styles.inputs_container}>
                   <Text style={{fontWeight: 'bold', marginTop: 10}}>Hello</Text>
                   <Text style={{padding: 5}}>Sign into your ccount</Text>
 
                   <CustomInput label="EMAIL ADDRESS" iconSource={require(`../../Assets/icon/email.png`)} setState={({text}) => this.setState({email: text})} state={this.state.email} />
                   <CustomInput label="PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
 
-                  <CtaButton
-                    title="Sign In"
-                    primary
-                    onPress={() => {
-                      this.props.navigation.navigate('DriverApp');
-                    }}
-                  />
+                  <CtaButton title="Sign In" primary onPress={() => this.props.navigation.navigate('DriverApp')} />
 
                   <LinkButton title="Forgot Your Password" onPress={() => this.props.navigation.navigate('ForgotPassword')} />
                 </View>
@@ -74,7 +68,7 @@ export default class SignUpUser extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  body: {
+  inputs_container: {
     width: '96%',
     // height: 270,
     backgroundColor: '#fff',

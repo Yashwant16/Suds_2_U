@@ -20,10 +20,6 @@ export default class SignUpUser extends React.Component {
     };
   }
 
-  componentDidUpdate() {
-    console.log(this.state);
-  }
-
   render() {
     return (
       <View
@@ -33,7 +29,7 @@ export default class SignUpUser extends React.Component {
           backgroundColor: 'white',
         }}>
         <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-        <CustomHeader title="REGISTER" onBackPress={() => this.props.navigation.goBack()} />
+        <CustomHeader title="REGISTER" onLeftButtonPress={() => this.props.navigation.goBack()} />
 
         <View style={{flex: 1}}>
           <ScrollView>

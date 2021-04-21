@@ -4,7 +4,7 @@ import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {Header} from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 
-const CustomHeader = ({onBackPress, title}) => {
+const CustomHeader = ({onLeftButtonPress, title}) => {
   return (
     <Header
       statusBarProps={{barStyle: 'light-content'}}
@@ -13,7 +13,7 @@ const CustomHeader = ({onBackPress, title}) => {
       backgroundColor={Colors.blue_color}
       placement={'left'}
       leftComponent={
-        <TouchableOpacity onPress={onBackPress}>
+        <TouchableOpacity onPress={onLeftButtonPress}>
           <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
         </TouchableOpacity>
       }
