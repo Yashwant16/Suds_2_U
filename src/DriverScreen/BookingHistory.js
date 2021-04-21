@@ -94,7 +94,7 @@ export default class MyNotificationsScreen extends React.Component {
     drawerIcon: ({ tintColor }) => (
       <View>
 
-        <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/home.png')} />
+        <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/list.png')} />
       </View>
     ),
   };

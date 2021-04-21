@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, 
 import {MoreHeader} from '../../Components/CustomeHeader';
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
+import { types } from '@babel/core';
 export default class SignUpUser2 extends React.Component {
     constructor(props) {
         super(props);
@@ -51,8 +52,9 @@ export default class SignUpUser2 extends React.Component {
                     <Text style={{ color: '#fff', textAlign: 'center', marginBottom: 5, fontSize: 18,fontWeight:'bold'}}>Continue as a</Text>
                     <View style={{ alignItems: 'center', width: '100%', marginBottom: 5, marginTop: 5, padding: 5 }}>
 
+{ (this.props.navigation.getParam('type')=="Washer")?
                         <TouchableOpacity
-                            onPress={() => { this.props.navigation.navigate('Login'); }}
+                            onPress={() => { this.props.navigation.navigate('WasherLogin',{type:this.props.navigation.getParam('type')}); }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}
@@ -61,12 +63,21 @@ export default class SignUpUser2 extends React.Component {
                         >
                             <Text style={{ fontSize: 14, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Login</Text>
                         </TouchableOpacity>
-
-
-
+:
+<TouchableOpacity
+onPress={() => { this.props.navigation.navigate('Login',{type:this.props.navigation.getParam('type')}); }}
+style={styles.auth_btn}
+underlayColor='gray'
+activeOpacity={0.8}
+elevation={5}
+// disabled={this.state.disableBtn}
+>
+<Text style={{ fontSize: 14, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Login</Text>
+</TouchableOpacity>
+    }
 
                         <TouchableOpacity
-                            onPress={() => { this.props.navigation.navigate('SignUp'); }}
+                            onPress={() => { this.props.navigation.navigate('SignUp',{type:this.props.navigation.getParam('type')}); }}
                             style={styles.auth_btn2}
                             underlayColor='gray'
                             activeOpacity={0.8}

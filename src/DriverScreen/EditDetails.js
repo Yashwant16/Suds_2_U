@@ -7,11 +7,11 @@ import Colors from '../../Constants/Colors';
 export default class MyNotificationsScreen extends React.Component {
     static navigationOptions = {
 
-        drawerLabel: 'Review & Ratings',
+        drawerLabel: 'Edit Details',
         drawerIcon: ({ tintColor }) => (
             <View>
 
-                <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/review.png')} />
+                <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/menu.png')} />
             </View>
         ),
     };

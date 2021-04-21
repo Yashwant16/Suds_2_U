@@ -42,7 +42,7 @@ export default class SignUpUser2 extends React.Component {
                     <View style={{ alignItems: 'center', width: '100%', marginBottom: 5, marginTop: 5, padding: 5 }}>
 
                         <TouchableOpacity
-                            onPress={() => { this.props.navigation.navigate('ChooseScreen'); }}
+                            onPress={() => { this.props.navigation.navigate('ChooseScreen',{ type: 'CUSTOMER'  });}}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}
@@ -56,7 +56,7 @@ export default class SignUpUser2 extends React.Component {
 
 
                         <TouchableOpacity
-                            onPress={() => { this.props.navigation.navigate('ChooseScreen'); }}
+                            onPress={() => { this.props.navigation.navigate('ChooseScreen',{ type: 'Washer'  }); }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}

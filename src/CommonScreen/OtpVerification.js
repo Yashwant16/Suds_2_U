@@ -56,7 +56,7 @@ export default class App extends Component {
                   
                     <TouchableOpacity
                     elevation={5} 
-                        onPress={() => { this.props.navigation.navigate('TermsConditions'); }}
+                        onPress={() => { this.props.navigation.navigate('TermsConditions',{type:this.props.navigation.getParam('type')});  }}
                         style={styles.auth_btn}
                         underlayColor='gray'
                         activeOpacity={0.8}

@@ -7,6 +7,7 @@ import Splash from '../src/CommonScreen/Splash';
 import { createDrawerNavigator ,DrawerItems} from 'react-navigation-drawer';
 import Colors from '../Constants/Colors';
 import Login from '../src/CommonScreen/Login';
+import WasherLogin from '../src/CommonScreen/WasherLogin';
 import SignUp from '../src/CommonScreen/SignUp';
 import ForgotPassword from '../src/CommonScreen/ForgotPassword';
 import ChooseScreen from '../src/CommonScreen/ChooseScreen';
@@ -37,6 +38,11 @@ import DashBoard from '../src/DriverScreen/DashBoard';
 import Earning from '../src/DriverScreen/Earning';
 import BookingHistory from '../src/DriverScreen/BookingHistory';
 import ReviewRating from '../src/DriverScreen/ReviewRating';
+import EditDetails from '../src/DriverScreen/EditDetails';
+import DriverHelp from '../src/DriverScreen/DriverHelp';
+import DriverChangePaasword from '../src/DriverScreen/DriverChangePaasword';
+import UpdateDocument from '../src/DriverScreen/UpdateDocument';
+import BankInfo from '../src/DriverScreen/BankInfo';
 import { ScrollView } from 'react-native';
 const SplashStack = createStackNavigator(
     {
@@ -84,6 +90,14 @@ const SplashStack = createStackNavigator(
         
         }) 
       },
+      WasherLogin: {
+        screen: WasherLogin,
+        navigationOptions:()=>({
+          header: null,
+        
+        }) 
+      },
+      
       SignUp: {
         screen: SignUp,
         navigationOptions:()=>({
@@ -278,6 +292,21 @@ activeBackgroundColor: Colors.blue_color,
         },
           Earning: {
             screen: Earning
+          },
+          BankInfo: {
+            screen: BankInfo
+          },
+          EditDetails: {
+            screen: EditDetails
+          },
+          UpdateDocument: {
+            screen: UpdateDocument
+          },
+          DriverChangePaasword: {
+            screen: DriverChangePaasword
+          },
+          DriverHelp: {
+            screen: DriverHelp
           },
         },
     

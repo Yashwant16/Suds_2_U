@@ -8,7 +8,7 @@ export default class App extends Component {
         setTimeout(() => {
             //  this._retrieveData();{}
             {
-                this.props.navigation.navigate("UserTypeScreen");
+                this.props.navigation.navigate("Auth");
             }
         }, 3000)
     }

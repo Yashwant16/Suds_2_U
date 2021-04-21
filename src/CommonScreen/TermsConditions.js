@@ -45,9 +45,11 @@ export default class SignUpUser extends React.Component {
 </View>
                     </ScrollView>
                     <View style={{justifyContent:'flex-end',flex:1,}}>
+                    
+                    { (this.props.navigation.getParam('type')=='Washer')?
                         <TouchableOpacity
                             elevation={5}
-                            onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
+                            onPress={() => { this.props.navigation.navigate('DriverApp'); }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}
@@ -56,7 +58,19 @@ export default class SignUpUser extends React.Component {
                             <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Agree & Continue</Text>
                          
                         </TouchableOpacity>
-                       
+:    
+<TouchableOpacity
+elevation={5}
+onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
+style={styles.auth_btn}
+underlayColor='gray'
+activeOpacity={0.8}
+// disabled={this.state.disableBtn}
+>
+<Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Agree & Continue</Text>
+
+</TouchableOpacity>
+}
                         </View>
                         {/* <SafeAreaView/> */}
                 </View>

@@ -119,7 +119,7 @@ export default class SignUpUser extends React.Component {
           </View>
                     <TouchableOpacity
                     elevation={5} 
-                        onPress={() => { this.props.navigation.navigate('OtpVerification'); }}
+                        onPress={() => { this.props.navigation.navigate('OtpVerification',{type:this.props.navigation.getParam('type')}); }}
                         style={styles.auth_btn}
                         underlayColor='gray'
                         activeOpacity={0.8}
@@ -128,7 +128,7 @@ export default class SignUpUser extends React.Component {
                         <Text style={{ fontSize: 15, textAlign: 'center', color:Colors.buton_label ,fontWeight:'bold'}}>Sign Up </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => { this.props.navigation.navigate('DriverApp'); }}
+                        onPress={() => { this.props.navigation.navigate(''); }}
                         style={{marginTop:10,marginBottom:10}}
                         underlayColor='gray'
                         activeOpacity={0.8}
