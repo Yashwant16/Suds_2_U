@@ -2,19 +2,19 @@ import React from 'react';
 import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
 import Colors from '../../Constants/Colors';
 
-const CustomInput = ({label, iconSource, setState, state}) => {
+const CustomInput = ({label, iconSource, setState, state, placeholder}) => {
   return (
     <View>
       <Text style={styles.input_label}>{label}</Text>
       <View style={{width: '95%', flexDirection: 'row'}}>
-        <TextInput style={[styles.auth_textInput]} onChangeText={text => setState({text})} value={state} placeholderTextColor={Colors.text_color} autoCapitalize="none" />
+        <TextInput style={[styles.auth_textInput]} placeholder={placeholder} onChangeText={text => setState({text})} value={state} placeholderTextColor={Colors.dark_gray} autoCapitalize="none" />
         <Image source={iconSource} style={styles.input_icon} />
       </View>
     </View>
   );
 };
 
-export default CustomInput
+export default CustomInput;
 
 const styles = StyleSheet.create({
   auth_textInput: {

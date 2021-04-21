@@ -1,148 +1,90 @@
 import React from 'react';
-import { StyleSheet, Button, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground } from 'react-native';
+import {StyleSheet, Button, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground} from 'react-native';
 
-import { Header, Icon, Avatar } from 'react-native-elements';
+import {Header, Icon, Avatar} from 'react-native-elements';
 import Colors from '../../Constants/Colors';
-import { MoreHeader } from '../../Components/CustomeHeader';
-import { ScrollView } from 'react-native';
+import {MoreHeader} from '../../Components/CustomeHeader';
+import {ScrollView} from 'react-native';
+import CustomInput from '../Components/CustomInput';
+import CtaButton from '../Components/CtaButton';
+import LinkButton from '../Components/LinkButton';
+import CustomHeader from '../Components/CustomHeader';
 export default class SignUpUser extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: "",
-            password: "",
-        }
-    }
-    render() {
-       
-        return (
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+    };
+  }
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+        }}>
+        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content"/>
 
-            <View style={{
-                flex: 1,
-              
-            }}>
-                <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={78}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
+        <CustomHeader title="LOGIN" onBackPress={() => this.props.navigation.goBack()}/>
 
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>LOGIN</Text>
-                    }
-                />
-                 
-                <View style={{ flex: 1,backgroundColor:'#FFF' }}>
-                 
-                    <ImageBackground style={{ width: '100%',flex:1,height:'100%' , }} source={require('../../Assets/imageBG.png')}>
-                        <SafeAreaView />
-<ScrollView>
-                        <Image style={{ width: '100%', height: 95, resizeMode: 'contain', marginTop: 30 }} source={require('../../Assets/logo_icon.png')}></Image>
-                        <Image style={{ width: '100%', height: 65, resizeMode: 'contain', marginTop: 5 }} source={require('../../Assets/logo2.png')}></Image>
-                        <View style={{   padding: 21,justifyContent:'flex-end' ,flex:1}}>
-                        <View  style={{width:'96%',height:270,backgroundColor:'#fff',alignItems:'center',shadowColor: '#000',justifyContent:'flex-end',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.5, borderRadius:15, 
-    elevation: 5}}>
+        <View style={{flex: 1, backgroundColor: '#FFF'}}>
+          <ImageBackground style={{width: '100%', flex: 1, height: '100%'}} source={require('../../Assets/imageBG.png')}>
+            <SafeAreaView />
+            <ScrollView>
+              <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>
+              <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}} source={require('../../Assets/logo2.png')}></Image>
+              <View style={{padding: 21, justifyContent: 'flex-end', flex: 1}}>
+                <View style={styles.body}>
+                  <Text style={{fontWeight: 'bold', marginTop: 10}}>Hello</Text>
+                  <Text style={{padding: 5}}>Sign into your ccount</Text>
 
-                                <Text style={{ fontWeight: 'bold', marginTop: 5 }}>Hello</Text>
-                                <Text style={{}}>Sign into your ccount</Text>
-                                <View style={{ width: '95%', flexDirection: 'row' }}>
-                                    <TextInput
-                                        style={[styles.auth_textInput,]}
-                                        onChangeText={(email) => this.setState({ email })}
-                                        value={this.state.email}
-                                        placeholder="Username or Email"
-                                        placeholderTextColor={Colors.text_color}
-                                        autoCapitalize='none' />
-                                    <Image
-                                        source={require('../../Assets/icon/email.png')}
-                                        style={{ width: 21, height: 21, marginTop: 15, marginLeft: -22, tintColor: '#aaa' }}
-                                    />
-                                </View>
-                                <View style={{ width: '95%', flexDirection: 'row' }}>
-                                    <TextInput
-                                        style={[styles.auth_textInput,]}
-                                        onChangeText={(password) => this.setState({ password })}
-                                        value={this.state.password}
-                                        placeholder="Password"
-                                        // secureTextEntry='true'
-                                        placeholderTextColor={Colors.text_color}
-                                        autoCapitalize='none' />
-                                    <Image
-                                        source={require('../../Assets/icon/password.png')}
-                                        style={{ width: 21, height: 21, marginTop: 15, marginLeft: -22, tintColor: '#aaa' }}
-                                    />
-                                </View>
-                                <TouchableOpacity
-                                    elevation={5}
-                                    onPress={() => { this.props.navigation.navigate('DriverApp'); }}
-                                    style={styles.auth_btn}
-                                    underlayColor='gray'
-                                    activeOpacity={0.8}
-                                // disabled={this.state.disableBtn}
-                                >
-                                    <Text style={{ fontSize: 15, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Sign In </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => { this.props.navigation.navigate('ForgotPassword'); }}
-                                    style={{ marginTop: 10, marginBottom: 10 }}
-                                    underlayColor='gray'
-                                    activeOpacity={0.8}
-                                // disabled={this.state.disableBtn}
-                                >
-                                    <Text style={{ fontSize: 15, textAlign: 'center', color: '#4193F7', fontWeight: 'bold' }}>Forgot Your Password</Text>
-                                </TouchableOpacity>
+                  <CustomInput label="EMAIL ADDRESS" iconSource={require(`../../Assets/icon/email.png`)} setState={({text}) => this.setState({email: text})} state={this.state.email} />
+                  <CustomInput label="PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
 
+                  <CtaButton
+                    title="Sign In"
+                    primary
+                    onPress={() => {
+                      this.props.navigation.navigate('DriverApp');
+                    }}
+                  />
 
-                            </View>
-                            <TouchableOpacity
-                                onPress={() => { this.props.navigation.navigate('SignUp'); }}
-                                style={{ marginTop: 10, marginBottom: 5 }}
-                                underlayColor='gray'
-                                activeOpacity={0.8}
-                            // disabled={this.state.disableBtn}
-                            >
-                                <Text style={{ fontSize: 14, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>Don't have an account <Text style={{ color: '#4193F7', fontWeight: 'bold', fontSize: 16 }}>Sign Up</Text></Text>
-                            </TouchableOpacity>
-                        </View>
-                        </ScrollView>
-                    </ImageBackground>
-                 
+                  <LinkButton title="Forgot Your Password" onPress={() => this.props.navigation.navigate('ForgotPassword')} />
                 </View>
-
-            </View>
-        )
-    }
+                <TouchableOpacity
+                  onPress={() => {
+                    this.props.navigation.navigate('SignUp');
+                  }}
+                  style={{marginTop: 10, marginBottom: 5}}
+                  underlayColor="gray"
+                  activeOpacity={0.8}
+                  // disabled={this.state.disableBtn}
+                >
+                  <Text style={{fontSize: 14, textAlign: 'center', color: '#000', fontWeight: 'bold'}}>
+                    Don't have an account <Text style={{color: '#4193F7', fontWeight: 'bold', fontSize: 16}}>Sign Up</Text>
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </ImageBackground>
+        </View>
+      </View>
+    );
+  }
 }
+
 const styles = StyleSheet.create({
-    auth_textInput: {
-
-        alignSelf: 'center',
-        width: '93%',
-        // borderWidth: 1,
-        borderBottomWidth: 1,
-        height: 40,
-        color: Colors.text_color,
-        marginTop: 10,
-
-    },
-    auth_btn: {
-        marginTop: 16,
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: Colors.buttom_color,
-        borderRadius: 25,
-        width: '90%',
-        height: 50,
-        justifyContent: 'center',
-    },
-})
+  body: {
+    width: '96%',
+    // height: 270,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    shadowColor: '#000',
+    justifyContent: 'flex-end',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 3.5,
+    borderRadius: 15,
+    elevation: 5,
+  },
+});

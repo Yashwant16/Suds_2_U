@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import Colors from '../../Constants/Colors';
 
-const CtaButton = ({onPress, primary}) => {
+const CtaButton = ({onPress, primary, title}) => {
   return (
     <TouchableOpacity
       elevation={5}
@@ -12,7 +12,7 @@ const CtaButton = ({onPress, primary}) => {
       activeOpacity={0.8}
       // disabled={this.state.disableBtn}
     >
-      <Text style={[styles.cta_button_text, {color: primary ? Colors.buton_label : '#333333'}]}>Sign Up</Text>
+      <Text style={[styles.cta_button_text, {color: primary ? Colors.buton_label : '#333333'}]}>{title}</Text>
     </TouchableOpacity>
   );
 };

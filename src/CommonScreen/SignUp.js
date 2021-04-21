@@ -8,14 +8,15 @@ import {ScrollView} from 'react-native';
 import CtaButton from '../Components/CtaButton';
 import CustomInput from '../Components/CustomInput';
 import LinkButton from '../Components/LinkButton';
+import CustomHeader from '../Components/CustomHeader';
 export default class SignUpUser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'Melinda Gates',
-      mobile: '+6415587465',
-      email: 'melindagates@gmail.com',
-      password: '125584354',
+      name: '',
+      mobile: '',
+      email: '',
+      password: '',
     };
   }
 
@@ -32,20 +33,8 @@ export default class SignUpUser extends React.Component {
           backgroundColor: 'white',
         }}>
         <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+        <CustomHeader title="REGISTER" onBackPress={() => this.props.navigation.goBack()} />
 
-        <Header
-          statusBarProps={{barStyle: 'light-content'}}
-          height={78}
-          containerStyle={{elevation: 0, justifyContent: 'center', borderBottomWidth: 0}}
-          backgroundColor={Colors.blue_color}
-          placement={'left'}
-          leftComponent={
-            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-              <Image style={{width: 25, height: 25, tintColor: '#fff', marginLeft: 10}} source={require('../../Assets/back_arrow.png')} />
-            </TouchableOpacity>
-          }
-          centerComponent={<Text style={{width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30}}>REGISTER</Text>}
-        />
         <View style={{flex: 1}}>
           <ScrollView>
             <ImageBackground style={{width: '100%', height: '100%', flex: 1}} source={require('../../Assets/imageBG.png')}>
@@ -60,9 +49,7 @@ export default class SignUpUser extends React.Component {
                   <CustomInput label="MOBILE NUMEBR" iconSource={require(`../../Assets/icon/cell-phone.png`)} setState={({text}) => this.setState({mobile: text})} state={this.state.mobile} />
                   <CustomInput label="PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
 
-                  <CtaButton primary onPress={() => this.props.navigation.navigate('OtpVerification', {type: this.props.navigation.getParam('type')})} />
-
-                  <LinkButton title="Forgot Your Password" onPress={() => this.props.navigation.navigate('')} />
+                  <CtaButton title="Continue" primary onPress={() => this.props.navigation.navigate('OtpVerification', {type: this.props.navigation.getParam('type')})} />
                 </View>
                 <TouchableOpacity
                   onPress={() => this.props.navigation.navigate('Login')}
@@ -97,5 +84,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.5,
     borderRadius: 15,
     elevation: 5,
+    paddingBottom: 18,
   },
 });
