@@ -70,7 +70,8 @@ export default class SignUpUser extends React.Component {
 const styles = StyleSheet.create({
   inputs_container: {
     width: '96%',
-    height: 350,
+    // height: 350,
+
     backgroundColor: '#fff',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -80,6 +81,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.5,
     borderRadius: 15,
     elevation: 5,
-    paddingBottom: 18,
+    paddingVertical: 16,
   },
 });

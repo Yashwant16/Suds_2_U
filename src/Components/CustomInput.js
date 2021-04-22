@@ -2,12 +2,12 @@ import React from 'react';
 import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
 import Colors from '../../Constants/Colors';
 
-const CustomInput = ({label, iconSource, setState, state, placeholder}) => {
+const CustomInput = ({label, iconSource, setState, state, placeholder, secure}) => {
   return (
     <View>
       <Text style={styles.input_label}>{label}</Text>
       <View style={{width: '95%', flexDirection: 'row'}}>
-        <TextInput style={[styles.auth_textInput]} placeholder={placeholder} onChangeText={text => setState({text})} value={state} placeholderTextColor={Colors.dark_gray} autoCapitalize="none" />
+        <TextInput style={[styles.auth_textInput]} placeholder={placeholder} secureTextEntry={secure} onChangeText={text => setState({text})} value={state} placeholderTextColor={Colors.dark_gray} autoCapitalize="none" />
         <Image source={iconSource} style={styles.input_icon} />
       </View>
     </View>
@@ -22,12 +22,13 @@ const styles = StyleSheet.create({
     width: '93%',
     // borderWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#999',
+    borderBottomColor: '#ddd',
     height: 40,
     color: Colors.text_color,
     padding: 0,
     marginTop: 1,
     fontSize: 18,
+    marginBottom:3
   },
 
   input_label: {
@@ -43,6 +44,6 @@ const styles = StyleSheet.create({
     height: 21,
     alignSelf: 'center',
     marginLeft: -22,
-    tintColor: '#555',
+    tintColor: '#999',
   },
 });
