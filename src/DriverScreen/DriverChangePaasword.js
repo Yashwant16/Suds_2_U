@@ -1,8 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, ImageBackground} from 'react-native';
-import {SafeAreaView} from 'react-navigation';
-import {Header, Icon, Avatar} from 'react-native-elements';
-import Colors from '../../Constants/Colors';
+import {StyleSheet, View, Image, ImageBackground} from 'react-native';
 import CustomInput from '../Components/CustomInput';
 import CtaButton from '../Components/CtaButton';
 import CustomHeader from '../Components/CustomHeader';

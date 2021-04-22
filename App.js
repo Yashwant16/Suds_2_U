@@ -18,6 +18,7 @@
  import AppNavigator from './Navigations/AppNavigator';
  import { MenuProvider } from 'react-native-popup-menu';
 import CustomHeader from './src/Components/CustomHeader';
+import { StackRouter } from 'react-navigation';
  
  
  
