@@ -20,7 +20,7 @@ export default class SignUpUser2 extends React.Component {
           flex: 1,
           flexDirection: 'column',
         }}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+        {/* <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" /> */}
         <CustomHeader title="GET STARTED NOW" onLeftButtonPress={() => this.props.navigation.goBack()} />
         
         <View style={{flex: 1}}>

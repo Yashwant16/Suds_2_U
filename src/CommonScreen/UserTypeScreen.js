@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground} from 'react-native';
 import {MoreHeader} from '../../Components/CustomeHeader';
+import CtaButton from '../Components/CtaButton';
 import CustomHeader from '../Components/CustomHeader';
 // import { SubmitButton } from '../src/components/Buttons';
 // import Fonts from '../../constants/Fonts';
@@ -19,10 +20,7 @@ export default class SignUpUser2 extends React.Component {
           flex: 1,
           flexDirection: 'column',
         }}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-
-        <CustomHeader title="GET STARTED NOW" onLeftButtonPress={() => this.props.navigation.goBack()} />
-
+        <CustomHeader title="GET STARTED NOW" />
         <View style={{flex: 1}}>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1}} source={require('../../Assets/bg_img.png')}>
             <SafeAreaView />
@@ -75,35 +73,9 @@ export default class SignUpUser2 extends React.Component {
                   marginTop: 5,
                   padding: 5,
                 }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.props.navigation.navigate('ChooseScreen', {
-                      type: 'CUSTOMER',
-                    });
-                  }}
-                  style={styles.auth_btn}
-                  underlayColor="gray"
-                  activeOpacity={0.8}
-                  elevation={5}
-                  // disabled={this.state.disableBtn}
-                >
-                  <Text style={{fontSize: 18, textAlign: 'center', color: '#fff', fontWeight: 'bold'}}>Customer</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    this.props.navigation.navigate('ChooseScreen', {
-                      type: 'Washer',
-                    });
-                  }}
-                  style={styles.auth_btn2}
-                  underlayColor="gray"
-                  activeOpacity={0.8}
-                  elevation={5}
-                  // disabled={this.state.disableBtn}
-                >
-                  <Text style={{fontSize: 18, textAlign: 'center', color: '#333333', fontWeight: 'bold'}}>Car Washer</Text>
-                </TouchableOpacity>
+                <CtaButton primary onPress={() => this.props.navigation.navigate('ChooseScreen', {type: 'CUSTOMER'})} title="Customer" />
+                <CtaButton onPress={() => this.props.navigation.navigate('ChooseScreen', {type: 'Washer'})} title="Car Washer" />
+             
               </View>
             </View>
             <SafeAreaView />

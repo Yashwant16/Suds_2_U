@@ -21,7 +21,7 @@ export default CtaButton;
 
 const styles = StyleSheet.create({
   btn: {
-    marginTop: 16,
+    marginTop: 10,
     paddingTop: 10,
     paddingBottom: 10,
     borderRadius: 25,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cta_button_text: {
-    fontSize: 15,
+    fontSize: 18,
     textAlign: 'center',
     fontWeight: 'bold',
   },
