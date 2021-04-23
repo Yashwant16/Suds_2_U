@@ -48,9 +48,3 @@ export default class MyNotificationsScreen extends React.Component {
     }
 }
 
-  // const styles = StyleSheet.create({
-  //   icon: {
-  //     width: 24,
-  //     height: 24,
-  //   },
-  // });
