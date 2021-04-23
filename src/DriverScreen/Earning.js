@@ -141,7 +141,7 @@ export default class MyNotificationsScreen extends React.Component {
             onPress={this.updateIndex}
             selectedIndex={selectedIndex}
             buttons={buttons}
-            containerStyle={{borderWidth: 0, marginTop: 0, marginLeft: 0, marginRight: 0, borderRadius: 0, backgroundColor: '#fff', height:50}}
+            containerStyle={{borderWidth: 0, marginTop: 0, marginLeft: 0, marginRight: 0, borderRadius: 0, backgroundColor: '#fff', height: 50}}
             buttonStyle={{}}
             innerBorderStyle={{width: 0}}
             selectedButtonStyle={{marginHorizontal: 5, marginTop: 4, borderBottomColor: 'orange', borderBottomWidth: 3, backgroundColor: '#fff'}}
@@ -149,13 +149,13 @@ export default class MyNotificationsScreen extends React.Component {
             textStyle={{color: '#8B9193', fontSize: 18}}
           />
 
-          <View style={{paddingTop: 7, paddingHorizontal:7, flex: 1}}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding:7}}>
+          <View style={{paddingTop: 7, paddingHorizontal: 7, flex: 1}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 7}}>
               <Detail detail="My Earning" title={this.state.data[selectedIndex].earning} color="#7DD948" />
               <Detail detail="Speed Time" title={this.state.data[selectedIndex].speed} color={Colors.blue_color} />
               <Detail detail="Washes Completed" title={this.state.data[selectedIndex].completed} color="orange" />
             </View>
-            <Text style={{marginTop: 25, marginHorizontal:10, color: '#888', fontSize:18}}>TODAY'S TRIP</Text>
+            <Text style={{marginTop: 25, marginHorizontal: 10, color: '#888', fontSize: 18}}>TODAY'S TRIP</Text>
             <View style={{flex: 1}}>
               <FlatList
                 keyExtractor={item => item.id}

@@ -42,45 +42,42 @@ const CustomHeader = ({onLeftButtonPress, onRightButtonPress, title, leftIconSou
     return getActiveRouteState(childActiveRoute);
   };
   return (
-    // <View>
-    //   <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-    //   <View style={styles.container}>
-    //     <Text style={styles.title}>{title}</Text>
-    //     {onLeftButtonPress && (
-    //       <View>
-    //         <TouchableOpacity onPress={onLeftButtonPress}>
-    //           <Image style={styles.back_icon} source={leftIconSource} />
-    //         </TouchableOpacity>
-    //       </View>
-    //     )}
-
-    //     {onRightButtonPress && (
-    //       <View>
-    //         <TouchableOpacity onPress={onRightButtonPress}>
-    //           <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
-    //         </TouchableOpacity>
-    //       </View>
-    //     )}
-    //   </View>
-    // </View>
-
     <View>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-      <Header
-        statusBarProps={{barStyle: 'light-content'}}
-        height={78}
-        containerStyle={styles.container}
-        backgroundColor={Colors.blue_color}
-        placement={'left'}
-        leftComponent={
-          <TouchableOpacity onPress={onLeftButtonPress}>
-            <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
-          </TouchableOpacity>
-        }
-        leftContainerStyle={styles.left_container}
-        centerComponent={<Text style={styles.title}>{title}</Text>}
-      />
+      <View style={styles.container}>
+        <Text style={styles.title}>{title}</Text>
+        {onLeftButtonPress && (
+          <View>
+            <TouchableOpacity onPress={onLeftButtonPress}>
+              <Image style={styles.back_icon} source={leftIconSource} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {onRightButtonPress && (
+          <View>
+            <TouchableOpacity onPress={onRightButtonPress}>
+              <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
     </View>
+
+    // <Header
+    //   statusBarProps={{barStyle: 'light-content'}}
+    //   height={78}
+    //   containerStyle={styles.container}
+    //   backgroundColor={Colors.blue_color}
+    //   placement={'left'}
+    //   leftComponent={
+    //     <TouchableOpacity onPress={onLeftButtonPress}>
+    //       <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
+    //     </TouchableOpacity>
+    //   }
+    //   leftContainerStyle={styles.left_container}
+    //   centerComponent={<Text style={styles.title}>{title}</Text>}
+    // />
   );
 };
 

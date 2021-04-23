@@ -17,13 +17,13 @@ export default class OnJob extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {modalVisible: true};
+    this.state = {arrived: false};
   }
 
   render() {
     return (
-      <View style={{flex: 1, position:'relative'}}>
-        <CustomHeader title="ON JOB" onLeftButtonPress={() => this.props.navigation.goBack()} />
+      <View style={{flex: 1, position: 'relative'}}>
+        {/* <CustomHeader title="ON JOB" onLeftButtonPress={() => this.props.navigation.goBack()} /> */}
 
         <MapView
           style={{width: '100%', flex: 1}}
@@ -35,15 +35,14 @@ export default class OnJob extends React.Component {
           }}
         />
 
-        <View style={styles.jobDetails}>
-          <Image style={{height: 25, width: 25, marginRight: 10, padding: 10, alignSelf:'center', tintColor:'#999'}} source={require('../../Assets/help.png')} />
+        <View style={styles.jobDestination}>
+          <Image style={{height: 25, width: 25, marginRight: 10, padding: 10, alignSelf: 'center', tintColor: '#999'}} source={require('../../Assets/help.png')} />
           <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
-            <View style={{alignItems:'center', flex:1}}>
-              <Text style={{marginHorizontal: 5, fontSize: 16, color:Colors.dark_orange}}>JOB DESTINATION</Text>
-              <Text style={{marginHorizontal: 5, fontSize: 16, color:'#444'}}>994 Colin Gateway Suite 981</Text>  
+            <View style={{alignItems: 'center', flex: 1}}>
+              <Text style={{marginHorizontal: 5, fontSize: 16, color: Colors.dark_orange}}>JOB DESTINATION</Text>
+              <Text style={{marginHorizontal: 5, fontSize: 16, color: '#444'}}>994 Colin Gateway Suite 981</Text>
             </View>
-            <Image style={{height: 25, width: 25, marginRight: 10, padding: 10, alignSelf:'center', tintColor:'#444'}} source={require('../../Assets/location.png')} />
-
+            <Image style={{height: 25, width: 25, marginRight: 10, padding: 10, alignSelf: 'center', tintColor: '#444'}} source={require('../../Assets/location.png')} />
           </View>
         </View>
 
@@ -65,7 +64,7 @@ export default class OnJob extends React.Component {
               </View>
             </View>
           </View>
-          <CtaButton primary title="ARRIVED & START JOB" style={{borderRadius: 5, backgroundColor: Colors.green, padding: 16}} />
+          <CtaButton onPress={()=> this.setState({arrived: !this.state.arrived})} primary title={this.state.arrived ? 'ARRIVED & START JOB' : 'ON MY WAY'} style={{borderRadius: 5, backgroundColor: this.state.arrived? Colors.green : "#226", padding: 16, width:"100%"}} />
         </View>
       </View>
     );
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  jobDetails:{
+  jobDestination: {
     shadowOffset: {width: 1, height: 1},
     shadowColor: '#333',
     shadowOpacity: 0.2,
@@ -96,10 +95,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 4,
     padding: 10,
-    position: "absolute",
-    top:88,
-    left:10,
-    right:10
-
-  }
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
+  },
 });

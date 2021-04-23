@@ -1,7 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import {StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, FlatList} from 'react-native';
-import {SafeAreaView} from 'react-navigation';
-import {Header, Icon, Avatar} from 'react-native-elements';
+import React, {useMemo} from 'react';
+import {Text, View, Image, FlatList} from 'react-native';
 import Colors from '../../Constants/Colors';
 import CustomHeader from '../Components/CustomHeader';
 import Rating from '../Components/Rating';
@@ -157,9 +155,3 @@ const Percent = ({rate, percent, amount}) => (
     <Text style={{textAlign: 'right', fontSize: 10, color: '#777', marginTop:2}}>{amount}</Text>
   </View>
 );
-// const styles = StyleSheet.create({
-//   icon: {
-//     width: 24,
-//     height: 24,
-//   },
-// });

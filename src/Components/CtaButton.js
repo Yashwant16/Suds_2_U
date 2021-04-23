@@ -7,7 +7,7 @@ const CtaButton = ({onPress, primary, title, style}) => {
     <TouchableOpacity
       elevation={5}
       onPress={onPress}
-      style={[styles.btn, {backgroundColor: primary ? Colors.buttom_color : 'white'}], style}
+      style={[styles.btn, {backgroundColor: primary ? Colors.buttom_color : 'white'}, style]}
       underlayColor="gray"
       activeOpacity={0.8}
       // disabled={this.state.disableBtn}

@@ -19,8 +19,8 @@ export default class Home extends React.Component {
 
   render() {
     return (
-      <View style={{flex:1}}>
-        {/* <CustomHeader title="WELCOME" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} /> */}
+      <View style={{flex: 1}}>
+        <CustomHeader title="WELCOME" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} />
         <WelcomContainer />
       </View>
     );
@@ -28,14 +28,6 @@ export default class Home extends React.Component {
 }
 
 class WelcomeScreen extends React.Component {
-  // static navigationOptions = {
-  //   drawerLabel: 'Home',
-  //   drawerIcon: ({tintColor}) => (
-  //     <View>
-  //       <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
-  //     </View>
-  //   ),
-  // };
 
   constructor(props) {
     super(props);
@@ -74,7 +66,14 @@ class WelcomeScreen extends React.Component {
             </View>
           </View>
         </View>
-        <NewJobModal accept={() => this.props.navigation.navigate('OnJob')} modalVisible={this.state.modalVisible} hide={() => this.setState({modalVisible: false})} />
+        <NewJobModal
+          accept={() => {
+            this.props.navigation.navigate('OnJob');
+            this.setState({modalVisible: false});
+          }}
+          modalVisible={this.state.modalVisible}
+          hide={() => this.setState({modalVisible: false})}
+        />
       </View>
     );
   }
