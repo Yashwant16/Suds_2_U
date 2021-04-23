@@ -2,22 +2,49 @@ import React from 'react';
 import {Text, View, Image, StatusBar} from 'react-native';
 import CustomHeader from '../Components/CustomHeader';
 import MapView from 'react-native-maps';
+import NewJobModal from '../Components/NewJobModal';
+import OnJob from './OnJob';
+import {createStackNavigator} from 'react-navigation-stack';
+import {createAppContainer} from 'react-navigation';
 
-export default class WelcomeScreen extends React.Component {
+export default class Home extends React.Component {
   static navigationOptions = {
-    drawerLabel: 'Review & Ratings',
+    drawerLabel: 'Home',
     drawerIcon: ({tintColor}) => (
       <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/review.png')} />
+        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
       </View>
     ),
   };
 
   render() {
     return (
+      <View style={{flex:1}}>
+        {/* <CustomHeader title="WELCOME" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} /> */}
+        <WelcomContainer />
+      </View>
+    );
+  }
+}
+
+class WelcomeScreen extends React.Component {
+  // static navigationOptions = {
+  //   drawerLabel: 'Home',
+  //   drawerIcon: ({tintColor}) => (
+  //     <View>
+  //       <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
+  //     </View>
+  //   ),
+  // };
+
+  constructor(props) {
+    super(props);
+    this.state = {modalVisible: true};
+  }
+
+  render() {
+    return (
       <View style={{flex: 1}}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-        <CustomHeader title="WELCOME" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} />
         <MapView
           style={{width: '100%', flex: 1}}
           region={{
@@ -27,6 +54,7 @@ export default class WelcomeScreen extends React.Component {
             longitudeDelta: 0.0421,
           }}
         />
+
         <View style={{backgroundColor: '#efefef', padding: 10}}>
           <Text style={{fontSize: 18, paddingBottom: 5}}>TODAY'S TRIP</Text>
           <View style={{flexDirection: 'row', backgroundColor: '#fff', borderRadius: 4, padding: 10, marginBottom: 10}}>
@@ -46,11 +74,27 @@ export default class WelcomeScreen extends React.Component {
             </View>
           </View>
         </View>
+        <NewJobModal accept={() => this.props.navigation.navigate('OnJob')} modalVisible={this.state.modalVisible} hide={() => this.setState({modalVisible: false})} />
       </View>
     );
   }
 }
+const Welcome = createStackNavigator({
+  Welcome: {
+    screen: WelcomeScreen,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
+  OnJob: {
+    screen: OnJob,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
+});
 
+const WelcomContainer = createAppContainer(Welcome);
 // const styles = StyleSheet.create({
 //   icon: {
 //     width: 24,

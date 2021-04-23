@@ -35,7 +35,7 @@ import { StackRouter } from 'react-navigation';
        <View style={styles.scrollView}>
          {/* <SafeAreaView style={{ backgroundColor: '#000' }}> */}
            <View style={{flex:1}}>
-             <AppNavigator onNavigationStateChange={(prevNav, nextNav, navAction)=>setNav(route)} />
+             <AppNavigator onNavigationStateChange={(prevNav, nextNav, navAction)=>setNav(nextNav)} />
            </View>
          {/* </SafeAreaView> */}
        </View>

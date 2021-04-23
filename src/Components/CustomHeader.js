@@ -6,59 +6,81 @@ import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import {Header} from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 
-const CustomHeader = ({onLeftButtonPress, onRightButtonPress, title,leftIconSource = require('../../Assets/back_arrow.png'), route}) => {
-  // const [heading, setHeading] = useState('GET STARTED NOW');
+const CustomHeader = ({onLeftButtonPress, onRightButtonPress, title, leftIconSource = require('../../Assets/back_arrow.png'), route}) => {
+  const [heading, setHeading] = useState('GET STARTED NOW');
   // useEffect(() => {
-  //   console.log(title,route);
-  //   // setHeading(currTitle=>{
-  //   //   if(route?.routeName=='ChooseScreen') return 'GET STARTED NOW'
-  //   //   if(route?.routeName=='Login') return 'LOGIN'
-  //   //   if(route?.routeName=='SignUp') return 'REGISTER'
-  //   //   if(route?.routeName=='ChooseScreen') return 'GET STARTED NOW'
-  //   //   if(route?.routeName=='ChooseScreen') return 'GET STARTED NOW'
-  //   //   if(route?.routeName=='ChooseScreen') return 'GET STARTED NOW'
-  //   //   return currTitle
-  //   // })
-    
-    
+  //   console.log(getActiveRouteState(route))
+  //   let activeRoute = getActiveRouteState(route)?.routeName
+  //   console.log(title, activeRoute);
+  //   setHeading(currTitle => {
+  //     if (activeRoute== 'UserTypeScreen') return 'GET STARTED NOW';
+  //     if (activeRoute == 'ChooseScreen') return 'GET STARTED NOW';
+  //     if (activeRoute == 'Login' || activeRoute=="WasherLogin") return 'LOGIN';
+  //     if (activeRoute == 'SignUp') return 'REGISTER';
+  //     if (activeRoute == 'OtpVerification') return 'ENTER OTP';
+  //     if (activeRoute == 'TermsConditions') return 'DISCLAIMER & TERMS';
+  //     if (activeRoute == 'Welcome') return 'WELCOME';
+  //     if (activeRoute == 'BookingHistory') return 'BOOKING HISTORY';
+  //     if (activeRoute == 'ReviewRating') return 'REVIEW & RATING';
+  //     if (activeRoute == 'Earning') return 'EARNINGS';
+  //     if (activeRoute == 'DriverChangePaasword') return 'CHANGE PASSWORD';
+  //     if (activeRoute == 'ForgotPassword') return 'FORGOT PASSWORD';
+  //     if (activeRoute == 'ReviewRating') return 'REVIEW & RATING';
+  //     if (activeRoute == 'ReviewRating') return 'REVIEW & RATING';
+  //     if (activeRoute == 'ReviewRating') return 'REVIEW & RATING';
+  //     if (activeRoute == 'ReviewRating') return 'REVIEW & RATING';
+  //     return currTitle;
+  //   });
   // }, [route]);
+  const getActiveRouteState = function (route) {
+    if (!route) return ' -- undefuned --';
+    if (!route.routes || route.routes.length === 0 || route.index >= route.routes.length) {
+      return route;
+    }
+
+    const childActiveRoute = route.routes[route.index];
+    return getActiveRouteState(childActiveRoute);
+  };
   return (
+    // <View>
+    //   <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+    //   <View style={styles.container}>
+    //     <Text style={styles.title}>{title}</Text>
+    //     {onLeftButtonPress && (
+    //       <View>
+    //         <TouchableOpacity onPress={onLeftButtonPress}>
+    //           <Image style={styles.back_icon} source={leftIconSource} />
+    //         </TouchableOpacity>
+    //       </View>
+    //     )}
+
+    //     {onRightButtonPress && (
+    //       <View>
+    //         <TouchableOpacity onPress={onRightButtonPress}>
+    //           <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
+    //         </TouchableOpacity>
+    //       </View>
+    //     )}
+    //   </View>
+    // </View>
+
     <View>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-      <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
-        {onLeftButtonPress && (
-          <View>
-            <TouchableOpacity onPress={onLeftButtonPress}>
-              <Image style={styles.back_icon} source={leftIconSource} />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {onRightButtonPress && (
-          <View>
-            <TouchableOpacity onPress={onRightButtonPress}>
-              <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
+      <Header
+        statusBarProps={{barStyle: 'light-content'}}
+        height={78}
+        containerStyle={styles.container}
+        backgroundColor={Colors.blue_color}
+        placement={'left'}
+        leftComponent={
+          <TouchableOpacity onPress={onLeftButtonPress}>
+            <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
+          </TouchableOpacity>
+        }
+        leftContainerStyle={styles.left_container}
+        centerComponent={<Text style={styles.title}>{title}</Text>}
+      />
     </View>
-
-    // <Header
-    //   statusBarProps={{barStyle: 'light-content'}}
-    //   height={78}
-    //   containerStyle={styles.container}
-    //   backgroundColor={Colors.blue_color}
-    //   placement={'left'}
-    //   leftComponent={
-    //     <TouchableOpacity onPress={onLeftButtonPress}>
-    //       <Image style={styles.back_icon} source={require('../../Assets/back_arrow.png')} />
-    //     </TouchableOpacity>
-    //   }
-    //   leftContainerStyle={styles.left_container}
-    //   centerComponent={<Text style={styles.title}>{title}</Text>}
-    // />
   );
 };
 
@@ -73,7 +95,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     paddingTop: StatusBar.currentHeight,
     alignItems: 'center',
-    zIndex: 100,
+    zIndex: 20,
     // borderWidth: 2,
     // borderColor : 'red',
     // backgroundColor:'green'
