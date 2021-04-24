@@ -1,6 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
+import {StyleSheet, Text, View, Image, FlatList, TouchableOpacity} from 'react-native';
 import Colors from '../../Constants/Colors';
+import {useNavigation, useRoute} from '@react-navigation/core';
 
 export const nav = React.createRef(null);
 export const routeRef = React.createRef(null);
@@ -143,8 +144,7 @@ class BookingHistory extends React.Component {
     return (
       <View style={{flex: 1}}>
         {/* <SafeAreaView /> */}
-        <View
-          style={styles.header}>
+        <View style={styles.header}>
           <Text style={{fontWeight: 'bold', color: Colors.text_white, fontSize: 18}}>Rewards:</Text>
 
           {[...Array(10)].map((v, i) => (
@@ -160,7 +160,7 @@ class BookingHistory extends React.Component {
           style={{width: '100%', height: 200}}
           showsVerticalScrollIndicator={false}
           data={this.state.Data}
-          renderItem={renderItem}
+          renderItem={({item})=><Item item={item} navigation={this.props.navigation}/>}
           ItemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#ddd'}} />}
           // ListEmptyComponent={this.ListEmpty}
         />
@@ -171,30 +171,32 @@ class BookingHistory extends React.Component {
 
 export default BookingHistory;
 
-const renderItem = ({item, index}) => (
-  <View style={{padding: 16, flex: 1}}>
-    <View style={{flexDirection: 'row'}}>
-      <Image style={{height: 70, width: 70, marginRight: 10, padding: 10, borderRadius: 35}} source={{uri: item.image}} />
-      <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
-        <View style={{}}>
-          <Text style={{marginHorizontal: 5, fontSize: 16, marginBottom: 2}}>{item.name}</Text>
-          <Text style={{marginHorizontal: 5, fontWeight: 'bold', color: Colors.blue_color}}>{item.vehicleType}</Text>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-            <Image style={{width: 16, height: 16, tintColor: '#777'}} source={require('../../Assets/location.png')} />
-            <Text style={{marginHorizontal: 3, color: '#999'}}>{item.name}</Text>
+const Item = ({item, navigation}) => {
+  return (
+    <TouchableOpacity style={{padding: 16, flex: 1}} onPress={()=>navigation.navigate("BOOKING DETAILS")}>
+      <View style={{flexDirection: 'row'}}>
+        <Image style={{height: 70, width: 70, marginRight: 10, padding: 10, borderRadius: 35}} source={{uri: item.image}} />
+        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{}}>
+            <Text style={{marginHorizontal: 5, fontSize: 16, marginBottom: 2}}>{item.name}</Text>
+            <Text style={{marginHorizontal: 5, fontWeight: 'bold', color: Colors.blue_color}}>{item.vehicleType}</Text>
+            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+              <Image style={{width: 16, height: 16, tintColor: '#777'}} source={require('../../Assets/location.png')} />
+              <Text style={{marginHorizontal: 3, color: '#999'}}>{item.name}</Text>
+            </View>
+          </View>
+          <View style={{}}>
+            <Text style={{marginHorizontal: 5, color: 'green', fontWeight: 'bold', textAlign: 'right'}}>Success</Text>
+            <Text style={{marginHorizontal: 5, color: '#aaa', textAlign: 'right'}}>Today at 3:26 pm</Text>
           </View>
         </View>
-        <View style={{}}>
-          <Text style={{marginHorizontal: 5, color: 'green', fontWeight: 'bold', textAlign: 'right'}}>Success</Text>
-          <Text style={{marginHorizontal: 5, color: '#aaa', textAlign: 'right'}}>Today at 3:26 pm</Text>
-        </View>
       </View>
-    </View>
-  </View>
-);
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
-  header:{
+  header: {
     padding: 15,
     backgroundColor: '#ffae00',
     flexDirection: 'row',

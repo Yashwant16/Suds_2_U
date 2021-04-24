@@ -8,6 +8,7 @@ import {useNavigation, useRoute} from '@react-navigation/core';
 import OnJob from '../../DriverScreen/OnJob';
 import WorkInProgress from '../../DriverScreen/WorkInProgress';
 import JobFinished from '../../DriverScreen/JobFinished';
+import BookingDetails from '../../DriverScreen/BookingDetails';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ const DriverHomeStack = () => {
       <Stack.Screen name="ON JOB" component={OnJob} />
       <Stack.Screen name="WORK IN PROGRESS" component={WorkInProgress} />
       <Stack.Screen name="JOB FINISHED" component={JobFinished} />
+      <Stack.Screen name="BOOKING DETAILS" component={BookingDetails} />
     </Stack.Navigator>
   );
 };
