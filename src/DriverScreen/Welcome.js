@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {Text, View, Image, StatusBar} from 'react-native';
 import CustomHeader from '../Components/CustomHeader';
 import MapView from 'react-native-maps';
@@ -32,13 +32,21 @@ import WorkInProgress from './WorkInProgress';
 //   }
 // }
 
-const WelcomeScreen = ({navigation}) => {
+export const nav = React.createRef(null);
+export const routeRef = React.createRef(null);
+
+const WelcomeScreen = ({navigation, route}) => {
   const [modalVisible, setModalVisibility] = useState(true);
 
   const accept = () => {
     navigation.navigate('ON JOB');
     hide();
   };
+
+  useEffect(()=>{
+    nav.current = navigation;
+    routeRef.current = route;
+  }, [])
 
   const hide = () => setModalVisibility(false);
 

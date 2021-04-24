@@ -8,6 +8,7 @@ import ReviewRating from '../../DriverScreen/ReviewRating';
 import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
 import DriverHelp from '../../DriverScreen/DriverHelp';
 import BankInfo from '../../DriverScreen/BankInfo';
+import UpdateDocument from '../../DriverScreen/UpdateDocument';
 const Drawer = createDrawerNavigator();
 
 const DriverDrawer = () => {
@@ -21,7 +22,7 @@ const DriverDrawer = () => {
         itemStyle: styles.drawerItem,
       }}
       drawerContent={CustomDrawerContent}
-      initialRouteName="BOOKING HISTORY"
+      initialRouteName="WELCOME"
       drawerStyle={{backgroundColor: '#469'}}>
       <Drawer.Screen
         name="WELCOME"
@@ -55,7 +56,7 @@ const DriverDrawer = () => {
       />
       <Drawer.Screen
         name="UPDATE DOCUMENT"
-        component={SignUP}
+        component={UpdateDocument}
         options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/uploaddocument.png')} />}}
       />
       <Drawer.Screen

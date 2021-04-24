@@ -33,7 +33,7 @@ class OTPverification extends Component {
                     Dont's have the OTP? <Text style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESENT OTP</Text>
                   </Text>
 
-                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate('DISCLAIMER & TERMS')} />
+                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate('COMPLETE PROFILE')} />
                   <LinkButton title="Login with Password" />
                 </View>
                 <TouchableOpacity
