@@ -9,7 +9,7 @@ import LinkButton from '../Components/LinkButton';
 import CtaButton from '../Components/CtaButton';
 import CustomHeader from '../Components/CustomHeader';
 
-export default class App extends Component {
+class OTPverification extends Component {
   state = {
     otpInput: '',
     inputText: '',
@@ -18,8 +18,6 @@ export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-        <CustomHeader title="ENTER OTP" onLeftButtonPress={() => this.props.navigation.goBack()} />
         <View style={{flex: 1}}>
           <ScrollView>
             <ImageBackground style={{width: '100%', height: '67%', flex: 1}} source={require('../../Assets/imageBG.png')}>
@@ -35,12 +33,12 @@ export default class App extends Component {
                     Dont's have the OTP? <Text style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESENT OTP</Text>
                   </Text>
 
-                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate('TermsConditions', {type: this.props.navigation.getParam('type')})} />
+                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate('DISCLAIMER & TERMS')} />
                   <LinkButton title="Login with Password" />
                 </View>
                 <TouchableOpacity
                   onPress={() => {
-                    this.props.navigation.navigate('SignUp');
+                    this.props.navigation.navigate('REGISTER');
                   }}
                   style={{marginTop: 15, marginBottom: 15}}
                   underlayColor="gray"
@@ -59,6 +57,8 @@ export default class App extends Component {
     );
   }
 }
+
+export default OTPverification
 
 const styles = StyleSheet.create({
   container: {

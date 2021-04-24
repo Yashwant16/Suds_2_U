@@ -1,56 +1,47 @@
 import React from 'react';
-import { Text, View, Image, StatusBar, TouchableOpacity, Button } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header } from 'react-native-elements';
-import Colors from '../../Constants/Colors';
+import {Text, View, ImageBackground, StyleSheet} from 'react-native';
+import CtaButton from '../Components/CtaButton';
 
-export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
-
-        drawerLabel: 'Bank Info',
-        drawerIcon: ({ tintColor }) => (
-            <View>
-
-                <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/dollar-symbol.png')} />
-            </View>
-        ),
-    };
-
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
-                <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={82}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff' }} source={require('../../Assets/menu.png')} />
-
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Home</Text>
-                    }
-                />
-                <SafeAreaView />
-                <Button
-                    onPress={() => this.props.navigation.goBack()}
-                    title="Go back home"
-                />
-                <Text>DBDFGBFDGB</Text>
-            </View>
-        );
-    }
+class BankInfo extends React.Component {
+  render() {
+    return (
+      <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
+        <View style={styles.container}>
+          <Text style={styles.text}>Full Name</Text>
+          <Text style={styles.text}>Account Number</Text>
+          <Text style={styles.text}>Confirm Account Number</Text>
+          <Text style={styles.text}>Routing Number</Text>
+          <View style={{flexDirection:'row'}}>
+            <Text style={[styles.text, {flex:1, }]}>Routing Number</Text>
+            <View style={{width:10, height:10}}/>
+            <Text style={[styles.text, {flex:1, }]}>Routing Number</Text>
+          </View>
+          <CtaButton primary title="Save" style={{width: '100%', marginTop: 8}} />
+        </View>
+      </ImageBackground>
+    );
+  }
 }
 
-  // const styles = StyleSheet.create({
-  //   icon: {
-  //     width: 24,
-  //     height: 24,
-  //   },
-  // });
+export default BankInfo;
+
+const styles = StyleSheet.create({
+  imgBg: {
+    flex: 1,
+  },
+  container: {
+    width: '100%',
+    height: '100%',
+    paddingTop: 15,
+    paddingHorizontal: 30,
+  },
+  text: {
+    fontWeight: 'bold',
+    padding: 18,
+    fontSize: 16,
+    width: '100%',
+    borderRadius: 50,
+    backgroundColor: 'white',
+    marginTop: 8
+  },
+});

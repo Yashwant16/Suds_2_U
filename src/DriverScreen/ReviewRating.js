@@ -4,15 +4,7 @@ import Colors from '../../Constants/Colors';
 import CustomHeader from '../Components/CustomHeader';
 import Rating from '../Components/Rating';
 
-export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Review & Ratings',
-    drawerIcon: ({tintColor}) => (
-      <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/review.png')} />
-      </View>
-    ),
-  };
+class ReviewRating extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -87,7 +79,6 @@ export default class MyNotificationsScreen extends React.Component {
   render() {
     return (
       <View style={{flex: 1}}>
-        <CustomHeader title="REVIEW & RATING" leftIconSource={require('../../Assets/menu.png')} onLeftButtonPress={() => this.props.navigation.openDrawer()} />
         <Overview ratingData={this.state.ratingData} />
         <FlatList
           keyExtractor={item => item.id}
@@ -101,6 +92,7 @@ export default class MyNotificationsScreen extends React.Component {
     );
   }
 }
+export default ReviewRating
 
 const renderItem = ({item, index}) => (
   <View style={{padding: 17}}>
@@ -144,14 +136,14 @@ const Overview = ({ratingData}) => {
 };
 
 const Percent = ({rate, percent, amount}) => (
-  <View style={{padding:3}}>
-    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+  <View style={{padding:0}}>
+    <View style={{ flexDirection: 'row', alignItems: 'center'}}>
       <Image style={{width: 16, height: 16, tintColor: '#aaa'}} source={require('../../Assets/review.png')} />
       <Text style={{marginHorizontal: 3, color: '#999'}}>{rate}</Text>
       <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-start', height: 4, backgroundColor: '#eee'}}>
         <View style={{width: percent + '%', height: '100%', backgroundColor: Colors.dark_orange}} />
       </View>
     </View>
-    <Text style={{textAlign: 'right', fontSize: 10, color: '#777', marginTop:2}}>{amount}</Text>
+    <Text style={{textAlign: 'right', fontSize: 10, color: '#777', lineHeight:10}}>{amount}</Text>
   </View>
 );

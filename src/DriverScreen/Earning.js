@@ -1,19 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, FlatList} from 'react-native';
-import {SafeAreaView} from 'react-navigation';
-import {Header, Icon, Avatar} from 'react-native-elements';
+import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
 import Colors from '../../Constants/Colors';
-import {ButtonGroup} from 'react-native-elements';
-import CustomHeader from '../Components/CustomHeader';
-export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Earning',
-    drawerIcon: ({tintColor}) => (
-      <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/money.png')} />
-      </View>
-    ),
-  };
+class Earning extends React.Component {
 
   constructor(props) {
     super(props);
@@ -134,10 +122,9 @@ export default class MyNotificationsScreen extends React.Component {
     const {selectedIndex, DayselectedIndex} = this.state;
     return (
       <View style={{flex: 1, backgroundColor: '#f8f8f8'}}>
-        <CustomHeader title="EARNINGS" leftIconSource={require('../../Assets/menu.png')} onLeftButtonPress={() => this.props.navigation.openDrawer()} />
 
         <View style={{flex: 1}}>
-          <ButtonGroup
+          <View
             onPress={this.updateIndex}
             selectedIndex={selectedIndex}
             buttons={buttons}
@@ -172,6 +159,8 @@ export default class MyNotificationsScreen extends React.Component {
     );
   }
 }
+
+export default Earning
 const renderItem = ({item, index}) => (
   <View style={styles.item}>
     <View style={{flexDirection: 'row'}}>

@@ -2,17 +2,8 @@ import React from 'react';
 import {StyleSheet, View, Image, ImageBackground} from 'react-native';
 import CustomInput from '../Components/CustomInput';
 import CtaButton from '../Components/CtaButton';
-import CustomHeader from '../Components/CustomHeader';
 
-export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Change Password',
-    drawerIcon: ({tintColor}) => (
-      <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/padlock.png')} />
-      </View>
-    ),
-  };
+class DriverChangePassword extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,7 +14,6 @@ export default class MyNotificationsScreen extends React.Component {
   render() {
     return (
       <View style={{flex: 1}}>
-        <CustomHeader title="CHANGE PASSWORD" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} />
         <View style={{flex: 1}}>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1, justifyContent:'space-evenly'}} source={require('../../Assets/imageBG.png')}>
             <Image style={{width:200, height:200, tintColor:'#fff', alignSelf:'center'}} source={require('../../Assets/padlock.png')}/>
@@ -42,7 +32,7 @@ export default class MyNotificationsScreen extends React.Component {
     );
   }
 }
-
+export default DriverChangePassword
 const styles = StyleSheet.create({
   inputs_container: {
     width: '90%',

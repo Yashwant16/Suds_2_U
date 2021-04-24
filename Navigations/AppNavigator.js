@@ -50,7 +50,7 @@ const SplashStack = createStackNavigator(
     Splash: {
       screen: Splash,
       navigationOptions: ({navigation}) => ({
-        header: null,
+        header: false,
       }),
     },
   },
@@ -72,56 +72,56 @@ const AuthStack = createStackNavigator({
   UserTypeScreen: {
     screen: UserTypeScreen,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   ChooseScreen: {
     screen: ChooseScreen,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   Login: {
     screen: Login,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   WasherLogin: {
     screen: WasherLogin,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
 
   SignUp: {
     screen: SignUp,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   ForgotPassword: {
     screen: ForgotPassword,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   OtpVerification: {
     screen: OtpVerification,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   AddLicence: {
     screen: AddLicence,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   TermsConditions: {
     screen: TermsConditions,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   initialRouteName: 'Login',
@@ -131,37 +131,37 @@ const drawerScreen = createStackNavigator({
   AddCard: {
     screen: AddCard,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   AddNewVehicle: {
     screen: AddNewVehicle,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   SelectPackage: {
     screen: SelectPackage,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   SelectAddOns: {
     screen: SelectAddOns,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   BookingDetails: {
     screen: BookingDetails,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
   ScheduleBook: {
     screen: ScheduleBook,
     navigationOptions: () => ({
-      header: null,
+      header: false,
     }),
   },
 });
