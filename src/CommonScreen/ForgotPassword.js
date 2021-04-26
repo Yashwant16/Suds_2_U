@@ -1,7 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, ImageBackground} from 'react-native';
-import Colors from '../../Constants/Colors';
-import CustomHeader from '../Components/CustomHeader';
+import {Text, View, Image, ImageBackground} from 'react-native';
 import CtaButton from '../Components/CtaButton';
 import InputsContainer from '../Components/InputsContainer';
 import CustomInput from '../Components/CustomInput';

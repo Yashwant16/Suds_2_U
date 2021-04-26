@@ -5,6 +5,7 @@ import OTPTextView from 'react-native-otp-textinput';
 import {ScrollView} from 'react-native';
 import LinkButton from '../Components/LinkButton';
 import CtaButton from '../Components/CtaButton';
+import { type, WASHER } from '../Navigation/NavigationService';
 
 class OTPverification extends Component {
   state = {
@@ -30,7 +31,7 @@ class OTPverification extends Component {
                     Dont's have the OTP? <Text style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESENT OTP</Text>
                   </Text>
 
-                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate('COMPLETE PROFILE')} />
+                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate(type.current==WASHER?'COMPLETE PROFILE':'TERMS & CONDITIONS')} />
                   <LinkButton title="Login with Password" />
                 </View>
                 <TouchableOpacity
