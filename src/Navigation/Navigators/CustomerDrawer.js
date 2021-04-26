@@ -16,10 +16,10 @@ const CustomerDrawer = () => {
         itemStyle: styles.drawerItem,
       }}
       drawerContent={CustomDrawerContent}
-      initialRouteName="CUSTOMER LOGIN"
+      initialRouteName="DASHBOARD"
       drawerStyle={{backgroundColor: '#469'}}>
       <Drawer.Screen
-        name="HOME"
+        name="DASHBOARD"
         component={HomeScreen}
         options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/home.png')} />}}
       />

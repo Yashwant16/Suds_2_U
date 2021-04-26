@@ -26,8 +26,8 @@ const CustomerHomeStack = () => {
     return state?.routes[0]?.state?.routes[0]?.state?.routeNames[index];
   }
   return (
-    <Stack.Navigator initialRouteName="WELCOME" mode="modal" screenOptions={defaultScreenOptions}>
-      <Stack.Screen name="WELCOME" options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title, headerRight:() => <TripSwitch headerTitle={title} />}} component={CustomerDrawer} />
+    <Stack.Navigator initialRouteName="DASHBOARD" mode="modal" screenOptions={defaultScreenOptions}>
+      <Stack.Screen name="DASHBOARD" options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title, headerRight:() => <TripSwitch headerTitle={title} />}} component={CustomerDrawer} />
       {/* <Stack.Screen name="ON JOB" component={OnJob} /> */}
     </Stack.Navigator>
   );
