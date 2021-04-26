@@ -1,13 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, Dimensions, SafeAreaView } from 'react-native';
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import { ImageBackground } from 'react-native';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+export const nav = React.createRef(null);
 export default class MyNotificationsScreen extends React.Component {
+  constructor(props){
+    super(props)
+    nav.current = props.navigation;
+  }
   static navigationOptions = {
 
     drawerLabel: 'DashBoard',

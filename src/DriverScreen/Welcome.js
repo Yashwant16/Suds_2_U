@@ -1,36 +1,7 @@
 import React, {useState,useEffect} from 'react';
-import {Text, View, Image, StatusBar} from 'react-native';
-import CustomHeader from '../Components/CustomHeader';
+import {Text, View, Image} from 'react-native';
 import MapView from 'react-native-maps';
 import NewJobModal from '../Components/NewJobModal';
-import OnJob from './OnJob';
-import {createStackNavigator} from 'react-navigation-stack';
-import {createAppContainer} from 'react-navigation';
-import WorkInProgress from './WorkInProgress';
-
-// export default class Home extends React.Component {
-//   static navigationOptions = {
-//     drawerLabel: 'Home',
-//     drawerIcon: ({tintColor}) => (
-//       <View>
-//         <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
-//       </View>
-//     ),
-//   };
-
-//   render() {
-//     return (
-//       <View style={{flex: 1}}>
-//         <CustomHeader
-//           title="WELCOME"
-//           onLeftButtonPress={() => this.props.navigation.openDrawer()}
-//           leftIconSource={require('../../Assets/menu.png')}
-//         />
-//         <WelcomContainer />
-//       </View>
-//     );
-//   }
-// }
 
 export const nav = React.createRef(null);
 export const routeRef = React.createRef(null);
@@ -93,32 +64,3 @@ const WelcomeScreen = ({navigation, route}) => {
 };
 
 export default WelcomeScreen
-// const Welcome = createStackNavigator({
-//   Welcome: {
-//     screen: WelcomeScreen,
-//     navigationOptions: () => ({
-//       header: null,
-//     }),
-//   },
-//   OnJob: {
-//     screen: OnJob,
-//     navigationOptions: () => ({
-//       header: null,
-//     }),
-//   },
-
-//   WorkInProgress: {
-//     screen: WorkInProgress,
-//     navigationOptions: () => ({
-//       header: null,
-//     }),
-//   },
-// });
-
-// const WelcomContainer = createAppContainer(Welcome);
-// const styles = StyleSheet.create({
-//   icon: {
-//     width: 24,
-//     height: 24,
-//   },
-// });

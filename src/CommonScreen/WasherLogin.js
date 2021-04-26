@@ -5,7 +5,7 @@ import {ScrollView} from 'react-native';
 import CustomInput from '../Components/CustomInput';
 import CtaButton from '../Components/CtaButton';
 import LinkButton from '../Components/LinkButton';
-import { changeStack } from '../Navigation/NavigationService';
+import { changeStack, type, WASHER } from '../Navigation/NavigationService';
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,7 +39,7 @@ const LoginScreen = ({navigation}) => {
                   state={password}
                 />
 
-                <CtaButton title="Sign In" primary onPress={() => changeStack("DriverHomeStack")} />
+                <CtaButton title="Sign In" primary onPress={() => changeStack(type.current==WASHER?"DriverHomeStack" : "CustomerHomeStack")} />
 
                 <LinkButton title="Forgot Your Password" onPress={() => navigation.navigate('FORGOT PASSWORD')} />
               </View>

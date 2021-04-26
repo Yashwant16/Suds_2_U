@@ -3,8 +3,8 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 import Colors from '../../Constants/Colors';
 import {ScrollView} from 'react-native';
-import { changeStack } from '../Navigation/NavigationService';
-const TermsConditions = ()=> {
+import { changeStack, type, WASHER } from '../Navigation/NavigationService';
+const TermsConditions = ({navigation})=> {
     return (
       <View
         style={{
@@ -42,7 +42,7 @@ const TermsConditions = ()=> {
           <View style={{justifyContent: 'flex-end', flex: 1}}>
             <TouchableOpacity
               elevation={5}
-              onPress={() => changeStack("DriverHomeStack")}
+              onPress={() =>  changeStack(type.current==WASHER?"DriverHomeStack":"CustomerHomeStack")}
               style={styles.auth_btn}
               underlayColor="gray"
               activeOpacity={0.8}>

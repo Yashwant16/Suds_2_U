@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, View, Image, SafeAreaView, ImageBackground} from 'react-native';
 import CtaButton from '../Components/CtaButton';
+import {CUSTOMER, type, WASHER} from '../Navigation/NavigationService';
 
 const UserTypeScreen = ({navigation}) => {
   return (
@@ -52,8 +53,21 @@ const UserTypeScreen = ({navigation}) => {
                 marginTop: 5,
                 padding: 5,
               }}>
-              <CtaButton primary onPress={() => navigation.navigate('chooseScreen')} title="Customer" />
-              <CtaButton onPress={() => navigation.navigate('chooseScreen')} title="Car Washer" />
+              <CtaButton
+                primary
+                onPress={() => {
+                  navigation.navigate('chooseScreen');
+                  type.current = CUSTOMER;
+                }}
+                title="Customer"
+              />
+              <CtaButton
+                onPress={() => {
+                  navigation.navigate('chooseScreen');
+                  type.current = WASHER;
+                }}
+                title="Car Washer"
+              />
             </View>
           </View>
           <SafeAreaView />
