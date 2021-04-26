@@ -8,7 +8,7 @@ export default class App extends Component {
         setTimeout(() => {
             //  this._retrieveData();{}
             {
-                this.props.navigation.navigate("Auth");
+                this.props.navigation.navigate("ScheduleBook");
             }
         }, 3000)
     }

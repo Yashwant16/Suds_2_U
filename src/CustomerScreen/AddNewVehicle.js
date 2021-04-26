@@ -93,7 +93,9 @@ export default class MyNotificationsScreen extends React.Component {
 
               <View style={[styles.camera_textInput]}>
 <TouchableOpacity style={{alignItems:'center'}}>
+  <View style={{backgroundColor:Colors.blue_color,width:50,height:50,justifyContent:'center',alignItems:'center',borderRadius:5}}>
 <Image style={{ width: 35, height:35, tintColor: '#000', alignItems:'center' ,backgroundColor:Colors.blue_color, }} source={require('../../Assets/icon/camera.png')} />
+</View>
 <Text style={{fontSize:16,color:'#ccc'}}>Upload Car Photo</Text>
 </TouchableOpacity>
               </View>

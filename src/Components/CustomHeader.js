@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Platform} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import {StatusBar} from 'react-native';
 import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 
@@ -43,6 +44,7 @@ const CustomHeader = ({onLeftButtonPress, onRightButtonPress, title, leftIconSou
   };
   return (
     <View>
+      <SafeAreaView style={{backgroundColor:Colors.blue_color}}/>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <View style={styles.container}>
         <Text style={styles.title}>{title}</Text>

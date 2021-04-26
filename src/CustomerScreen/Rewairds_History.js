@@ -90,7 +90,7 @@ export default class MyNotificationsScreen extends React.Component {
 
   static navigationOptions = {
 
-    drawerLabel: 'Rewairds & History',
+    drawerLabel: 'Rewards & History',
     drawerIcon: ({ tintColor }) => (
       <View>
 
@@ -102,19 +102,19 @@ export default class MyNotificationsScreen extends React.Component {
   renderItem = ({ item, index }) => (
     <View style={{ padding: 5 ,flex:1}}>
 <View style={{flexDirection:'row',padding:5}}>
-      <Image style={{ height: 50, width: 50, padding: 5, borderRadius: 25,marginRight:10}} source={{ uri: item.image }} />
+      <Image style={{ height: 60, width: 60, padding: 5, borderRadius: 30,marginRight:10}} source={{ uri: item.image }} />
 <View style={{flex:1}}>
-<View style={{flexDirection:'row',justifyContent:'space-between',}}>
-  <Text style={{marginHorizontal:5}}>{item.name}</Text>
+<View style={{flexDirection:'row',justifyContent:'space-between',marginBottom:5}}>
+  <Text style={{marginHorizontal:5,fontSize:15}}>{item.name}</Text>
   <Text style={{marginHorizontal:5,color:'green',fontWeight:'bold'}}>Success</Text>
 </View>
-<View style={{flexDirection:'row',justifyContent:'space-between'}}>
+<View style={{flexDirection:'row',justifyContent:'space-between',marginBottom:5}}>
   <Text style={{marginHorizontal:5,color:Colors.blue_color,fontWeight:'bold'}}>{item.name}</Text>
-  <Text style={{marginHorizontal:5,color:'#ccc'}}>Today at 3:26 pm</Text>
+  <Text style={{marginHorizontal:5,color:'#aaa'}}>Today at 3:26 pm</Text>
 </View>
-<View style={{flexDirection:'row'}}>
+<View style={{flexDirection:'row',marginBottom:5}}>
 <Image style={{ width: 17, height: 17, tintColor: '#000' }} source={require('../../Assets/location.png')} />
-<Text style={{color:'#bbb'}}>8753  Maurico Walks</Text>
+<Text style={{color:'#aaa'}}> 8753  Maurico Walks</Text>
 </View>
 </View>
       </View>
@@ -139,10 +139,17 @@ export default class MyNotificationsScreen extends React.Component {
             </TouchableOpacity>
           }
           centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>REWAIRDS HISTORY</Text>
+            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>REWARDS HISTORY</Text>
           }
         />
-        <SafeAreaView />
+        <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
+          <Text style={{ color: '#fff', margin: 6, marginTop: 10,fontSize:16 ,fontWeight:'600' }}>Rewards</Text>
+
+          <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
+          <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
+          <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
+          <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
+        </View>
         <View style={{alignItems:'center',width:'100%',}}> 
        <FlatList
       

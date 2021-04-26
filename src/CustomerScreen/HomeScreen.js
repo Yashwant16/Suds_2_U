@@ -44,7 +44,7 @@ export default class MyNotificationsScreen extends React.Component {
 
 
         <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
-          <Text style={{ color: '#fff', margin: 6, marginTop: 10,fontSize:16 ,fontWeight:'600' }}>Rewairds</Text>
+          <Text style={{ color: '#fff', margin: 6, marginTop: 10,fontSize:16 ,fontWeight:'600' }}>Rewards</Text>
 
           <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
           <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
@@ -84,7 +84,7 @@ export default class MyNotificationsScreen extends React.Component {
 
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
+                  onPress={() => { this.props.navigation.navigate('BookWasher_Now'); }}
                   style={styles.auth_btn}
                   underlayColor='gray'
                   activeOpacity={0.8}

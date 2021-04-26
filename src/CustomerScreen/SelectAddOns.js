@@ -115,7 +115,7 @@ export default class MyNotificationsScreen extends React.Component {
                 </View>
                         <TouchableOpacity
                             elevation={5}
-                            onPress={() => { this.props.navigation.navigate('BookingDetails'); }}
+                            onPress={() => { this.props.navigation.navigate('BookingReview'); }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}

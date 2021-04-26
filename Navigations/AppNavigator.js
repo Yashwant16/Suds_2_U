@@ -31,8 +31,13 @@ import AddCard from '../src/CustomerScreen/AddCard';
 import AddNewVehicle from '../src/CustomerScreen/AddNewVehicle';
 import SelectPackage from '../src/CustomerScreen/SelectPackage';
 import SelectAddOns from '../src/CustomerScreen/SelectAddOns';
-import BookingDetails from '../src/CustomerScreen/BookingDetails';
+import BookingReview from '../src/CustomerScreen/BookingReview';
+import BookingDetail from '../src/CustomerScreen/BookingDetail';
+import BookingConfirm from '../src/CustomerScreen/BookingConfirm';
+import WorkInProgress from '../src/CustomerScreen/WorkInProgress';
 import ScheduleBook from '../src/CustomerScreen/ScheduleBook';
+import OnTheWay from '../src/CustomerScreen/OnTheWay';
+import OnDemand from '../src/CustomerScreen/OnDemand';
 //DRIVER SCREEN
 import DashBoard from '../src/DriverScreen/DashBoard';
 import Earning from '../src/DriverScreen/Earning';
@@ -152,8 +157,26 @@ const drawerScreen = createStackNavigator({
       header: false,
     }),
   },
-  BookingDetails: {
-    screen: BookingDetails,
+  BookingReview: {
+    screen: BookingReview,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
+  BookingDetail: {
+    screen: BookingDetail,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
+  BookingConfirm: {
+    screen: BookingConfirm,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
+  WorkInProgress: {
+    screen: WorkInProgress,
     navigationOptions: () => ({
       header: false,
     }),
@@ -164,20 +187,34 @@ const drawerScreen = createStackNavigator({
       header: false,
     }),
   },
+  OnTheWay: {
+    screen: OnTheWay,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
+  OnDemand: {
+    screen: OnDemand,
+    navigationOptions: () => ({
+      header: null,
+    }),
+  },
 });
 const CustomDrawerContentComponent = props => (
-  <View style={{flex: 1, backgroundColor: '#182245'}}>
+  <View style={{flex: 1, backgroundColor: '#182245',}}>
     <ScrollView>
       <SafeAreaView />
       <View style={{marginTop: 22, width: 90, height: 90, borderColor: '#fff', borderRadius: 5, borderWidth: 3, alignItems: 'center', alignSelf: 'center'}}>
         <Image style={{width: 88, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch'}} source={require('../Assets/images.jpeg')} />
       </View>
-      <Text style={{color: Colors.blue_color, fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginTop: 10}}>Randy Orton</Text>
+      <Text style={{color: Colors.blue_color, fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 10,marginBottom:5}}>Randy Orton</Text>
+     <View style={{flexDirection:'row',alignItems:'center',alignSelf:'center'}}>
+       <Image style={{width: 15, height: 15, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch',tintColor:'#F5BA05'}} source={require('../Assets/location.png')} />
       <Text style={{color: '#fff', textAlign: 'center', fontSize: 16}}>san fracisco usa</Text>
-
+      </View>
       <View style={{alignItems: 'center'}}>
-        <View style={{width: 150, height: 45, backgroundColor: 'orange', alignItems: 'center', borderRadius: 22, justifyContent: 'center', marginTop: 5}}>
-          <Text style={{fontWeight: 'bold'}}>08 DROP</Text>
+        <View style={{width: 110, height: 30, backgroundColor: '#F5BA05', alignItems: 'center', borderRadius: 22, justifyContent: 'center', marginTop: 10,marginBottom:5}}>
+          <Text style={{fontWeight: 'bold'}}>08 Drops</Text>
         </View>
       </View>
       <DrawerItems {...props}>
