@@ -1,18 +1,92 @@
 import React from 'react';
-import { StyleSheet, Button, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground, Modal } from 'react-native';
 
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import { MoreHeader } from '../../Components/CustomeHeader';
 import { ScrollView } from 'react-native';
+import { BASE_URL } from '../../Constants/Base_Url';
+import Loader from '../../Components/loader/index'
+
 export default class SignUpUser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            name: '',
+            mobile: '',
             email: "",
-            password: "",
+            password: "", isLoading: false
         }
     }
+
+    validation = () => {
+
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        let phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+        if (this.state.email === '' && this.state.password === '' ) {
+            // this.setState({ isLoading: false })
+            alert('Please Enter all field')
+        }
+        else if (this.state.email === '') {
+            alert('Please Enter your Email Id')
+        }
+       
+        else if (this.state.password === '') {
+            alert('Please Enter your Email Id')
+        }
+      
+        else if (reg.test(this.state.email) === false) {
+            alert('Please Enter Correct Email Id')
+        }
+ 
+        else {
+            // this.loginUpApi();
+            this.props.navigation.navigate('CustomerApp');
+        }
+    }
+
+
+    loginUpApi = async () => {
+        this.setState({ isLoading: true })
+
+        let params = {
+            email: this.state.email, password: this.state.password,
+          device_token: 'sfsdfdsfsdf', 
+        };
+        return fetch(BASE_URL + 'login', {
+            method: 'POST',
+            headers: {
+                // Accept: 'application/json',
+                'App-Key': 'ABCDEFGHIJK',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(params)
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ isLoading: false })
+                console.log("responseJson onLoginPressHandle", responseJson)
+                if (responseJson.response === true) {
+                    this.props.navigation.navigate('CustomerApp');
+                    // let user_info = responseJson.data
+                    // let user_token = responseJson.data.token
+                    // console.log("Token",user_token)
+                    // AsyncStorage.setItem('user_token', user_token)
+                    // AsyncStorage.setItem('user_info', JSON.stringify(user_info))
+                    alert(responseJson.message)
+                    // this.props.navigation.navigate('Main')
+                }
+                else if(responseJson.response === false) {
+                    alert(responseJson.message)
+                }
+            })
+            .catch((error) => {
+                this.setState({ isLoading: false })
+                console.error(error);
+            });
+
+    };
+
     render() {
         return (
 
@@ -46,7 +120,7 @@ export default class SignUpUser extends React.Component {
                         <Image style={{ width: '100%', height: 95, resizeMode: 'contain', marginTop: 30 }} source={require('../../Assets/logo_icon.png')}></Image>
                         <Image style={{ width: '100%', height: 65, resizeMode: 'contain', marginTop: 5 }} source={require('../../Assets/logo2.png')}></Image>
                         <View style={{   padding: 21,justifyContent:'flex-end' ,flex:1}}>
-                        <View  style={{width:'96%',height:270,backgroundColor:'#fff',alignItems:'center',shadowColor: '#000',justifyContent:'flex-end',
+                        <View  style={{width:'96%',height:280,backgroundColor:'#fff',alignItems:'center',shadowColor: '#000',justifyContent:'flex-end',marginTop:30,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 3.5, borderRadius:15, 
@@ -83,7 +157,9 @@ export default class SignUpUser extends React.Component {
                                 </View>
                                 <TouchableOpacity
                                     elevation={5}
-                                    onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
+                                    onPress={() => { 
+                                        this.validation(); 
+                                    }}
                                     style={styles.auth_btn}
                                     underlayColor='gray'
                                     activeOpacity={0.8}
@@ -117,7 +193,7 @@ export default class SignUpUser extends React.Component {
                     </ImageBackground>
                  
                 </View>
-
+                {this.state.isLoading ? <Modal transparent={true}><Loader /></Modal> : null}
             </View>
         )
     }
