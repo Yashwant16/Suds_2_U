@@ -36,7 +36,8 @@ export const nav = React.createRef(null);
 export const routeRef = React.createRef(null);
 
 const WelcomeScreen = ({navigation, route}) => {
-  const [modalVisible, setModalVisibility] = useState(true);
+  const [modalVisible, setModalVisibility] = useState(false);
+
 
   const accept = () => {
     navigation.navigate('ON JOB');
@@ -46,6 +47,8 @@ const WelcomeScreen = ({navigation, route}) => {
   useEffect(()=>{
     nav.current = navigation;
     routeRef.current = route;
+    const timeout = setTimeout(()=>setModalVisibility(true), 3000)
+    return ()=> clearTimeout(timeout)
   }, [])
 
   const hide = () => setModalVisibility(false);

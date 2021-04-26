@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, Text, View, TouchableOpacity,StyleSheet} from 'react-native';
 import Colors from '../../Constants/Colors';
 import CustomInput from '../Components/CustomInput';
 
-const UploadDriverLicense = ({navigation}) => {
+const UploadDriverLicense = ({navigation,route }) => {
     const [number, setNumber] = useState('');
     const [licenseClass, setClass] = useState('');
     const [issuedDate, setIssuedDate] = useState('');
@@ -24,35 +24,39 @@ const UploadDriverLicense = ({navigation}) => {
           iconSource={require(`../../Assets/icon/password.png`)}
           setState={({text}) => setNumber(text)}
           state={number}
+          noIcon
         />
         <CustomInput
           label="LICENSE CLASSIFICATION"
           iconSource={require(`../../Assets/icon/password.png`)}
           setState={({text}) => setClass(text)}
           state={licenseClass}
+          noIcon
         />
         <CustomInput
           label="ISSUED ON"
           iconSource={require(`../../Assets/icon/password.png`)}
           setState={({text}) => setIssuedDate(text)}
           state={issuedDate}
+          noIcon
         />
         <CustomInput
           label="EXPIRY DATE"
           iconSource={require(`../../Assets/icon/password.png`)}
           setState={({text}) => setExpiryDate(text)}
           state={expiryDate}
+          noIcon
         />
-        <CardBtn navigation={navigation}/>
+        <CardBtn isFromAuthStack= {route.params.authStack} navigation={navigation}/>
       </View>
     </View>
   );
 };
 
 export default UploadDriverLicense;
-const CardBtn = ({navigation}) => (
-    <TouchableOpacity onPress={()=>navigation.navigate('BACKGROUND CHECK')} style={[styles.card, {backgroundColor:Colors.blue_color, padding: 16}]}>
-      <Text style={{color:'white', fontSize:20, fontWeight:'bold'}}>CONTINUE</Text>
+const CardBtn = ({navigation, isFromAuthStack}) => (
+    <TouchableOpacity onPress={()=>isFromAuthStack ? navigation.navigate('BACKGROUND CHECK'):navigation.goBack()} style={[styles.card, {backgroundColor:Colors.blue_color, padding: 16}]}>
+      <Text style={{color:'white', fontSize:20, fontWeight:'bold'}}>{isFromAuthStack?'CONTINUE':'DONE'}</Text>
     </TouchableOpacity>
   );
 

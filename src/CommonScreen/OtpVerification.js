@@ -1,13 +1,10 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Button, Alert, TextInput, SafeAreaView, StatusBar, ImageBackground, Image, TouchableOpacity} from 'react-native';
-import {Header, Icon, Avatar} from 'react-native-elements';
+import {StyleSheet, Text, View, SafeAreaView, ImageBackground, Image, TouchableOpacity} from 'react-native';
 import Colors from '../../Constants/Colors';
-import {MoreHeader} from '../../Components/CustomeHeader';
 import OTPTextView from 'react-native-otp-textinput';
 import {ScrollView} from 'react-native';
 import LinkButton from '../Components/LinkButton';
 import CtaButton from '../Components/CtaButton';
-import CustomHeader from '../Components/CustomHeader';
 
 class OTPverification extends Component {
   state = {

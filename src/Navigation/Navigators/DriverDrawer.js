@@ -9,6 +9,7 @@ import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
 import DriverHelp from '../../DriverScreen/DriverHelp';
 import BankInfo from '../../DriverScreen/BankInfo';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
+import TripSwitch from '../../Components/TirpSwitch';
 const Drawer = createDrawerNavigator();
 
 const DriverDrawer = () => {
@@ -37,7 +38,7 @@ const DriverDrawer = () => {
       <Drawer.Screen
         name="EARNING"
         component={Earning}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/money.png')} />}}
+        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/money.png')} /> ,headerRight:TripSwitch}}
       />
       <Drawer.Screen
         name="REVIEW & RATING"
@@ -92,7 +93,7 @@ const Login = ({navigation}) => (
 
 const SignUP = () => (
   <View>
-    <Text>SignUp</Text>
+    <Text>Edit Details</Text>
   </View>
 );
 

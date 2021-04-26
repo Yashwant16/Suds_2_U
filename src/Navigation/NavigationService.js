@@ -1,3 +1,4 @@
+import { TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import Colors from '../../Constants/Colors';
 
@@ -27,4 +28,6 @@ export const defaultScreenOptions = {
   headerTitleStyle: {color: 'white'},
   headerTitleAlign: 'center',
   headerTintColor: 'white',
+  ...TransitionPresets.SlideFromRightIOS,
+  // cardStyle: {backgroundColor: '#000'},
 };

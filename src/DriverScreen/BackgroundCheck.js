@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 import Colors from '../../Constants/Colors';
 import {ScrollView} from 'react-native';
-import {changeStack} from '../Navigation/NavigationService';
+import {CheckBox} from 'react-native-elements';
 const BackgroundCheck = ({navigation}) => {
+  const [isSelected, setSelection] = useState(false);
   return (
     <View
       style={{
@@ -39,15 +40,36 @@ const BackgroundCheck = ({navigation}) => {
           </View>
         </ScrollView>
 
-        <View style={{padding: 10, position:'absolute', bottom:60, textAlign: 'center', left:0, right:0, flexDirection:'row', backgroundColor:'white'}}>
-           
-            <Text style={{flex:1}}>Recieve a free copy of my background report.</Text>
-          </View>
+        <View
+          style={{
+            padding: 10,
+            position: 'absolute',
+            bottom: 60,
+            textAlign: 'center',
+            left: 0,
+            right: 0,
+            flexDirection: 'row',
+            backgroundColor: 'white',
+            width:"100%",
+            borderTopColor:'#ddd',
+            borderTopWidth:1
+          }}>
+          <CheckBox title="Recieve a free copy of my background report." containerStyle={{flex:1}} checked={isSelected}   onPress={() => setSelection(curr=>!curr)}/>
+          {/* <CheckBox
+            center
+            title="Click Here to Remove This Item"
+            iconRight
+            iconType="material"
+            checkedIcon="clear"
+            uncheckedIcon="add"
+            checkedColor="red"
+            checked={false}
+          /> */}
+        </View>
         <View style={{justifyContent: 'flex-end', flex: 1}}>
-       
           <TouchableOpacity
             elevation={5}
-            onPress={()=>navigation.navigate('TERMS & CONDITIONS')}
+            onPress={() => navigation.navigate('TERMS & CONDITIONS')}
             style={styles.auth_btn}
             underlayColor="gray"
             activeOpacity={0.8}>

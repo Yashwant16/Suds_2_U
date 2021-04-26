@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 
 import AuthStack from './AuthStack';
 import DriverHomeStack from './DriverHomeStack';
@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 
 const RootStack = () => {
   return (
-    <Stack.Navigator initialRouteName="AuthStack" headerMode="none" mode="modal">
+    <Stack.Navigator initialRouteName="AuthStack" headerMode="none" mode="modal" screenOptions={{...TransitionPresets.ModalSlideFromBottomIOS}}>
       <Stack.Screen name="AuthStack" component={AuthStack} />
       <Stack.Screen name="DriverHomeStack" component={DriverHomeStack} />
       <Stack.Screen name="DriverDrawer" component={DriverDrawer} />

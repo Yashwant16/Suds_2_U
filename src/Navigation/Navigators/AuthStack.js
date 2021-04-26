@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import UserTypeScreen from '../../CommonScreen/UserTypeScreen';
 import {defaultScreenOptions} from '../NavigationService';
 import ChooseScreen from '../../CommonScreen/ChooseScreen';
@@ -12,26 +12,26 @@ import CompleteProfile from '../../DriverScreen/CompleteProfile';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
 import BackgroundCheck from '../../DriverScreen/BackgroundCheck';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
+import Colors from '../../../Constants/Colors';
 
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
   return (
-    <Stack.Navigator initialRouteName="userTypeScreen" screenOptions={defaultScreenOptions}>
+    <Stack.Navigator initialRouteName="userTypeScreen" mode="modal" screenOptions={defaultScreenOptions}>
       <Stack.Screen name="userTypeScreen" component={UserTypeScreen} options={{headerTitle: 'GET STARTED NOW'}} />
       <Stack.Screen name="chooseScreen" component={ChooseScreen} options={{headerTitle: 'GET STARTED NOW'}} />
       <Stack.Screen name="LOGIN" component={LoginScreen} />
       <Stack.Screen name="REGISTER" component={SignUp} />
       <Stack.Screen name="ENTER OTP" component={OTPverification} />
-      <Stack.Screen name='FORGOT PASSWORD' component={ForgotPassword} />
-      <Stack.Screen name='COMPLETE PROFILE' component={CompleteProfile} />
-      <Stack.Screen name='BACKGROUND CHECK' component={BackgroundCheck} />
-      <Stack.Screen name='TERMS & CONDITIONS' component={TermsConditions} />
-      <Stack.Screen name='UPDATE DOCUMENT' component={UpdateDocument} />
-      <Stack.Screen name='UPLOAD DRIVING LICENSE' component={UploadDriverLicense} />
+      <Stack.Screen name="FORGOT PASSWORD" component={ForgotPassword} />
+      <Stack.Screen name="COMPLETE PROFILE" component={CompleteProfile} />
+      <Stack.Screen name="BACKGROUND CHECK" component={BackgroundCheck} />
+      <Stack.Screen name="TERMS & CONDITIONS" component={TermsConditions} />
+      <Stack.Screen name="UPDATE DOCUMENT" component={UpdateDocument} initialParams={{authStack: true}} />
+      <Stack.Screen name="UPLOAD DRIVING LICENSE" component={UploadDriverLicense} initialParams={{authStack: true}} />
     </Stack.Navigator>
   );
 };
 
 export default AuthStack;
-

@@ -6,6 +6,9 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "prebuild": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "build": "cd android && ./gradlew assembleDebug && cd ../",
+    "buildr": "cd android && ./gradlew assembleRelease && cd ../",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -17,12 +20,14 @@
     "react": "17.0.1",
     "react-native": "0.64.0",
     "react-native-collapsible": "^1.5.3",
+    "react-native-elements": "^3.4.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-maps": "^0.28.0",
     "react-native-otp-textinput": "^0.0.8",
     "react-native-reanimated": "^2.1.0",
     "react-native-safe-area-context": "^3.2.0",
-    "react-native-screens": "^3.1.1"
+    "react-native-screens": "^3.1.1",
+    "react-native-vector-icons": "^8.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.13.16",

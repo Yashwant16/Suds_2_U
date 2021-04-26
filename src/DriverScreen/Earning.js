@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
+import { ButtonGroup } from 'react-native-elements/dist/buttons/ButtonGroup';
 import Colors from '../../Constants/Colors';
 class Earning extends React.Component {
 
@@ -124,7 +125,7 @@ class Earning extends React.Component {
       <View style={{flex: 1, backgroundColor: '#f8f8f8'}}>
 
         <View style={{flex: 1}}>
-          <View
+          <ButtonGroup
             onPress={this.updateIndex}
             selectedIndex={selectedIndex}
             buttons={buttons}

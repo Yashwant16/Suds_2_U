@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Text, View, Button, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import Colors from '../../Constants/Colors';
 import Divider from '../Components/Divider';
 
-const UpdateDocument = ({navigation}) => {
+const UpdateDocument = ({navigation, route}) => {
   return (
     <View style={{flex: 1, padding: 16}}>
       <Card>
@@ -25,7 +25,7 @@ const UpdateDocument = ({navigation}) => {
       <Card>
         <CardHead title="Step 4 : Vehicle Registration" />
       </Card>
-      <CardBtn navigation={navigation}/>
+      <CardBtn isFromAuthStack={route.params?.authStack} navigation={navigation} />
     </View>
   );
 };
@@ -33,11 +33,14 @@ const UpdateDocument = ({navigation}) => {
 export default UpdateDocument;
 
 const Card = ({children}) => <View style={styles.card}>{children}</View>;
-const CardBtn = ({navigation}) => (
-  <TouchableOpacity onPress={()=>navigation.navigate('UPLOAD DRIVING LICENSE')} style={[styles.card, {backgroundColor:Colors.blue_color, padding: 20}]}>
-    <Text style={{color:'white', fontSize:20, fontWeight:'bold'}}>CONTINUE</Text>
+const CardBtn = ({navigation, isFromAuthStack}) => (
+  <TouchableOpacity
+    onPress={() => navigation.navigate('UPLOAD DRIVING LICENSE')}
+    style={[styles.card, {backgroundColor: Colors.blue_color, padding: 20}]}>
+    <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>{isFromAuthStack ? 'CONTINUE' : 'UPDATE DRIVING LICENSE'}</Text>
   </TouchableOpacity>
 );
+
 const CardHead = ({title}) => (
   <View style={{flexDirection: 'row', padding: 16, alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
     <Text style={{color: '#777', fontSize: 22}}>{title}</Text>
