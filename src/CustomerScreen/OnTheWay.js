@@ -22,10 +22,11 @@ export default class OnJob extends React.Component {
   }
 
   render() {
+    const { navigation } = this.props;
     return (
       <View style={{flex: 1, position: 'relative'}}>
         {/* <CustomHeader title="ON JOB" onLeftButtonPress={() => this.props.navigation.goBack()} /> */}
-        <Header
+        {/* <Header
                     statusBarProps={{ barStyle: 'light-content' }}
                     height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -39,7 +40,7 @@ export default class OnJob extends React.Component {
                     centerComponent={
                         <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>CAR WHASHER IS ON THE WAY</Text>
                     }
-                />
+                /> */}
         <MapView
           style={{width: '100%', flex: 1}}
           region={{
@@ -110,9 +111,11 @@ export default class OnJob extends React.Component {
                                         placeholder="Type your message"
                                         placeholderTextColor={Colors.text_color}
                                         autoCapitalize='none' />
-
+   <TouchableOpacity
+   onPress={() => { navigation.navigate('Work In Progress'); }}>
+                           
                                         <Text style={{color:'#445F98',fontSize:16,fontWeight:'bold',textAlign:'center'}}>SEND</Text>
-
+                                        </TouchableOpacity>
     </View>
 </View>
 

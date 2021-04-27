@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button ,FlatList} from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, Image,SafeAreaView, StatusBar, TouchableOpacity, TextInput, Button ,FlatList} from 'react-native';
+
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 
@@ -99,8 +99,10 @@ export default class MyNotificationsScreen extends React.Component {
     ),
   };
 
-  renderItem = ({ item, index }) => (
+  renderItem = ({ item, index, }) => (
+    
     <View style={{ padding: 5 ,flex:1}}>
+      <TouchableOpacity      onPress={() => {  }} >
 <View style={{flexDirection:'row',padding:5}}>
       <Image style={{ height: 60, width: 60, padding: 5, borderRadius: 30,marginRight:10}} source={{ uri: item.image }} />
 <View style={{flex:1}}>
@@ -118,14 +120,16 @@ export default class MyNotificationsScreen extends React.Component {
 </View>
 </View>
       </View>
+      </TouchableOpacity>
       <View style={{width:'100%',height:0.5,backgroundColor:'#ccc',marginHorizontal:5}}/>
     </View>
   )
   render() {
+    const { navigation } = this.props;
     return (
       <View style={{ flex: 1 }}>
         <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
+{/* 
         <Header
           statusBarProps={{ barStyle: 'light-content' }}
           height={82}
@@ -141,7 +145,7 @@ export default class MyNotificationsScreen extends React.Component {
           centerComponent={
             <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>REWARDS HISTORY</Text>
           }
-        />
+        /> */}
         <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
           <Text style={{ color: '#fff', margin: 6, marginTop: 10,fontSize:16 ,fontWeight:'600' }}>Rewards</Text>
 
