@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, Text, StatusBar, TouchableOpacity, Image } from 'react-native';
-import TimePicker from 'react-native-simple-time-picker';
+// import TimePicker from 'react-native-simple-time-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import CalendarPicker from 'react-native-calendar-picker';
@@ -56,11 +56,12 @@ export default class MyNotificationsScreen extends React.Component {
     }
   };
   render() {
+    const { navigation } = this.props;
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
 
         {/* <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' /> */}
-        <Header
+        {/* <Header
           statusBarProps={{ barStyle: 'light-content' }}
           height={79}
           containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -74,7 +75,7 @@ export default class MyNotificationsScreen extends React.Component {
           centerComponent={
             <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>SCHEDULE</Text>
           }
-        />
+        /> */}
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
             Donge Ram 350 Truck
@@ -145,7 +146,7 @@ export default class MyNotificationsScreen extends React.Component {
 
           <TouchableOpacity
             elevation={5}
-            onPress={() => { this.props.navigation.navigate('WorkInProgress'); }}
+            onPress={() => { navigation.navigate('Booking Confirm'); }}
             style={styles.auth_btn}
             underlayColor='gray'
             activeOpacity={0.8}
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e28c39',
 
     width: '100%',
-    height: 40,
+    height: 60,
     justifyContent: 'center',
   },
 });

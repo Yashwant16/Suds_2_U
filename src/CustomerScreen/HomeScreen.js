@@ -24,28 +24,10 @@ export default class MyNotificationsScreen extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
     return (
       <View style={{ flex: 1, }}>
         <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
-        <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={79}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 4 }} source={require('../../Assets/menu.png')} />
-
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>DASHBOARD</Text>
-          }
-        />
-        <SafeAreaView />
-
 
         <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
           <Text style={{ color: '#fff', margin: 6, marginTop: 10,fontSize:16 ,fontWeight:'600' }}>Rewards</Text>
@@ -55,7 +37,7 @@ export default class MyNotificationsScreen extends React.Component {
           <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
           <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
         </View>
-        <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/images.jpeg')}>
+        <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between',  padding: 21 }}>
             <TouchableOpacity style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
               <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
@@ -77,7 +59,7 @@ export default class MyNotificationsScreen extends React.Component {
               <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%',}}>
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => { this.props.navigation.navigate('Login'); }}
+                  onPress={() => { navigation.navigate('OnDemand'); }}
                   style={styles.auth_btn}
                   underlayColor='gray'
                   activeOpacity={0.8}
@@ -88,7 +70,7 @@ export default class MyNotificationsScreen extends React.Component {
 
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => { this.props.navigation.navigate('BookWasher_Now'); }}
+                  onPress={() => { navigation.navigate('Book Washer Now'); }}
                   style={styles.auth_btn}
                   underlayColor='gray'
                   activeOpacity={0.8}

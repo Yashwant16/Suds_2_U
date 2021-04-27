@@ -1,22 +1,21 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput,Button,FlatList ,ImageBackground} from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput,Button,FlatList ,ImageBackground,SafeAreaView} from 'react-native';
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box'
 // import { CheckBox } from 'react-native-elements'
 
 export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
+    // static navigationOptions = {
       
-      drawerLabel: 'Book Washer Now',
-      drawerIcon: ({ tintColor }) => (
-        <View>
+    //   drawerLabel: 'Book Washer Now',
+    //   drawerIcon: ({ tintColor }) => (
+    //     <View>
         
-    <Image  style={{width:25,height:25,tintColor:'#FFF'}} source={require('../../Assets/car-steering-wheel.png')}/> 
-    </View>
-      ),
-    };
+    // <Image  style={{width:25,height:25,tintColor:'#FFF'}} source={require('../../Assets/car-steering-wheel.png')}/> 
+    // </View>
+    //   ),
+    // };
   
 
     constructor(props) {
@@ -82,10 +81,12 @@ export default class MyNotificationsScreen extends React.Component {
       </View>
     )
     render() {
+      const { navigation } = this.props;
+
       return (
         <View style={{flex:1}}>
                           <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                          <Header
+                          {/* <Header
                     statusBarProps={{ barStyle: 'light-content' }}
                   height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -100,9 +101,9 @@ export default class MyNotificationsScreen extends React.Component {
                   centerComponent={
                     <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>SELECT VEHICLE</Text>
                 }
-                />
+                /> */}
                    <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
-                <SafeAreaView/>
+                {/* <SafeAreaView/> */}
                 <View style={{alignItems:'center',width:'100%',}}> 
 
        <FlatList
@@ -119,7 +120,7 @@ export default class MyNotificationsScreen extends React.Component {
        <View style={{justifyContent:'flex-end',flex:1,alignItems:'center'}}>
        <TouchableOpacity
                             elevation={5}
-                            onPress={() => { this.props.navigation.navigate('AddNewVehicle'); }}
+                            onPress={() => {navigation.navigate('Add New Vehicle'); }}
                             style={styles.add_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}
@@ -132,7 +133,7 @@ export default class MyNotificationsScreen extends React.Component {
          <Text style={{color:'#fff',fontSize:17,textAlign:'center',marginHorizontal:20,marginVertical:5}}>and vehicle make/model</Text>
                         <TouchableOpacity
                             elevation={5}
-                            onPress={() => { this.props.navigation.navigate('SelectPackage'); }}
+                            onPress={() => {navigation.navigate('Select Package'); }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}
