@@ -11,6 +11,7 @@ import BookingDetails from '../../DriverScreen/BookingDetails';
 import { nav } from '../../DriverScreen/Welcome';
 import TripSwitch from '../../Components/TirpSwitch';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
+import CompleteProfile from '../../DriverScreen/CompleteProfile';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,7 @@ const DriverHomeStack = () => {
       <Stack.Screen name="JOB FINISHED" component={JobFinished} />
       <Stack.Screen name="BOOKING DETAILS" component={BookingDetails} />
       <Stack.Screen name='UPLOAD DRIVING LICENSE' component={UploadDriverLicense} initialParams={{authStack:false}}/>
+      <Stack.Screen name="EDIT PROFILE" component={CompleteProfile} />
     </Stack.Navigator>
   );
 };

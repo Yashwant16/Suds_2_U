@@ -38,7 +38,7 @@ const CustomerHomeStack = () => {
   }
   return (
     <Stack.Navigator initialRouteName="DASHBOARD" mode="modal" screenOptions={defaultScreenOptions}>
-      <Stack.Screen name="DASHBOARD" options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title, headerRight:() => <TripSwitch headerTitle={title} />}} component={CustomerDrawer} />
+      <Stack.Screen name="DASHBOARD" options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title}} component={CustomerDrawer} />
       <Stack.Screen name="Add New Vehicle" component={AddNewVehicle} />
       <Stack.Screen name="Select Package" component={SelectPackage} />
       <Stack.Screen name="Add Card" component={AddCard} />

@@ -1,15 +1,16 @@
 import React from 'react';
-import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
-import {Button, Image, StyleSheet, Text, View} from 'react-native';
+import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList} from '@react-navigation/drawer';
+import {Button, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import BookingHistory from '../../DriverScreen/BookingHistory';
-import WelcomeScreen from '../../DriverScreen/Welcome';
-import Earning from '../../DriverScreen/Earning'
+import WelcomeScreen, {nav} from '../../DriverScreen/Welcome';
+import Earning from '../../DriverScreen/Earning';
 import ReviewRating from '../../DriverScreen/ReviewRating';
 import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
 import DriverHelp from '../../DriverScreen/DriverHelp';
 import BankInfo from '../../DriverScreen/BankInfo';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
 import TripSwitch from '../../Components/TirpSwitch';
+import {changeStack, navigate} from '../NavigationService';
 const Drawer = createDrawerNavigator();
 
 const DriverDrawer = () => {
@@ -38,7 +39,7 @@ const DriverDrawer = () => {
       <Drawer.Screen
         name="EARNING"
         component={Earning}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/money.png')} /> ,headerRight:TripSwitch}}
+        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/money.png')} />, headerRight: TripSwitch}}
       />
       <Drawer.Screen
         name="REVIEW & RATING"
@@ -70,11 +71,6 @@ const DriverDrawer = () => {
         component={DriverHelp}
         options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/help.png')} />}}
       />
-      <Drawer.Screen
-        name="LOGOUT"
-        component={SignUP}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/logout.png')} />}}
-      />
     </Drawer.Navigator>
   );
 };
@@ -102,21 +98,39 @@ const CustomDrawerContent = props => {
     <DrawerContentScrollView {...props}>
       <DrawerProfile />
       <DrawerItemList {...props} />
+      <Logout/>
     </DrawerContentScrollView>
   );
 };
 
+const Logout = () => (
+  <DrawerItem
+    label="LOG OUT"
+    labelStyle={[styles.drawerLable, {color: 'white'}]}
+    style={styles.drawerItem}
+    icon={()=><Icon color={'white'} iconSource={require('../../../Assets/logout.png')} />}
+    onPress={()=>changeStack('AuthStack')}
+  />
+)
+
 const DrawerProfile = () => (
-  <View style={{width: '100%', backgroundColor: 'orange', marginTop: 0, flexDirection: 'row', padding: 16, alignItems: 'center'}}>
-    <Image
-      style={{height: 75, width: 75, borderRadius: 200, marginRight: 16}}
-      source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}}
-    />
-    <View>
-      <Text style={{color: 'white', fontSize: 18, paddingBottom: 6}}>Dynamu Frayne</Text>
-      <Text style={{fontWeight: 'bold'}}>Edit profile</Text>
+  <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => {
+      navigate('EDIT PROFILE');
+      nav.current.toggleDrawer();
+    }}>
+    <View style={{width: '100%', backgroundColor: 'orange', marginTop: 0, flexDirection: 'row', padding: 16, alignItems: 'center'}}>
+      <Image
+        style={{height: 75, width: 75, borderRadius: 200, marginRight: 16}}
+        source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}}
+      />
+      <View>
+        <Text style={{color: 'white', fontSize: 18, paddingBottom: 6}}>Dynamu Frayne</Text>
+        <Text style={{fontWeight: 'bold'}}>Edit profile</Text>
+      </View>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
