@@ -13,6 +13,7 @@ import UpdateDocument from '../../DriverScreen/UpdateDocument';
 import BackgroundCheck from '../../DriverScreen/BackgroundCheck';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
 import Colors from '../../../Constants/Colors';
+import Splash from '../../CommonScreen/Splash';
 
 const Stack = createStackNavigator();
 
@@ -25,7 +26,7 @@ const AuthStack = () => {
       <Stack.Screen name="REGISTER" component={SignUp} />
       <Stack.Screen name="ENTER OTP" component={OTPverification} />
       <Stack.Screen name="FORGOT PASSWORD" component={ForgotPassword} />
-      <Stack.Screen name="COMPLETE PROFILE" component={CompleteProfile} />
+      <Stack.Screen name="COMPLETE PROFILE" component={CompleteProfile} initialParams={{authStack: true}}/>
       <Stack.Screen name="BACKGROUND CHECK" component={BackgroundCheck} />
       <Stack.Screen name="TERMS & CONDITIONS" component={TermsConditions} />
       <Stack.Screen name="UPDATE DOCUMENT" component={UpdateDocument} initialParams={{authStack: true}} />

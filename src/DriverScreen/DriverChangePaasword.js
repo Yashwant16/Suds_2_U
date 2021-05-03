@@ -1,38 +1,77 @@
-import React from 'react';
-import {StyleSheet, View, Image, ImageBackground} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {StyleSheet, View, Image, ImageBackground, Alert} from 'react-native';
 import CustomInput from '../Components/CustomInput';
 import CtaButton from '../Components/CtaButton';
+import LoadingView from '../Components/LoadingView';
+import ControllerInput from '../Components/ControllerInput';
+import {useForm} from 'react-hook-form';
+import {AuthContext} from '../Providers/AuthProvider';
 
-class DriverChangePassword extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-    };
-  }
-  render() {
-    return (
+const DriverChangePassword = () => {
+  const {changePassword} = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: {errors},
+  } = useForm();
+
+  const onSubmit = async data => {
+    if (data.confirm_password != data.newpassword) return Alert.alert('Confirm password', "Your password doesn't match confirmation");
+    console.log(data)
+    setLoading(true);
+    let success = await changePassword(data);
+    setLoading(false);
+    if(success) reset()
+  };
+
+  return (
+    <View style={{flex: 1}}>
       <View style={{flex: 1}}>
-        <View style={{flex: 1}}>
-          <ImageBackground style={{width: '100%', height: '100%', flex: 1, justifyContent:'space-evenly'}} source={require('../../Assets/imageBG.png')}>
-            <Image style={{width:200, height:200, tintColor:'#fff', alignSelf:'center'}} source={require('../../Assets/padlock.png')}/>
-            <View style={{justifyContent: 'flex-end',paddingBottom:100, paddingHorizontal: 21, alignItems: 'center'}}>
+        <ImageBackground
+          style={{width: '100%', height: '100%', flex: 1, justifyContent: 'space-evenly'}}
+          source={require('../../Assets/imageBG.png')}>
+          <LoadingView loading={loading}>
+            <Image style={{width: 200, height: 200, tintColor: '#fff', alignSelf: 'center'}} source={require('../../Assets/padlock.png')} />
+            <View style={{justifyContent: 'flex-end', paddingBottom: 100, paddingHorizontal: 21, alignItems: 'center'}}>
               <View style={styles.inputs_container}>
-                <CustomInput secure label="OLD PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
-                <CustomInput secure label="NEW PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
-                <CustomInput secure label="CONFIRM PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
-
-                <CtaButton title="Submit" primary onPress={() => this.props.navigation.navigate('CustomerApp')} />
+                <ControllerInput
+                  label="OLD PASSWORD"
+                  iconSource={require(`../../Assets/icon/password.png`)}
+                  control={control}
+                  errors={errors}
+                  rules={{required: true}}
+                  fieldName="old_password"
+                  secure
+                />
+                <ControllerInput
+                  label="NEW PASSWORD"
+                  iconSource={require(`../../Assets/icon/password.png`)}
+                  control={control}
+                  errors={errors}
+                  rules={{required: true}}
+                  fieldName="newpassword"
+                  secure
+                />
+                <ControllerInput
+                  label="CONFIRM PASSWORD"
+                  iconSource={require(`../../Assets/icon/password.png`)}
+                  control={control}
+                  errors={errors}
+                  fieldName="confirm_password"
+                  secure
+                />
+                <CtaButton title="Submit" primary onPress={handleSubmit(onSubmit)} />
               </View>
             </View>
-          </ImageBackground>
-        </View>
+          </LoadingView>
+        </ImageBackground>
       </View>
-    );
-  }
-}
-export default DriverChangePassword
+    </View>
+  );
+};
+export default DriverChangePassword;
 const styles = StyleSheet.create({
   inputs_container: {
     width: '90%',
@@ -44,7 +83,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 1, height: 1},
     shadowOpacity: 0.5,
     shadowRadius: 3.5,
-    elevation:5,
+    elevation: 5,
     borderRadius: 15,
   },
 });

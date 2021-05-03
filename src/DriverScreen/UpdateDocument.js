@@ -1,30 +1,24 @@
-import React, { useEffect } from 'react';
-import {Text, View, Button, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Colors from '../../Constants/Colors';
 import Divider from '../Components/Divider';
 
 const UpdateDocument = ({navigation, route}) => {
   return (
     <View style={{flex: 1, padding: 16}}>
-      <Card>
-        <CardHead title="Step 1 : Driver License" />
-        <Divider color="#00000020" />
-        <CardSub checked text="Please upload your driving license" />
-        <Divider color="#00000020" />
-        <CardSub text="Please upload your vehicle's documents" />
+      <Card title="Step 1 : Driver License">
+        <View style={{width: '100%'}}>
+          <Divider color="#00000020" />
+          <CardSub checked text="Please upload your driving license" />
+          <Divider color="#00000020" />
+          <CardSub text="Please upload your vehicle's documents" />
+        </View>
       </Card>
-      <Card>
-        <CardHead title="Step 2 : Background Check" />
-      </Card>
-      <Card>
-        <CardHead title="Step 3 : Vehicle Insurance" />
-      </Card>
-      <Card>
-        <CardHead title="Step 4 : Vehicle Permit" />
-      </Card>
-      <Card>
-        <CardHead title="Step 4 : Vehicle Registration" />
-      </Card>
+      <Card title="Step 2 : Background Check"></Card>
+      <Card title="Step 3 : Vehicle Insurance"></Card>
+      <Card title="Step 4 : Vehicle Permit"></Card>
+      <Card title="Step 5 : Vehicle Registration"></Card>
       <CardBtn isFromAuthStack={route.params?.authStack} navigation={navigation} />
     </View>
   );
@@ -32,7 +26,16 @@ const UpdateDocument = ({navigation, route}) => {
 
 export default UpdateDocument;
 
-const Card = ({children}) => <View style={styles.card}>{children}</View>;
+const Card = ({children, title}) => {
+  // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  const [show, setShow] = useState(true);
+  return (
+    <View style={styles.card}>
+      <CardHead show={show} title={title} onPress={() => setShow(currValue => !currValue)} />
+      {show && children}
+    </View>
+  );
+};
 const CardBtn = ({navigation, isFromAuthStack}) => (
   <TouchableOpacity
     onPress={() => navigation.navigate('UPLOAD DRIVING LICENSE')}
@@ -41,18 +44,16 @@ const CardBtn = ({navigation, isFromAuthStack}) => (
   </TouchableOpacity>
 );
 
-const CardHead = ({title}) => (
-  <View style={{flexDirection: 'row', padding: 16, alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
-    <Text style={{color: '#777', fontSize: 22}}>{title}</Text>
-    <Image
-      style={{tintColor: '#777', width: 16, height: 16, transform: [{rotate: '180deg'}]}}
-      source={{
-        uri:
-          'https://lh3.googleusercontent.com/proxy/L_ecjSgjvcHz4_nyi-xqZuBjlbRJ8Bl0PqVGVj3IJl-78UCKIjocQU70PvR-QRlTdKXW8uBRfXPBrEMrtbnUkc9-rL3L-NxV5QWJeFUV_GOoa0kLOjR-bQ',
-      }}
-    />
-  </View>
-);
+const CardHead = ({title, onPress, show}) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{flexDirection: 'row', padding: 16, alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+      <Text style={{color: '#777', fontSize: 22}}>{title}</Text>
+      <Icon style={{transform: [{rotate:show? '180deg':'0deg'}]}} color="#777" name="keyboard-arrow-down"/>
+    </TouchableOpacity>
+  );
+};
 
 const CardSub = ({text, checked}) => (
   <View style={{flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, alignItems: 'center', justifyContent: 'flex-start', width: '100%'}}>
@@ -73,6 +74,5 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     elevation: 5,
     marginBottom: 12,
-    // padding: 16,
   },
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList} from '@react-navigation/drawer';
 import {Button, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import BookingHistory from '../../DriverScreen/BookingHistory';
@@ -11,6 +11,7 @@ import BankInfo from '../../DriverScreen/BankInfo';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
 import TripSwitch from '../../Components/TirpSwitch';
 import {changeStack, navigate} from '../NavigationService';
+import {AuthContext} from '../../Providers/AuthProvider';
 const Drawer = createDrawerNavigator();
 
 const DriverDrawer = () => {
@@ -96,42 +97,48 @@ const SignUP = () => (
 const CustomDrawerContent = props => {
   return (
     <DrawerContentScrollView {...props}>
-      <DrawerProfile />
+      <DrawerProfile  />
       <DrawerItemList {...props} />
-      <Logout/>
+      <Logout />
     </DrawerContentScrollView>
   );
 };
 
-const Logout = () => (
-  <DrawerItem
-    label="LOG OUT"
-    labelStyle={[styles.drawerLable, {color: 'white'}]}
-    style={styles.drawerItem}
-    icon={()=><Icon color={'white'} iconSource={require('../../../Assets/logout.png')} />}
-    onPress={()=>changeStack('AuthStack')}
-  />
-)
+const Logout = () => {
+  const {logout} = useContext(AuthContext);
+  return (
+    <DrawerItem
+      label="LOG OUT"
+      labelStyle={[styles.drawerLable, {color: 'white'}]}
+      style={styles.drawerItem}
+      icon={() => <Icon color={'white'} iconSource={require('../../../Assets/logout.png')} />}
+      onPress={logout}
+    />
+  );
+};
 
-const DrawerProfile = () => (
-  <TouchableOpacity
-    activeOpacity={0.8}
-    onPress={() => {
-      navigate('EDIT PROFILE');
-      nav.current.toggleDrawer();
-    }}>
-    <View style={{width: '100%', backgroundColor: 'orange', marginTop: 0, flexDirection: 'row', padding: 16, alignItems: 'center'}}>
-      <Image
-        style={{height: 75, width: 75, borderRadius: 200, marginRight: 16}}
-        source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}}
-      />
-      <View>
-        <Text style={{color: 'white', fontSize: 18, paddingBottom: 6}}>Dynamu Frayne</Text>
-        <Text style={{fontWeight: 'bold'}}>Edit profile</Text>
+const DrawerProfile = () => {
+  const {userData} = useContext(AuthContext);
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        navigate('EDIT PROFILE');
+        nav.current.toggleDrawer();
+      }}>
+      <View style={{width: '100%', backgroundColor: 'orange', marginTop: 0, flexDirection: 'row', padding: 16, alignItems: 'center'}}>
+        <Image
+          style={{height: 75, width: 75, borderRadius: 200, marginRight: 16}}
+          source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}}
+        />
+        <View>
+          <Text style={{color: 'white', fontSize: 18, paddingBottom: 6}}>{userData.name}</Text>
+          <Text style={{fontWeight: 'bold'}}>Edit profile</Text>
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   drawerItem: {

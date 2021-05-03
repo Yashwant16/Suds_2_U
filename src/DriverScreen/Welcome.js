@@ -1,14 +1,15 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState,useEffect, useContext} from 'react';
 import {Text, View, Image} from 'react-native';
 import MapView from 'react-native-maps';
 import NewJobModal from '../Components/NewJobModal';
+import { AuthContext } from '../Providers/AuthProvider';
 
 export const nav = React.createRef(null);
 export const routeRef = React.createRef(null);
 
 const WelcomeScreen = ({navigation, route}) => {
   const [modalVisible, setModalVisibility] = useState(false);
-
+  const {userData:{latitude,longitude}} = useContext(AuthContext)
 
   const accept = () => {
     navigation.navigate('ON JOB');
@@ -18,8 +19,8 @@ const WelcomeScreen = ({navigation, route}) => {
   useEffect(()=>{
     nav.current = navigation;
     routeRef.current = route;
-    const timeout = setTimeout(()=>setModalVisibility(true), 3000)
-    return ()=> clearTimeout(timeout)
+    // const timeout = setTimeout(()=>setModalVisibility(true), 3000)
+    // return ()=> clearTimeout(timeout)
   }, [])
 
   const hide = () => setModalVisibility(false);
@@ -29,8 +30,8 @@ const WelcomeScreen = ({navigation, route}) => {
       <MapView
         style={{width: '100%', flex: 1}}
         region={{
-          latitude: 37.78825,
-          longitude: -122.4324,
+          latitude: latitude? parseFloat(latitude): 37.78825,
+          longitude: longitude? parseFloat(longitude): -122.4324,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}

@@ -1,62 +1,74 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, SafeAreaView, ImageBackground, Image, TouchableOpacity} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {StyleSheet, Text, View, SafeAreaView, ImageBackground, Image, TouchableOpacity, Alert, ToastAndroid} from 'react-native';
 import Colors from '../../Constants/Colors';
 import OTPTextView from 'react-native-otp-textinput';
 import {ScrollView} from 'react-native';
 import LinkButton from '../Components/LinkButton';
 import CtaButton from '../Components/CtaButton';
-import { type, WASHER } from '../Navigation/NavigationService';
+import {type, WASHER} from '../Navigation/NavigationService';
+import {AuthContext} from '../Providers/AuthProvider';
 
-class OTPverification extends Component {
-  state = {
-    otpInput: '',
-    inputText: '',
+const OTPverification = ({navigation, route}) => {
+  const {saveUserData} = useContext(AuthContext);
+  const [otpInput, setOtpInput] = useState('');
+
+  const onSubmit = () => {
+    console.log(route.params.otp, otpInput);
+    if (route.params.otp + '' == otpInput) {
+      navigation.navigate(type.current == WASHER ? 'COMPLETE PROFILE' : 'TERMS & CONDITIONS');
+      type.current == WASHER ? saveUserData('COMPLETE PROFILE') : saveUserData('TERMS & CONDITIONS');
+    } else Alert.alert('Incorrect OTP', 'Please enter the correct OTP code you recieved on your phone.');
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={{flex: 1}}>
-          <ScrollView>
-            <ImageBackground style={{width: '100%', height: '67%', flex: 1}} source={require('../../Assets/imageBG.png')}>
-              <SafeAreaView />
-              <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>
-              <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}} source={require('../../Assets/logo2.png')}></Image>
-              <View style={{flex: 1, justifyContent: 'flex-end', padding: 21, alignItems: 'center'}}>
-                <View style={styles.inputs_container}>
-                  <Text style={{fontWeight: 'bold', marginTop: 5, color: '#000', fontSize: 16, marginBottom: 8}}>Enter OTP</Text>
-                  <Text style={{marginTop: 5, color: '#555', fontSize: 16, marginBottom: 8, textAlign: 'center'}}>Enter 4 digits OTP Code that you have received on phone.</Text>
-                  <OTPTextView handleTextChange={e => {}} containerStyle={styles.textInputContainer} textInputStyle={[styles.roundedTextInput, {borderRadius: 10}]} tintColor={Colors.blue_color} />
-                  <Text style={{marginTop: 5, color: '#999', fontSize: 16, marginBottom: 8}}>
-                    Dont's have the OTP? <Text style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESENT OTP</Text>
-                  </Text>
+  useEffect(() => ToastAndroid.show(route.params?.otp+'', 5000), []);
 
-                  <CtaButton primary title="Confirm OTP" onPress={() => this.props.navigation.navigate(type.current==WASHER?'COMPLETE PROFILE':'TERMS & CONDITIONS')} />
-                  <LinkButton title="Login with Password" />
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.props.navigation.navigate('REGISTER');
-                  }}
-                  style={{marginTop: 15, marginBottom: 15}}
-                  underlayColor="gray"
-                  activeOpacity={0.8}
-                  // disabled={this.state.disableBtn}
-                >
-                  <Text style={{fontSize: 16, textAlign: 'center', color: '#000'}}>
-                    Don't have an account - <Text style={{color: '#4193F7', fontWeight: 'bold', fontSize: 16}}>Sign Up</Text>
-                  </Text>
-                </TouchableOpacity>
+  return (
+    <View style={styles.container}>
+      <View style={{flex: 1}}>
+        <ScrollView>
+          <ImageBackground style={{width: '100%', height: '67%', flex: 1}} source={require('../../Assets/imageBG.png')}>
+            <SafeAreaView />
+            <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>
+            <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}} source={require('../../Assets/logo2.png')}></Image>
+            <View style={{flex: 1, justifyContent: 'flex-end', padding: 21, alignItems: 'center'}}>
+              <View style={styles.inputs_container}>
+                <Text style={{fontWeight: 'bold', marginTop: 5, color: '#000', fontSize: 16, marginBottom: 8}}>Enter OTP</Text>
+                <Text style={{marginTop: 5, color: '#555', fontSize: 16, marginBottom: 8, textAlign: 'center'}}>
+                  Enter 4 digits OTP Code that you have received on phone.
+                </Text>
+                <OTPTextView
+                  handleTextChange={input => setOtpInput(input)}
+                  containerStyle={styles.textInputContainer}
+                  textInputStyle={[styles.roundedTextInput, {borderRadius: 10}]}
+                  tintColor={Colors.blue_color}
+                />
+                <Text style={{marginTop: 5, color: '#999', fontSize: 16, marginBottom: 8}}>
+                  Dont's have the OTP? <Text style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESENT OTP</Text>
+                </Text>
+
+                <CtaButton primary title="Confirm OTP" onPress={onSubmit} />
+                <LinkButton title="Login with Password" />
               </View>
-            </ImageBackground>
-          </ScrollView>
-        </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('REGISTER');
+                }}
+                style={{marginTop: 15, marginBottom: 15}}
+                underlayColor="gray"
+                activeOpacity={0.8}>
+                <Text style={{fontSize: 16, textAlign: 'center', color: '#000'}}>
+                  Don't have an account - <Text style={{color: '#4193F7', fontWeight: 'bold', fontSize: 16}}>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
+        </ScrollView>
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
-export default OTPverification
+export default OTPverification;
 
 const styles = StyleSheet.create({
   container: {

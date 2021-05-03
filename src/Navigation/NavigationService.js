@@ -4,8 +4,8 @@ import Colors from '../../Constants/Colors';
 
 export const navigationRef = React.createRef();
 export const type = React.createRef()
-export const WASHER = 1
-export const CUSTOMER = 0
+export const WASHER = '2'
+export const CUSTOMER = '3'
 
 export const navigate = (routeName, params) => {
   navigationRef.current?.navigate(routeName, params);
