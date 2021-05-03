@@ -3,6 +3,8 @@ import AppProvider from './AppProvider';
 import AuthProvider from './AuthProvider';
 import BookingProvider from './BookingProvider';
 
+const BASE_URL = "http://suds-2-u.com/sudsadmin/api/"
+
 const Providers = ({children}) => {
   return (
     <AppProvider>

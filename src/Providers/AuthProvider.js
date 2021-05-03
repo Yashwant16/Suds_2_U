@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from 'react';
 import {Alert} from 'react-native';
-import {BASE_URL} from '../../Constants/Base_Url';
+import { callApi } from '.';
 import {changeStack, navigate, WASHER} from '../Navigation/NavigationService';
 
 const DEVICE_TOKEN = 'random_token';
@@ -74,7 +74,7 @@ const AuthProvider = ({children}) => {
         changeStack('AuthStack');
         setTimeout(() => navigate(savedUserData.stage), 100);
       }
-    } else changeStack('AuthStack');
+    } else changeStack('AuthStack'); 
   };
 
   const saveUserData = async (stage, data = userData) => await AsyncStorage.setItem('userData', JSON.stringify({...data, stage}));
@@ -109,21 +109,3 @@ const AuthProvider = ({children}) => {
 };
 
 export default AuthProvider;
-
-const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') => {
-  try {
-    let url = `${BASE_URL}${subfix}?` + new URLSearchParams(params);
-    let res = await fetch(url, {
-      method: method,
-      headers: {'App-Key': AppKey, 'Content-Type': 'application/json'},
-    });
-    let jsonResponse = await res.json();
-    console.log(jsonResponse);
-    if (!jsonResponse.response) {
-      if (onFalse) onFalse(jsonResponse);
-      else Alert.alert('Alert', jsonResponse.message);
-    } else return jsonResponse;
-  } catch (error) {
-    console.log(error);
-  }
-};
