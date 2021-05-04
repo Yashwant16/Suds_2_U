@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useReducer} from 'react';
+import { callApi } from '.';
 import {AuthContext} from './AuthProvider';
 
 export const BookingContext = React.createContext();
