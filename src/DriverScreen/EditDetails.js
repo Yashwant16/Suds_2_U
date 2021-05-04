@@ -1,56 +1,53 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import {Text, View, TouchableOpacity, StyleSheet, SafeAreaView} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import Colors from '../../Constants/Colors';
+import { navigate } from '../Navigation/NavigationService';
 
-export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
+const EditDtails = () => {
+  return (
+    <View style={{flex: 1, padding: 8}}>
+      <SafeAreaView />
+      <ScrollView>
+        <Card packageType="Bronze" />
+        <Card packageType="Silver" />
+        <Card packageType="Gold" />
+        <Card packageType="Diamond" />
+        <Card packageType="Platinuim" />
+      </ScrollView>
+      <TouchableOpacity activeOpacity={0.8} style={{backgroundColor:Colors.blue_color, position:'absolute', padding:20, left:0, right:0, bottom:0, alignItems:'center'}}>
+          <Text style={{fontSize:18, color:'white', fontWeight:'bold'}} >Cancel</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-        drawerLabel: 'Edit Details',
-        drawerIcon: ({ tintColor }) => (
-            <View>
+export default EditDtails;
 
-                <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/menu.png')} />
-            </View>
-        ),
-    };
+const Card = ({packageType}) => {
+  return (
+    <View style={styles.card}>
+      <Text style={{fontWeight: 'bold', fontSize: 20}}>{packageType} Package</Text>
+      <TouchableOpacity onPress={()=>navigate('PACKAGE DETAILS', {packageType})}>
+        <Text style={{color: Colors.blue_color}}>Edit details</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
-                <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={82}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff' }} source={require('../../Assets/menu.png')} />
-
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Home</Text>
-                    }
-                />
-                <SafeAreaView />
-                <Button
-                    onPress={() => this.props.navigation.goBack()}
-                    title="Go back home"
-                />
-                <Text>DBDFGBFDGB</Text>
-            </View>
-        );
-    }
-}
-
-  // const styles = StyleSheet.create({
-  //   icon: {
-  //     width: 24,
-  //     height: 24,
-  //   },
-  // });
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    shadowColor: '#999',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 3.5,
+    borderRadius: 10,
+    elevation: 5,
+    margin: 8,
+    flexDirection: 'row',
+    padding: 18,
+    justifyContent: 'space-between',
+  },
+});

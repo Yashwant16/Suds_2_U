@@ -9,9 +9,9 @@ import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
 import DriverHelp from '../../DriverScreen/DriverHelp';
 import BankInfo from '../../DriverScreen/BankInfo';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
-import TripSwitch from '../../Components/TirpSwitch';
-import {changeStack, navigate} from '../NavigationService';
+import {navigate} from '../NavigationService';
 import {AuthContext} from '../../Providers/AuthProvider';
+import EditDtails from '../../DriverScreen/EditDetails';
 const Drawer = createDrawerNavigator();
 
 const DriverDrawer = () => {
@@ -40,7 +40,7 @@ const DriverDrawer = () => {
       <Drawer.Screen
         name="EARNING"
         component={Earning}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/money.png')} />, headerRight: TripSwitch}}
+        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/money.png')} />}}
       />
       <Drawer.Screen
         name="REVIEW & RATING"
@@ -54,7 +54,7 @@ const DriverDrawer = () => {
       />
       <Drawer.Screen
         name="EDIT DETAILS"
-        component={SignUP}
+        component={EditDtails}
         options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/document.png')} />}}
       />
       <Drawer.Screen
