@@ -47,6 +47,7 @@ export default class SignUpUser extends React.Component {
 
 
     loginUpApi = async () => {
+
         this.setState({ isLoading: true })
 
         let params = {
@@ -69,8 +70,8 @@ export default class SignUpUser extends React.Component {
                 if (responseJson.response === true) {
                     this.props.navigation.navigate('CustomerApp');
                     // let user_info = responseJson.data
-                    // let user_token = responseJson.data.token
-                    // console.log("Token",user_token)
+                    let user_token = responseJson.data.token
+                    console.log("Token",user_token)
                     // AsyncStorage.setItem('user_token', user_token)
                     // AsyncStorage.setItem('user_info', JSON.stringify(user_info))
                     alert(responseJson.message)
