@@ -50,6 +50,8 @@ const AuthProvider = ({children}) => {
     return 'success';
   };
 
+  const resendOtp = async () => await callApi('resentOtp', 'ABCDEFGHIJK', {email: userData.email});
+
   const getUserDetails = async () => await callApi('userdetails', userData.api_token, {user_id: userData.id});
 
   const changePassword = async data => await callApi('change_password', userData.api_token, {...data, user_id: userData.id});
@@ -102,6 +104,7 @@ const AuthProvider = ({children}) => {
         getStates,
         getCities,
         getUserDetails,
+        resendOtp
       }}>
       {children}
     </AuthContext.Provider>

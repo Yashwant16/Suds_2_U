@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {Controller} from 'react-hook-form';
 import {ActivityIndicator, Modal, Text, View, FlatList, TouchableOpacity, StyleSheet, LayoutAnimation} from 'react-native';
 import Colors from '../../Constants/Colors';
@@ -7,6 +7,8 @@ const CustomPicker = ({label, control, rules, errors, fieldName, asynFunction}) 
   const [showList, setShowList] = useState(false);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  
 
   const onPress = async () => {
     setShowList(true);
@@ -23,7 +25,7 @@ const CustomPicker = ({label, control, rules, errors, fieldName, asynFunction}) 
         control={control}
         render={({field: {onChange, onBlur, value}}) => (
           <TouchableOpacity onPress={onPress} style={{width: '100%', padding: 16, backgroundColor: 'white', borderRadius: 30, marginTop: 8}}>
-            <Text style={styles.text}>{value ? value.name : label}</Text>
+            <Text style={styles.text}>{value?.name ? value.name : label}</Text>
             {showList && <PickerList onSelect={item => onChange(item)} loading={loading} list={list} dismiss={() => setShowList(false)} />}
           </TouchableOpacity>
         )}
