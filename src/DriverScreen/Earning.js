@@ -1,167 +1,81 @@
-import React from 'react';
-import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
-import { ButtonGroup } from 'react-native-elements/dist/buttons/ButtonGroup';
+import {useNetInfo} from '@react-native-community/netinfo';
+import React, {useContext, useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Image, FlatList, RefreshControl, ActivityIndicator} from 'react-native';
+import {ButtonGroup} from 'react-native-elements/dist/buttons/ButtonGroup';
 import Colors from '../../Constants/Colors';
-class Earning extends React.Component {
+import Divider from '../Components/Divider';
+import ListEmpty from '../Components/ListEmpty';
+import {ACTIONS, EarningContext} from '../Providers/EarningsProvider';
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      search: '',
-      showModal: false,
-      password: '',
-      visible: false,
-      showpassword: true,
-      selectedIndex: 0,
-      DayselectedIndex: 0,
-      JobType: '',
-      selectedStartDate: null,
-      Nav_Screen: 'JobDetails',
-      data: [
-        {earning: '24.5$', speed: '4h 32m', completed: 6},
-        {earning: '154.5$', speed: '3h 5m', completed: 42},
-      ],
-      metric: '',
-      pin: '',
-      value: 0,
+const Earning = () => {
+  const netInfo = useNetInfo();
+  const {
+    state: {data, loading, hasLoadedAllItems, refreshing, type, totalbooking, totaltime, totalamount},
+    dispatch,
+  } = useContext(EarningContext);
 
-      Data: [
-        {
-          status: 'Done 01:25 pm, 10.03.2021',
-          id: 1,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Started 10:25 am, 10.03.2021',
-          id: 2,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Pending',
-          id: 3,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Pending',
-          id: 4,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Pending',
-          id: 5,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Pending',
-          id: 6,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Pending',
-          id: 7,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-        {
-          status: 'Pending',
-          id: 8,
-          dueAmount: '500 Rs',
-          content: 'Headline of the featured training in view words',
-          image: 'https://images.unsplash.com/photo-1517836257463-d25dfeac3438?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-          like: '25',
-          comment: '50',
-        },
-      ],
-    };
-    this.updateIndex = this.updateIndex.bind(this);
-  }
+  useEffect(() => dispatch({type: ACTIONS.Start}), []);
 
-  updateIndex(selectedIndex) {
-    this.setState({selectedIndex});
-    if (selectedIndex === 0) {
-      //   this.Search_JOB("UPCOMING");
-      // this.setState({ Nav_Screen: 'JobDetails' })
-    } else if (selectedIndex === 1) {
-      //   this.Search_JOB("RECURRING");
-      // this.setState({ Nav_Screen: 'RecurringJobDetails' })
-    } else if (selectedIndex === 2) {
-      //   this.Search_JOB("COMPLETED");
-      // this.setState({ Nav_Screen: 'CompletedJobDetails' })
-    }
-  }
+  const [state, setState] = useState({
+    selectedIndex: 0,
+    data: [
+      {earning: '24.5$', speed: '4h 32m', completed: 6},
+      {earning: '154.5$', speed: '3h 5m', completed: 42},
+    ],
+  });
 
-  render() {
-    const buttons = ['Today', 'Weekly'];
+  const updateIndex = selectedIndex => {
+    setState({...state, selectedIndex});
+  };
 
-    const {selectedIndex, DayselectedIndex} = this.state;
-    return (
-      <View style={{flex: 1, backgroundColor: '#f8f8f8'}}>
+  const buttons = ['Today', 'Weekly'];
 
-        <View style={{flex: 1}}>
-          <ButtonGroup
-            onPress={this.updateIndex}
-            selectedIndex={selectedIndex}
-            buttons={buttons}
-            containerStyle={{borderWidth: 0, marginTop: 0, marginLeft: 0, marginRight: 0, borderRadius: 0, backgroundColor: '#fff', height: 50}}
-            buttonStyle={{}}
-            innerBorderStyle={{width: 0}}
-            selectedButtonStyle={{marginHorizontal: 5, marginTop: 4, borderBottomColor: 'orange', borderBottomWidth: 3, backgroundColor: '#fff'}}
-            selectedTextStyle={{color: '#1F292D'}}
-            textStyle={{color: '#8B9193', fontSize: 18}}
-          />
+  return (
+    <View style={{flex: 1, backgroundColor: '#f8f8f8'}}>
+      <View style={{flex: 1}}>
+        <ButtonGroup
+          onPress={updateIndex}
+          selectedIndex={state.selectedIndex}
+          buttons={buttons}
+          containerStyle={{borderWidth: 0, marginTop: 0, marginLeft: 0, marginRight: 0, borderRadius: 0, backgroundColor: '#fff', height: 50}}
+          buttonStyle={{}}
+          innerBorderStyle={{width: 0}}
+          selectedButtonStyle={{marginHorizontal: 5, marginTop: 4, borderBottomColor: 'orange', borderBottomWidth: 3, backgroundColor: '#fff'}}
+          selectedTextStyle={{color: '#1F292D'}}
+          textStyle={{color: '#8B9193', fontSize: 18}}
+        />
 
-          <View style={{paddingTop: 7, paddingHorizontal: 7, flex: 1}}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 7}}>
-              <Detail detail="My Earning" title={this.state.data[selectedIndex].earning} color="#7DD948" />
-              <Detail detail="Speed Time" title={this.state.data[selectedIndex].speed} color={Colors.blue_color} />
-              <Detail detail="Washes Completed" title={this.state.data[selectedIndex].completed} color="orange" />
-            </View>
-            <Text style={{marginTop: 25, marginHorizontal: 10, color: '#888', fontSize: 18}}>TODAY'S TRIP</Text>
-            <View style={{flex: 1}}>
-              <FlatList
-                keyExtractor={item => item.id}
-                style={{width: '100%', flex: 1}}
-                showsVerticalScrollIndicator={false}
-                data={this.state.Data}
-                renderItem={renderItem}
-                // ListEmptyComponent={this.ListEmpty}
-              />
-            </View>
+        <View style={{paddingTop: 7, flex: 1}}>
+          <View style={{ paddingHorizontal: 7}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 7}}>
+            <Detail detail="My Earning" title={totalamount} color="#7DD948" />
+            <Detail detail="Speed Time" title={totaltime} color={Colors.blue_color} />
+            <Detail detail="Washes Completed" title={totalbooking} color="orange" />
+          </View>
+          <Text style={{marginTop: 25, marginHorizontal: 10, color: '#888', fontSize: 18}}>TODAY'S TRIP</Text>
+          </View>
+          <Divider color='#eee' />
+          <View style={{flex: 1, paddingHorizontal: 7}}>
+            <FlatList
+              style={{width: '100%', flex: 1}}
+              keyExtractor={item => item.id}
+              showsVerticalScrollIndicator={false}
+              data={data}
+              renderItem={renderItem}
+              ListEmptyComponent={!loading && <ListEmpty retry={() => dispatch({type: ACTIONS.Start})} netInfo={netInfo} emptyMsg="No Reports Yet" />}
+              ListFooterComponent={(loading || (!hasLoadedAllItems && type !== ACTIONS.OnFail)) && ListFooter}
+              onEndReached={!hasLoadedAllItems && (() => dispatch({type: ACTIONS.LoadMore}))}
+              onEndReachedThreshold={0.1}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => dispatch({type: ACTIONS.Refresh})} />}
+            />
           </View>
         </View>
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
-export default Earning
+export default Earning;
 const renderItem = ({item, index}) => (
   <View style={styles.item}>
     <View style={{flexDirection: 'row'}}>
@@ -182,6 +96,12 @@ const renderItem = ({item, index}) => (
         </View>
       </View>
     </View>
+  </View>
+);
+
+const ListFooter = () => (
+  <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', justifyContent: 'center', padding: 8}}>
+    <ActivityIndicator color={Colors.blue_color} size="large" />
   </View>
 );
 

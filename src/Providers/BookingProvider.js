@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useReducer} from 'react';
-import { callApi } from '.';
+import {callApi} from '.';
 import {AuthContext} from './AuthProvider';
 
 export const BookingContext = React.createContext();
@@ -22,11 +22,12 @@ const initialState = {
   type: ACTIONS.OnInit,
   hasLoadedAllItems: false,
   pagecount: 0,
-  refreshing: false,
 };
 
 const reducer = (state, {type, payload}) => {
   switch (type) {
+    case ACTIONS.OnFail:
+      return {...state, loading: false, refreshing: false, type: ACTIONS.OnFail};
     case ACTIONS.OnInit:
       return initialState;
     case ACTIONS.Start:
@@ -75,9 +76,13 @@ const BookingProvider = ({children}) => {
     if (state.type.includes('on')) return;
     let json = await callApi('bookinghistory', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
     if (json) dispatch({type: `on${state.type}Success`, payload: {bookingHistory: json.data}});
+    else dispatch({type: ACTIONS.OnFail});
   };
 
-  return <BookingContext.Provider value={{state, dispatch}}>{children}</BookingContext.Provider>;
+  const acceptJob = async booking_id => await callApi('accept_job', userData.api_token, {user_id: userData.id, booking_id});
+  const rejectJob = async booking_id => await callApi('reject_job', userData.api_token, {user_id: userData.id, booking_id});
+
+  return <BookingContext.Provider value={{state, dispatch, acceptJob, rejectJob}}>{children}</BookingContext.Provider>;
 };
 
 export default BookingProvider;
@@ -85,8 +90,9 @@ export default BookingProvider;
 const fakeCallApi = (subfix, AppKey, {pagecount}, onFalse, method = 'POST') => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve({data: Data.slice(pagecount * 10, (pagecount + 1) * 10)});
-    }, 2000);
+    //   resolve({data: Data.slice(pagecount * 10, (pagecount + 1) * 10)});
+    resolve({data:[]})
+    }, 500);
   });
 };
 
