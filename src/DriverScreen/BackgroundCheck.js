@@ -1,11 +1,31 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 import Colors from '../../Constants/Colors';
 import {ScrollView} from 'react-native';
 import {CheckBox} from 'react-native-elements';
+import {AuthContext} from '../Providers/AuthProvider';
+import LoadingView from '../Components/LoadingView';
 const BackgroundCheck = ({navigation}) => {
   const [isSelected, setSelection] = useState(false);
+  const [text, setText] = useState('');
+  const {getBackgroundCheckContent, saveAgreement} = useContext(AuthContext);
+  const [fetching, setFetching] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setFetching(true);
+    getBackgroundCheckContent().then(json => {
+      if (json) setText(json.data.description);
+      setFetching(false);
+    });
+  },[]);
+  const onPress = async () => {
+    setLoading(true);
+    let json = await saveAgreement();
+    setLoading(false);
+    if (json) navigation.navigate('TERMS & CONDITIONS');
+  };
   return (
     <View
       style={{
@@ -13,32 +33,11 @@ const BackgroundCheck = ({navigation}) => {
         flexDirection: 'column',
       }}>
       <View style={{flex: 1, backgroundColor: '#FFF'}}>
-        <ScrollView style={{}}>
+        <LoadingView fetching={fetching}>
           <View style={{padding: 21, flex: 1, marginBottom: 30}}>
-            <Text style={{fontSize: 16, marginBottom: 50}}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-              minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-              in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-              officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-              ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-              occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-              ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-              fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-              minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-              in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-              officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-              ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-              occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-              ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-              fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </Text>
+            <Text style={{fontSize: 16, marginBottom: 50}}>{text}</Text>
           </View>
-        </ScrollView>
+        </LoadingView>
 
         <View
           style={{
@@ -50,26 +49,21 @@ const BackgroundCheck = ({navigation}) => {
             right: 0,
             flexDirection: 'row',
             backgroundColor: 'white',
-            width:"100%",
-            borderTopColor:'#ddd',
-            borderTopWidth:1
+            width: '100%',
+            borderTopColor: '#ddd',
+            borderTopWidth: 1,
           }}>
-          <CheckBox title="Recieve a free copy of my background report." containerStyle={{flex:1}} checked={isSelected}   onPress={() => setSelection(curr=>!curr)}/>
-          {/* <CheckBox
-            center
-            title="Click Here to Remove This Item"
-            iconRight
-            iconType="material"
-            checkedIcon="clear"
-            uncheckedIcon="add"
-            checkedColor="red"
-            checked={false}
-          /> */}
+          <CheckBox
+            title="Recieve a free copy of my background report."
+            containerStyle={{flex: 1}}
+            checked={isSelected}
+            onPress={() => setSelection(curr => !curr)}
+          />
         </View>
         <View style={{justifyContent: 'flex-end', flex: 1}}>
           <TouchableOpacity
             elevation={5}
-            onPress={() => navigation.navigate('TERMS & CONDITIONS')}
+            onPress={onPress}
             style={styles.auth_btn}
             underlayColor="gray"
             activeOpacity={0.8}>

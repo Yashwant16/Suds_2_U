@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {defaultScreenOptions} from '../NavigationService';
 import {Image, TouchableOpacity} from 'react-native';
@@ -13,6 +13,7 @@ import TripSwitch from '../../Components/TirpSwitch';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
 import CompleteProfile from '../../DriverScreen/CompleteProfile';
 import PackgeScreen from '../../DriverScreen/PackageScreen';
+import {AuthContext} from '../../Providers/AuthProvider';
 
 const Stack = createStackNavigator();
 
@@ -20,17 +21,22 @@ const DriverHomeStack = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
+  const {getOnlineStatus} = useContext(AuthContext);
+
   const title = useMemo(() => getActionFromState(navigation.dangerouslyGetState()), [route]);
+  const [onlineStatus, setOnlineStatus] = useState()
+
+  useEffect(()=>getOnlineStatus().then(json=>setOnlineStatus(json?.status)), [])
 
   function getActionFromState(state) {
     let index = state?.routes[0]?.state?.routes[0]?.state?.index;
     return state?.routes[0]?.state?.routes[0]?.state?.routeNames[index];
-  }
+  } 
   return (
     <Stack.Navigator initialRouteName="WELCOME" mode="modal" screenOptions={defaultScreenOptions}>
       <Stack.Screen
-        name="WELCOME"
-        options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title, headerRight: () => <TripSwitch headerTitle={title} />}}
+        name="WELCOME" 
+        options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title, headerRight: () => <TripSwitch status={onlineStatus} headerTitle={title} />}}
         component={DriverDrawer}
       />
       <Stack.Screen name="ON JOB" component={OnJob} />

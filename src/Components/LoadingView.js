@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import {ActivityIndicator, Modal, Text, View} from 'react-native';
+import {ActivityIndicator, Modal, ScrollView, Text, View} from 'react-native';
 
-const LoadingView = ({children, loading, fetching, loadingColor = 'white', fetchingColor = 'white'}) => {
+const LoadingView = ({children, loading, fetching, loadingColor = 'white', fetchingColor = 'white', containerStyle}) => {
     useEffect(()=>{
     }, [loading])
   return (
-    <View>
+    <View >
       {fetching && <ActivityIndicator style={{padding: 50}} color={fetchingColor} size="large" />}
-      <View style={{opacity: fetching ? 0 : 1}}>{children}</View>
+      <View style={[{opacity: fetching ? 0 : 1}, containerStyle]}>{children}</View>
       {loading && <Loading color={loadingColor} />}
     </View>
   );
@@ -26,7 +26,7 @@ const Loading = ({color}) => (
         flex: 1,
         backgroundColor: '#00000050',
         position: 'absolute',
-        top: 58,
+        top: 56,
         bottom: 0,
         left: 0,
         right: 0,

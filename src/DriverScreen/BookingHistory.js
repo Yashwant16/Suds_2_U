@@ -30,7 +30,7 @@ const BookingHistory = ({navigation}) => {
         ))}
       </View>
       <FlatList
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.booking_id}
         style={{width: '100%', height: 200}}
         showsVerticalScrollIndicator={false}
         data={bookingHistory}
@@ -50,21 +50,21 @@ export default BookingHistory;
 
 const Item = ({item, navigation}) => {
   return (
-    <TouchableOpacity style={{padding: 16, flex: 1}} onPress={() => navigation.navigate('BOOKING DETAILS')}>
+    <TouchableOpacity style={{padding: 16, flex: 1}} onPress={() => navigation.navigate('BOOKING DETAILS', {id : item.booking_id})}>
       <View style={{flexDirection: 'row'}}>
-        <Image style={{height: 70, width: 70, marginRight: 10, padding: 10, borderRadius: 35}} source={{uri: item.image}} />
+        <Image style={{height: 70, width: 70, marginRight: 10, padding: 10, borderRadius: 35}} source={{uri: item.userdetails[0].image}} />
         <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
           <View style={{}}>
-            <Text style={{marginHorizontal: 5, fontSize: 16, marginBottom: 2}}>{item.name}</Text>
-            <Text style={{marginHorizontal: 5, fontWeight: 'bold', color: Colors.blue_color}}>{item.vehicleType}</Text>
+            <Text style={{marginHorizontal: 5, fontSize: 16, marginBottom: 2}}>{item.userdetails[0].name}</Text>
+            <Text style={{marginHorizontal: 5, fontWeight: 'bold', color: Colors.blue_color}}>{item.vehicledetails[0].model}</Text>
             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
               <Image style={{width: 16, height: 16, tintColor: '#777'}} source={require('../../Assets/location.png')} />
-              <Text style={{marginHorizontal: 3, color: '#999'}}>{item.name}</Text>
+              <Text style={{marginHorizontal: 3, color: '#999'}}>{item.wash_location}</Text>
             </View>
           </View>
           <View style={{}}>
             <Text style={{marginHorizontal: 5, color: 'green', fontWeight: 'bold', textAlign: 'right'}}>Success</Text>
-            <Text style={{marginHorizontal: 5, color: '#aaa', textAlign: 'right'}}>Today at 3:26 pm</Text>
+            <Text style={{marginHorizontal: 5, color: '#aaa', textAlign: 'right'}}>{item.updated_at}</Text>
           </View>
         </View>
       </View>

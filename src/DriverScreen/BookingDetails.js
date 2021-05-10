@@ -1,45 +1,77 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Text, View, ImageBackground, StyleSheet, TouchableOpacity} from 'react-native';
 import Colors from '../../Constants/Colors';
 import CtaButton from '../Components/CtaButton';
 import Divider from '../Components/Divider';
+import LoadingView from '../Components/LoadingView';
 import Rating from '../Components/Rating';
+import {BookingContext} from '../Providers/BookingProvider';
 
-const BookingDetails = () => {
+const BookingDetails = ({route}) => {
+  // const booking = useMemo(() => {
+  //   console.log(route.params);
+  //   if (route.params?.id){
+  //     getBooking(route.params?.id).then(data => {
+  //       if (data) return data;
+  //     });
+  //   }
+
+  // }, [route]);
+  const [booking, setBooking] = useState();
   const [tips] = useState(['$10', '$15', '$20', 'Custom']);
   const [selectedTip, setSelectedTip] = useState('$15');
+  const [fetching, setFetching] = useState(false);
+  const {getSingleBookingDetails} = useContext(BookingContext);
+
+  const getBooking = async () => {
+  
+    setFetching(true);
+    let json = await getSingleBookingDetails(route.params?.id);
+    setFetching(false);
+    console.log('...................',json?.data)
+    setBooking(json?.data);
+
+  
+  };
+
+  useEffect(() => console.log(booking?.extraaddonsdetails), [booking]);
+
+  useEffect(() => {
+    console.log(route.params);
+    getBooking(route.params?.id);
+  }, []);
 
   return (
     <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
       <View style={styles.container}>
-        <Text style={[styles.text, {fontWeight: 'bold'}]}>Wash Location</Text>
-        <Text style={[styles.text]}>321 Main street, Aloma</Text>
-        <Text style={[styles.text]}>CA-94507</Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Detail bold title="Donge Ram 350 Truck" detail="$39.00" />
-        <Detail title="Liquid Hand Wax" detail="$12.00" />
-        <Detail title="Extra Cleaning Fee" detail="$10.00" />
-        <Detail title="Service Fee" detail="$+1.00" />
-        <Detail title="Distance Fee" detail="$10.00" />
-        <Detail title="Extra Minutes" detail="$10.00" />
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Detail bold detailColored title="Total :" detail="$200.99" />
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', color: Colors.dark_orange, paddingVertical: 0}]}>
-          JANUARY 29,2021 AT 4:00 PM
-        </Text>
-        <Divider style={{marginTop: 10, marginBottom: 10}} />
-        <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 0}]}>TIP</Text>
-        <View style={{flexDirection: 'row'}}>
-          {tips.map((v, i) => (
-            <TipItem amount={v} key={i} onPress={() => setSelectedTip(v)} selected={v == selectedTip} />
-          ))}
-        </View>
-        <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 10}]}>Your rating on this job</Text>
-        <View style={{padding:24, backgroundColor:'white', borderRadius:10, alignItems:'center', }}>
-            <Rating rating={3} size={30}/>
-            <Text style={{color:'#777', paddingTop:30}}>Lorem ipsum dolor lit</Text>
-        </View>
+          <LoadingView fetching={fetching}>
+            <Text style={[styles.text, {fontWeight: 'bold'}]}>Wash Location</Text>
+            <Text style={[styles.text]}>{booking?.wash_location}</Text>
+            <Text style={[styles.text]}>CA-94507</Text>
+            <Divider style={{marginTop: 10, marginBottom: 10}} />
+            <Detail bold title={booking?.vehicledetails[0]?.model} detail="$39.00" />
+            {booking?.extraaddonsdetails?.map(ext => (
+              <Detail key={ext.id} title={ext.add_ons_name} detail={'$' + parseFloat(ext.add_ons_price).toFixed(2)} />
+            ))}
+            <Divider style={{marginTop: 10, marginBottom: 10}} />
+            <Detail bold detailColored title="Total :" detail={'$' + parseFloat(booking?.total).toFixed(2)} />
+            <Divider style={{marginTop: 10, marginBottom: 10}} />
+            <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', color: Colors.dark_orange, paddingVertical: 0}]}>
+              {booking?.booking_date}, {booking?.booking_time}
+            </Text>
+            <Divider style={{marginTop: 10, marginBottom: 10}} />
+            <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 0}]}>TIP</Text>
+            <View style={{flexDirection: 'row'}}>
+              {tips.map((v, i) => (
+                <TipItem amount={v} key={i} onPress={() => setSelectedTip(v)} selected={v == selectedTip} />
+              ))}
+            </View>
+            <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 10}]}>Your rating on this job</Text>
+            <View style={{padding: 24, backgroundColor: 'white', borderRadius: 10, alignItems: 'center'}}>
+              <Rating rating={booking?.rating} size={30} />
+              <Text style={{color: '#777', paddingTop: 30}}>{booking?.review}</Text>
+            </View>
+          </LoadingView>
       </View>
     </ImageBackground>
   );
@@ -56,7 +88,7 @@ const Detail = ({title, detail, bold, detailColored}) => (
 
 const TipItem = ({amount, selected, onPress}) => (
   <TouchableOpacity
-    onPressIn={onPress}
+    // onPressIn={onPress}
     activeOpacity={1}
     style={{padding: 16, backgroundColor: selected ? Colors.blue_color : 'white', borderRadius: 10, flex: 1, alignItems: 'center', margin: 5}}>
     <Text style={{color: selected ? 'white' : 'black', fontWeight: 'bold'}}>{amount}</Text>

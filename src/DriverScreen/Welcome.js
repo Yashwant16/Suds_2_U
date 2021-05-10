@@ -1,27 +1,60 @@
-import React, {useState,useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {Text, View, Image} from 'react-native';
 import MapView from 'react-native-maps';
 import NewJobModal from '../Components/NewJobModal';
-import { AuthContext } from '../Providers/AuthProvider';
+import {AuthContext} from '../Providers/AuthProvider';
+import messaging from '@react-native-firebase/messaging';
+import LoadingView from '../Components/LoadingView';
+import {BookingContext} from '../Providers/BookingProvider';
 
 export const nav = React.createRef(null);
 export const routeRef = React.createRef(null);
 
 const WelcomeScreen = ({navigation, route}) => {
   const [modalVisible, setModalVisibility] = useState(false);
-  const {userData:{latitude,longitude}} = useContext(AuthContext)
+  const [newJobBooking, setNewJobBooking] = useState();
+  const [loadingNewRequest, setLoadingNewRequest] = useState(false);
+  const {getSingleBookingDetails} = useContext(BookingContext);
+  const {
+    userData: {latitude, longitude},
+  } = useContext(AuthContext);
 
   const accept = () => {
-    navigation.navigate('ON JOB');
+    navigation.navigate('ON JOB', {booking: newJobBooking});
     hide();
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     nav.current = navigation;
     routeRef.current = route;
-    // const timeout = setTimeout(()=>setModalVisibility(true), 3000)
-    // return ()=> clearTimeout(timeout)
-  }, [])
+
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      if (remoteMessage.data.type == 'new job request') {
+        setLoadingNewRequest(true);
+        let json = await getSingleBookingDetails('1');
+        setLoadingNewRequest(false);
+        if (json) {
+          setNewJobBooking(json.data);
+          setModalVisibility(true);
+        }
+      }
+    });
+    // const timeout1 = setTimeout(async () => {
+    //   setLoadingNewRequest(true);
+    //   let json = await getSingleBookingDetails('1')
+    //   setLoadingNewRequest(false);
+    //   if(json) {
+    //     setNewJobBooking(json.data)
+    //     setModalVisibility(true);
+    //   }
+
+    // }, 1000);
+    // const timeout = setTimeout(() => {
+    //   setLoadingNewRequest(false);
+    //   setModalVisibility(true);
+    // }, 3000);
+    return unsubscribe
+  }, []);
 
   const hide = () => setModalVisibility(false);
 
@@ -30,8 +63,8 @@ const WelcomeScreen = ({navigation, route}) => {
       <MapView
         style={{width: '100%', flex: 1}}
         region={{
-          latitude: latitude? parseFloat(latitude): 37.78825,
-          longitude: longitude? parseFloat(longitude): -122.4324,
+          latitude: latitude ? parseFloat(latitude) : 37.78825,
+          longitude: longitude ? parseFloat(longitude) : -122.4324,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
@@ -59,9 +92,10 @@ const WelcomeScreen = ({navigation, route}) => {
           </View>
         </View>
       </View>
-      <NewJobModal accept={accept} modalVisible={modalVisible} hide={hide} />
+      <LoadingView loading={loadingNewRequest} />
+      <NewJobModal booking={newJobBooking} accept={accept} modalVisible={modalVisible} hide={hide} />
     </View>
   );
 };
 
-export default WelcomeScreen
+export default WelcomeScreen;

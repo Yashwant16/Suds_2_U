@@ -6,6 +6,7 @@ import BookingProvider from './BookingProvider';
 import RatingProvider from './RatingProvider';
 import NetInfo from '@react-native-community/netinfo';
 import EarningProvider from './EarningsProvider';
+import PackageProvider from './PackageProvider';
 
 const BASE_URL = 'http://suds-2-u.com/sudsadmin/api/';
 
@@ -15,7 +16,9 @@ const Providers = ({children}) => {
       <AuthProvider>
         <RatingProvider>
           <EarningProvider>
-            <BookingProvider>{children}</BookingProvider>
+            <PackageProvider>
+              <BookingProvider>{children}</BookingProvider>
+            </PackageProvider>
           </EarningProvider>
         </RatingProvider>
       </AuthProvider>

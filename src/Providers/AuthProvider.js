@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert} from 'react-native';
-import { callApi } from '.';
+import {callApi} from '.';
 import {changeStack, navigate, WASHER} from '../Navigation/NavigationService';
+import messaging from '@react-native-firebase/messaging';
 
 const DEVICE_TOKEN = 'random_token';
 
@@ -11,15 +12,17 @@ export const AuthContext = React.createContext();
 const AuthProvider = ({children}) => {
   const [userData, setUserData] = useState({});
 
+  useEffect(()=> messaging().getToken().then((token)=>console.log("-------------------------------",token)), [])
+
   const signUp = async data => {
-    let json = await callApi('washregistration', 'ABCDEFGHIJK', {...data, device_token: DEVICE_TOKEN});
+    let json = await callApi('washregistration', 'ABCDEFGHIJK', {...data, device_token:  await messaging().getToken()});
     if (!json) return;
     setUserData({...json.data, password: data.password});
     return json.otp;
   };
 
   const login = async loginData => {
-    let json = await callApi('login', 'ABCDEFGHIJK', {...loginData, device_token: DEVICE_TOKEN}, jsonResponse => {
+    let json = await callApi('login', 'ABCDEFGHIJK', {...loginData, device_token:  await messaging().getToken()}, jsonResponse => {
       Alert.alert('Error', jsonResponse.message, [
         {
           text: 'Ok',
@@ -50,6 +53,23 @@ const AuthProvider = ({children}) => {
     return 'success';
   };
 
+  const updateDrivingLicense = async (data, isFromAuthStack) => {
+    let json = await callApi('update_drivinglicense', userData.api_token, {...data, user_id: userData.id, term_condition: 0});
+    if (!json) return;
+    await saveUserData(isFromAuthStack ? 'BACKGROUND CHECK' : 'AUTH_DONE');
+    return 'success';
+  };
+
+  const setOnlineStatus = async status => await callApi('updatestatus', userData.api_token, {user_id: userData.id, status});
+
+  const getOnlineStatus = async () => await callApi('useronlinestatus', userData.api_token, {user_id: userData.id});
+
+  const saveAgreement = async () => await callApi('saveagree', userData.api_token, {user_id: userData.id});
+
+  const getBackgroundCheckContent = async () => await callApi('backgroundcheck', userData.api_token, {}, null, 'GET');
+
+  const getDrivingLicenseDetails = async () => await callApi('drivinglicensedetails', userData.api_token, {user_id: userData.id});
+
   const resendOtp = async () => await callApi('resentOtp', 'ABCDEFGHIJK', {email: userData.email});
 
   const getUserDetails = async () => await callApi('userdetails', userData.api_token, {user_id: userData.id});
@@ -76,7 +96,7 @@ const AuthProvider = ({children}) => {
         changeStack('AuthStack');
         setTimeout(() => navigate(savedUserData.stage), 100);
       }
-    } else changeStack('AuthStack'); 
+    } else changeStack('AuthStack');
   };
 
   const saveUserData = async (stage, data = userData) => await AsyncStorage.setItem('userData', JSON.stringify({...data, stage}));
@@ -84,6 +104,7 @@ const AuthProvider = ({children}) => {
     await AsyncStorage.removeItem('userData');
     changeStack('AuthStack');
     setUserData({});
+    messaging().deleteToken().then(()=>console.log('Token deleted'))
   };
 
   return (
@@ -104,7 +125,13 @@ const AuthProvider = ({children}) => {
         getStates,
         getCities,
         getUserDetails,
-        resendOtp
+        resendOtp,
+        updateDrivingLicense,
+        getDrivingLicenseDetails,
+        getBackgroundCheckContent,
+        saveAgreement,
+        getOnlineStatus,
+        setOnlineStatus
       }}>
       {children}
     </AuthContext.Provider>

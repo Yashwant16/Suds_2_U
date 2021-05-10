@@ -1,31 +1,39 @@
 import React from 'react';
-import {Image, StyleSheet, Text, TextInput, View, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, Text, TextInput, View, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
+// import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../../Constants/Colors';
 import CtaButton from '../Components/CtaButton';
+import LoadingView from '../Components/LoadingView';
 
-const JobFinished = () => (
-  <View style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
-    <Text style={styles.headerText}>Upload carwash images to share with our customer</Text>
-    <View style={styles.imageContainer}>
-      <Image style={{width: 85, height: 85, tintColor: 'white'}} source={require('../../Assets/icon/camera.png')} />
-    </View>
-    <Text style={{fontSize: 28, paddingBottom: 20, color: '#666'}}>Upload car images</Text>
-    <Text style={{textAlign: 'center', fontSize: 17, width: '65%', lineHeight: 32, color: '#666'}}>
-      Please upload 4 images of the car wash related to service.
-    </Text>
-    <View style={{flexDirection: 'row', width: '100%', padding: 16}}>
-      <CustomButton title="Camera" color={Colors.blue_color} />
-      <View style={{width: 16}} />
-      <CustomButton title="Gallery" color={Colors.dark_orange} />
-    </View>
-    <View style={{flex: 1, width: '100%', paddingHorizontal: 16}}>
-      <TextInput placeholder="Add comment" placeholderTextColor="#999" style={styles.textArea} />
-    </View>
-    <TouchableOpacity style={{padding: 20, backgroundColor: Colors.dark_orange, width: '100%', alignItems: 'center'}}>
-      <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold'}}>JOB FINISHED</Text>
-    </TouchableOpacity>
-  </View>
-);
+const JobFinished = () => {
+  return (
+    <LoadingView containerStyle={{height: '100%', backgroundColor: 'white'}}>
+      <ScrollView style={{height: '100%'}}>
+        <View style={{alignItems: 'center'}}>
+          <Text style={styles.headerText}>Upload carwash images to share with our customer</Text>
+          <View style={styles.imageContainer}>
+            <Image style={{width: 85, height: 85, tintColor: 'white'}} source={require('../../Assets/icon/camera.png')} />
+          </View>
+          <Text style={{fontSize: 28, paddingBottom: 20, color: '#666'}}>Upload car images</Text>
+          <Text style={{textAlign: 'center', fontSize: 17, width: '65%', lineHeight: 32, color: '#666'}}>
+            Please upload 4 images of the car wash related to service.
+          </Text>
+          <View style={{flexDirection: 'row', width: '100%', padding: 16}}>
+            <CustomButton title="Camera" color={Colors.blue_color} />
+            <View style={{width: 16}} />
+            <CustomButton title="Gallery" color={Colors.dark_orange} />
+          </View>
+          <View style={{height: 200, width: '100%', paddingHorizontal: 16}}>
+            <TextInput placeholder="Add comment" placeholderTextColor="#999" style={styles.textArea} />
+          </View>
+        </View>
+      </ScrollView>
+      <TouchableOpacity style={{padding: 20, backgroundColor: Colors.dark_orange, width: '100%', alignItems: 'center'}}>
+        <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold'}}>JOB FINISHED</Text>
+      </TouchableOpacity>
+    </LoadingView>
+  );
+};
 
 export default JobFinished;
 
@@ -76,3 +84,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+let notification = {
+  bigPictureUrl: 'Notification Image',
+  channelId: 'fcm_fallback_notification_channel',
+  color: null,
+  data: {booking_id: '1'},
+  finish: [Function],
+  foreground: true,
+  id: '999893157',
+  largeIconUrl: 'Notification Image',
+  message: 'new job request',
+  priority: 'high',
+  sound: 'Default',
+  tag: null,
+  title: 'job request',
+  userInteraction: false,
+  visibility: 'private',
+};
+
+let ndnotification = {
+  channelId: 'fcm_fallback_notification_channel',
+  color: null,
+  data: {customeData: '12'},
+  finish: [Function],
+  foreground: true,
+  id: '-1418509837',
+  message: 'test text',
+  priority: 'high',
+  sound: 'default',
+  tag: 'campaign_collapse_key_8280196326863859297',
+  title: 'Test Title',
+  userInteraction: false,
+  visibility: 'private',
+};
