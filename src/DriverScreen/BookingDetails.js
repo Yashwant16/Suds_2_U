@@ -1,50 +1,32 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Text, View, ImageBackground, StyleSheet, TouchableOpacity} from 'react-native';
 import Colors from '../../Constants/Colors';
-import CtaButton from '../Components/CtaButton';
 import Divider from '../Components/Divider';
 import LoadingView from '../Components/LoadingView';
 import Rating from '../Components/Rating';
 import {BookingContext} from '../Providers/BookingProvider';
 
 const BookingDetails = ({route}) => {
-  // const booking = useMemo(() => {
-  //   console.log(route.params);
-  //   if (route.params?.id){
-  //     getBooking(route.params?.id).then(data => {
-  //       if (data) return data;
-  //     });
-  //   }
-
-  // }, [route]);
   const [booking, setBooking] = useState();
   const [tips] = useState(['$10', '$15', '$20', 'Custom']);
   const [selectedTip, setSelectedTip] = useState('$15');
-  const [fetching, setFetching] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [emptyResponse, setEmptyResponse] = useState(false)
   const {getSingleBookingDetails} = useContext(BookingContext);
 
   const getBooking = async () => {
-  
     setFetching(true);
     let json = await getSingleBookingDetails(route.params?.id);
     setFetching(false);
-    console.log('...................',json?.data)
-    setBooking(json?.data);
-
-  
+    json?.empty? setEmptyResponse(true) :  setBooking(json?.data);
   };
 
-  useEffect(() => console.log(booking?.extraaddonsdetails), [booking]);
-
-  useEffect(() => {
-    console.log(route.params);
-    getBooking(route.params?.id);
-  }, []);
+  useEffect(() => getBooking(route.params?.id), []);
 
   return (
     <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
       <View style={styles.container}>
-          <LoadingView fetching={fetching}>
+          <LoadingView empty={emptyResponse} fetching={fetching}>
             <Text style={[styles.text, {fontWeight: 'bold'}]}>Wash Location</Text>
             <Text style={[styles.text]}>{booking?.wash_location}</Text>
             <Text style={[styles.text]}>CA-94507</Text>

@@ -38,13 +38,20 @@ export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') 
     });
     let jsonResponse = await res.json();
     console.log(jsonResponse);
-    if (!jsonResponse.response) {
+    if (isEmptyResponse(jsonResponse)) return {...jsonResponse, empty:true};
+    else if (!jsonResponse.response) {
       if (onFalse) onFalse(jsonResponse);
       else Alert.alert('Alert', jsonResponse.message);
     } else return jsonResponse;
   } catch (error) {
     console.log(error);
   }
+};
+
+const isEmptyResponse = json => {
+  if (!json.data) return false
+  if (!json.error && Object.keys(json.data).length === 0) return true;
+  return false;
 };
 
 const checkConnection = async () => {

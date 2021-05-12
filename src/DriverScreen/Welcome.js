@@ -13,50 +13,54 @@ export const routeRef = React.createRef(null);
 const WelcomeScreen = ({navigation, route}) => {
   const [modalVisible, setModalVisibility] = useState(false);
   const [newJobBooking, setNewJobBooking] = useState();
-  const [loadingNewRequest, setLoadingNewRequest] = useState(false);
-  const {getSingleBookingDetails} = useContext(BookingContext);
+  const [loading, setLoading] = useState(false);
+  const {getSingleBookingDetails, acceptJob, rejectJob} = useContext(BookingContext);
   const {
     userData: {latitude, longitude},
   } = useContext(AuthContext);
 
-  const accept = () => {
-    navigation.navigate('ON JOB', {booking: newJobBooking});
-    hide();
+  const accept = async () => {
+    setModalVisibility(false);
+    // setLoading(true);
+    // let success = await acceptJob();
+    // setLoading(false);
+    /* if (success) */ navigation.navigate('ON JOB', {booking: newJobBooking});
   };
 
   useEffect(() => {
     nav.current = navigation;
     routeRef.current = route;
 
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      if (remoteMessage.data.type == 'new job request') {
-        setLoadingNewRequest(true);
-        let json = await getSingleBookingDetails('1');
-        setLoadingNewRequest(false);
-        if (json) {
-          setNewJobBooking(json.data);
-          setModalVisibility(true);
-        }
-      }
-    });
-    // const timeout1 = setTimeout(async () => {
-    //   setLoadingNewRequest(true);
-    //   let json = await getSingleBookingDetails('1')
-    //   setLoadingNewRequest(false);
-    //   if(json) {
-    //     setNewJobBooking(json.data)
-    //     setModalVisibility(true);
+    // const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   if (remoteMessage.data.type == 'new job request') {
+    //     setLoading(true);
+    //     let json = await getSingleBookingDetails('1');
+    //     setLoading(false);
+    //     if (json) {
+    //       setNewJobBooking(json.data);
+    //       setModalVisibility(true);
+    //     }
     //   }
+    // });
+    const timeout1 = setTimeout(async () => {
+      setLoading(true);
+      let json = await getSingleBookingDetails('17') 
+      setLoading(false);
+      if(json) {
+        setNewJobBooking(json.data)
+        setModalVisibility(true);
+      }
 
-    // }, 1000);
-    // const timeout = setTimeout(() => {
-    //   setLoadingNewRequest(false);
-    //   setModalVisibility(true);
-    // }, 3000);
-    return unsubscribe
+    }, 1000);
+    // return unsubscribe;
+    return ()=>clearTimeout(timeout1)
   }, []);
 
-  const hide = () => setModalVisibility(false);
+  const hide = async () => {
+    setLoading(true);
+    await rejectJob();
+    setLoading(false);
+  };
 
   return (
     <View style={{flex: 1}}>
@@ -92,7 +96,7 @@ const WelcomeScreen = ({navigation, route}) => {
           </View>
         </View>
       </View>
-      <LoadingView loading={loadingNewRequest} />
+      <LoadingView loading={loading} />
       <NewJobModal booking={newJobBooking} accept={accept} modalVisible={modalVisible} hide={hide} />
     </View>
   );

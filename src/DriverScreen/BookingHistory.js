@@ -1,7 +1,6 @@
 import {useNetInfo} from '@react-native-community/netinfo';
 import React, {useContext, useState, useEffect} from 'react';
 import {StyleSheet, Text, View, Image, FlatList, TouchableOpacity, SafeAreaView, RefreshControl, ActivityIndicator} from 'react-native';
-import {Icon} from 'react-native-elements/dist/icons/Icon';
 import Colors from '../../Constants/Colors';
 import ListEmpty from '../Components/ListEmpty';
 import {ACTIONS, BookingContext} from '../Providers/BookingProvider';

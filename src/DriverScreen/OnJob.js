@@ -9,7 +9,7 @@ import LoadingView from '../Components/LoadingView';
 
 const origin = {latitude: 37.3318456, longitude: -122.0296002};
 const destination = {latitude: 37.771707, longitude: -122.4053769};
-const GOOGLE_MAPS_APIKEY = 'AIzaSyDqV5G6lyrBe_ILlKSYMrlF2-8mSxzx1vo';
+const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 const OnJob = ({navigation,route}) => {
   const [arrived, setArrived] = useState(false);
   const [loading, setLoading] = useState(true);

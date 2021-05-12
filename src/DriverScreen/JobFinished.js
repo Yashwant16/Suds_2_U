@@ -1,8 +1,6 @@
 import React from 'react';
-import {Image, StyleSheet, Text, TextInput, View, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
-// import {SafeAreaView} from 'react-native-safe-area-context';
+import {Image, StyleSheet, Text, TextInput, View, TouchableOpacity, ScrollView} from 'react-native';
 import Colors from '../../Constants/Colors';
-import CtaButton from '../Components/CtaButton';
 import LoadingView from '../Components/LoadingView';
 
 const JobFinished = () => {
@@ -84,37 +82,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-let notification = {
-  bigPictureUrl: 'Notification Image',
-  channelId: 'fcm_fallback_notification_channel',
-  color: null,
-  data: {booking_id: '1'},
-  finish: [Function],
-  foreground: true,
-  id: '999893157',
-  largeIconUrl: 'Notification Image',
-  message: 'new job request',
-  priority: 'high',
-  sound: 'Default',
-  tag: null,
-  title: 'job request',
-  userInteraction: false,
-  visibility: 'private',
-};
-
-let ndnotification = {
-  channelId: 'fcm_fallback_notification_channel',
-  color: null,
-  data: {customeData: '12'},
-  finish: [Function],
-  foreground: true,
-  id: '-1418509837',
-  message: 'test text',
-  priority: 'high',
-  sound: 'default',
-  tag: 'campaign_collapse_key_8280196326863859297',
-  title: 'Test Title',
-  userInteraction: false,
-  visibility: 'private',
-};
