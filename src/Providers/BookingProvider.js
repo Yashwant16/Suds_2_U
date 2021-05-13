@@ -85,9 +85,9 @@ const BookingProvider = ({children}) => {
 
   const rejectJob = async booking_id => await callApi('reject_job', userData.api_token, {user_id: userData.id, booking_id});
 
-  const finishedjob = async data => callApi('finishedjob', userData.api_token, {user_id:userData.id, ...data})
+  const finishedjob = async data => callApi('finishedjob', userData.api_token, {...data,user_id:userData.id})
 
-  return <BookingContext.Provider value={{state, dispatch, acceptJob, rejectJob, getSingleBookingDetails}}>{children}</BookingContext.Provider>;
+  return <BookingContext.Provider value={{state, dispatch, acceptJob, rejectJob, getSingleBookingDetails, finishedjob}}>{children}</BookingContext.Provider>;
 };
 
 export default BookingProvider;

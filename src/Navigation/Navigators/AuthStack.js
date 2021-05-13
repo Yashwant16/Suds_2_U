@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import UserTypeScreen from '../../CommonScreen/UserTypeScreen';
 import {defaultScreenOptions} from '../NavigationService';
 import ChooseScreen from '../../CommonScreen/ChooseScreen';
@@ -12,8 +12,6 @@ import CompleteProfile from '../../DriverScreen/CompleteProfile';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
 import BackgroundCheck from '../../DriverScreen/BackgroundCheck';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
-import Colors from '../../../Constants/Colors';
-import Splash from '../../CommonScreen/Splash';
 
 const Stack = createStackNavigator();
 

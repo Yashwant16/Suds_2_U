@@ -1,11 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {View, Image, Text} from 'react-native';
 import Colors from '../../Constants/Colors';
 
-const WorkInProgress = ({navigation}) => {
+const WorkInProgress = ({navigation, route}) => {
   const [timeRemaining, setTimeRemaining] = useState(3600000);
+  const booking = useMemo(()=>route.params?.booking, [route])
+
   useEffect(() => {
     const interval = setInterval(() => setTimeRemaining(currTime => currTime - 1000), 1000);
     return () => clearInterval(interval);
@@ -34,7 +36,7 @@ const WorkInProgress = ({navigation}) => {
       </View>
 
       <View style={{flexDirection: 'row', position: 'absolute', bottom: 0, left: 0, right: 0}}>
-        <TouchableOpacity onPress={()=>navigation.navigate('JOB FINISHED')} style={[styles.btns, {backgroundColor: Colors.blue_color}]}>
+        <TouchableOpacity onPress={()=>navigation.navigate('JOB FINISHED', {booking})} style={[styles.btns, {backgroundColor: Colors.blue_color}]}>
           <Text style={styles.btnText}>Job Finished</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.btns, {backgroundColor: Colors.dark_orange}]}>

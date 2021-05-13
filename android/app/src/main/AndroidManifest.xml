@@ -25,7 +25,7 @@
       </activity>
        <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyDqV5G6lyrBe_ILlKSYMrlF2-8mSxzx1vo"/>
+        android:value="AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM"/>
       <service
         android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
         android:exported="false" >

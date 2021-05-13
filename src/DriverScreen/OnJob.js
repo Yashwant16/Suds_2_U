@@ -12,7 +12,7 @@ const destination = {latitude: 37.771707, longitude: -122.4053769};
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 const OnJob = ({navigation,route}) => {
   const [arrived, setArrived] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const booking = useMemo(()=>route.params?.booking, [route])
 
   const {
@@ -20,7 +20,7 @@ const OnJob = ({navigation,route}) => {
   } = useContext(AuthContext);
 
   const onPress = () => {
-    if (arrived) navigation.navigate('WORK IN PROGRESS');
+    if (arrived) navigation.navigate('WORK IN PROGRESS', {booking});
     else setArrived(true);
   };
 
@@ -36,14 +36,14 @@ const OnJob = ({navigation,route}) => {
           altitude: 2,
           center: {latitude: parseFloat(latitude), longitude: parseFloat(longitude)},
         }}>
-        <MapViewDirections
+        {/* <MapViewDirections
           onReady={() => setLoading(false)}
           strokeWidth={5}
           strokeColor={Colors.blue_color}
           origin={{latitude: parseFloat(latitude), longitude: parseFloat(longitude)}}
           destination={{latitude: parseFloat(booking?.userdetails[0].latitude), longitude: parseFloat(booking?.userdetails[0].longitude)}}
           apikey={GOOGLE_MAPS_APIKEY}
-        />
+        /> */}
         <MapView.Marker coordinate={{latitude: parseFloat(latitude), longitude: parseFloat(longitude)}} title={'Your location'} />
         <MapView.Marker
           coordinate={{latitude: parseFloat(booking?.userdetails[0].latitude), longitude: parseFloat(booking?.userdetails[0].longitude)}}

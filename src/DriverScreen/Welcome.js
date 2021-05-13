@@ -57,9 +57,10 @@ const WelcomeScreen = ({navigation, route}) => {
   }, []);
 
   const hide = async () => {
-    setLoading(true);
-    await rejectJob();
-    setLoading(false);
+    // setLoading(true);
+    // await rejectJob(newJobBooking.booking_id);
+    // setLoading(false);
+    setModalVisibility(false);
   };
 
   return (
