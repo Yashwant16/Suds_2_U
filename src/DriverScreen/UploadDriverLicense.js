@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
+import { ScrollView } from 'react-native';
 import {Image, Text, View, TouchableOpacity, StyleSheet} from 'react-native';
 import Colors from '../../Constants/Colors';
 import ControllerInput from '../Components/ControllerInput';
@@ -46,7 +47,9 @@ const UploadDriverLicense = ({navigation, route}) => {
 
   return (
     <View style={{flex: 1}}>
-      <LoadingView loading={loading} fetching={fetching}>
+          <ScrollView>
+      <LoadingView loading={loading} fetchingColor={Colors.blue_color} fetching={fetching}>
+    
         <View style={{height: 250, width: '100%', backgroundColor: '#eee'}}>
           <Image
             style={{tintColor: '#ccc', height: 210, width: '100%', resizeMode: 'center'}}
@@ -88,7 +91,9 @@ const UploadDriverLicense = ({navigation, route}) => {
           />
           <CardBtn onPress={handleSubmit(onSubmit)} isFromAuthStack={route.params.authStack} navigation={navigation} />
         </View>
+  
       </LoadingView>
+      </ScrollView>
     </View>
   );
 };

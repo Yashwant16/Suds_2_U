@@ -30,6 +30,10 @@ const OTPverification = ({navigation, route}) => {
     setLoading(false)
   };
 
+  useEffect(()=>{
+    ToastAndroid.show(route.params?.otp+'', 5000)
+  }, [])
+
   // useEffect(() => setOtp(route?.params?.otp), []);
 
   return (

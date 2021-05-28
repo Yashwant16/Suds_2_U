@@ -3,13 +3,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity, ScrollView } from 'react-native';
 import Colors from '../../Constants/Colors';
 import LoadingView from '../Components/LoadingView';
-import { changeStack } from '../Navigation/NavigationService';
+import { changeStack, dontShow, setTrue } from '../Navigation/NavigationService';
 import { BookingContext } from '../Providers/BookingProvider';
 
-const JobFinished = ({route, navigation}) => {
+const JobFinished = ({ route, navigation }) => {
   const { finishedjob } = useContext(BookingContext)
   const [loading, setLoading] = useState(false);
-  const booking = useMemo(()=>route.params?.booking, [route])
+  const booking = useMemo(() => route.params?.booking, [route])
 
   const {
     control,
@@ -17,13 +17,16 @@ const JobFinished = ({route, navigation}) => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async data=>{
-    console.log({...data, booking_id : booking.booking_id})
+  const onSubmit = async data => {
+    console.log({ ...data, booking_id: booking.booking_id })
     setLoading(true)
-    let json = await finishedjob({...data, booking_id : booking.booking_id})
+    let json = await finishedjob({ ...data, booking_id: booking.booking_id })
     setLoading(false)
-    if(json) changeStack('DriverHomeStack')
- 
+    if (json) { 
+      setTrue()
+      changeStack('DriverHomeStack')
+     }
+
   }
   return (
     <LoadingView loading={loading} containerStyle={{ height: '100%', backgroundColor: 'white' }}>
@@ -47,7 +50,7 @@ const JobFinished = ({route, navigation}) => {
             <Controller
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
-                <View style={{height: 200, flexDirection: 'row' }}>
+                <View style={{ height: 200, flexDirection: 'row' }}>
                   <TextInput
                     style={styles.textArea}
                     placeholder="Add comment"
@@ -59,7 +62,7 @@ const JobFinished = ({route, navigation}) => {
                 </View>
               )}
               name={'comment'}
-              rules={{required : true}}
+              rules={{ required: true }}
               defaultValue=""
             />
             <Error error={errors.comment} label={'Comment'} />
@@ -81,20 +84,20 @@ const CustomButton = ({ title, color }) => (
   </TouchableOpacity>
 );
 
-const wait = ()=>{
-  return new Promise((resolve)=>{
-    setTimeout(()=>resolve(), 2000)
+const wait = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), 2000)
   })
 }
 
-const Error = ({error, label}) => {
+const Error = ({ error, label }) => {
   if (!error) return null;
   const capitalizeFistLetter = string => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   const errorText = useMemo(() => {
     if (error.type == 'pattern') return `Please enter a valid ${label.toLowerCase()}`;
     if (error.type == 'required') return `${capitalizeFistLetter(label)} is required`;
   }, [error]);
-  return <Text style={{color: 'red'}}>{errorText}</Text>;
+  return <Text style={{ color: 'red' }}>{errorText}</Text>;
 };
 
 const styles = StyleSheet.create({

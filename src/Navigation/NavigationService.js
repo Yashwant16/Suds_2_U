@@ -6,6 +6,11 @@ export const navigationRef = React.createRef();
 export const type = React.createRef()
 export const WASHER = '2'
 export const CUSTOMER = '3'
+export let dontShow = false
+
+export function setTrue() {
+  dontShow = true
+}
 
 export const navigate = (routeName, params) => {
   navigationRef.current?.navigate(routeName, params);

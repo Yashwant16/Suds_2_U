@@ -74,7 +74,7 @@ const BookingProvider = ({children}) => {
   const onStateChange = async state => {
     console.log(state);
     if (state.type.includes('on')) return;
-    let json = await callApi('bookinghistory', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
+    let json = await fakeCallApi('bookinghistory', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
     if (json) dispatch({type: `on${state.type}Success`, payload: {bookingHistory: json.data}});
     else dispatch({type: ACTIONS.OnFail});
   };
