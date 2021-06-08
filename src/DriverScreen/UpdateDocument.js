@@ -38,10 +38,10 @@ const Card = ({children, title}) => {
 };
 const CardBtn = ({navigation, isFromAuthStack}) => (
   <TouchableOpacity
-    onPress={() => navigation.navigate('UPLOAD DRIVING LICENSE')}
+    onPress={() => navigation.navigate('UPLOAD DRIVING LICENSE', {authStack : isFromAuthStack})}
     style={[styles.card, {backgroundColor: Colors.blue_color, padding: 20}]}>
     <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>{isFromAuthStack ? 'CONTINUE' : 'UPDATE DRIVING LICENSE'}</Text>
-  </TouchableOpacity>
+  </TouchableOpacity> 
 );
 
 const CardHead = ({title, onPress, show}) => {

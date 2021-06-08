@@ -22,12 +22,12 @@ const WelcomeScreen = ({ navigation, route }) => {
 
   const accept = async () => {
     setModalVisibility(false);
-    // setLoading(true);
-    // let success = await acceptJob();
-    // setLoading(false);
-    /* if (success) */ navigation.navigate('ON JOB', { booking: newJobBooking });
+ /*    setLoading(true);
+    let success = await acceptJob(newJobBooking?.booking_id);
+    setLoading(false);
+    if (success) */ navigation.navigate('ON JOB', { booking: newJobBooking });
   };
-
+ 
   useEffect(() => {
     nav.current = navigation;
     routeRef.current = route;

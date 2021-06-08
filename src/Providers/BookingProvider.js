@@ -87,7 +87,13 @@ const BookingProvider = ({children}) => {
 
   const finishedjob = async data => callApi('finishedjob', userData.api_token, {...data,user_id:userData.id})
 
-  return <BookingContext.Provider value={{state, dispatch, acceptJob, rejectJob, getSingleBookingDetails, finishedjob}}>{children}</BookingContext.Provider>;
+  const onMyWay = async washer_id => callApi('onMyWay', userData.api_token, {user_id:userData.id, washer_id})
+
+  const startJob = async booking_id => callApi('startjob', userData.api_token, {booking_id})
+
+  const addMoreMinutes = async (booking_id, extra_time) => callApi('addMoreTime', userData.api_token, {booking_id, extra_time })
+
+  return <BookingContext.Provider value={{state, dispatch, acceptJob, rejectJob, getSingleBookingDetails, finishedjob, onMyWay, addMoreMinutes, startJob}}>{children}</BookingContext.Provider>;
 };
 
 export default BookingProvider;

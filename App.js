@@ -1,10 +1,11 @@
 import 'react-native-gesture-handler';
-import React, {} from 'react';
-import {Platform, StatusBar, UIManager} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { Platform, StatusBar, UIManager } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import Navigation from './src/Navigation/Navigators/RootStack';
-import {navigationRef} from './src/Navigation/NavigationService';
+import { navigationRef } from './src/Navigation/NavigationService';
 import Providers from './src/Providers';
+import messaging from '@react-native-firebase/messaging';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -12,9 +13,7 @@ if (Platform.OS === 'android') {
   }
 }
 const App = () => {
-  // useEffect(() => {
-  //   messaging().subscribeToTopic('mike');
-  // });
+  useEffect(() => messaging().subscribeToTopic('mike'));
   return (
     <Providers>
       <NavigationContainer ref={navigationRef}>

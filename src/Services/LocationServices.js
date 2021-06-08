@@ -18,7 +18,7 @@ export const askLocationService = async () => {
 export const getCurrentPosition = () => {
   return new Promise((resolve, reject) => {
     askLocationService()
-      .then(data => setTimeout(() =>Geolocation.getCurrentPosition(info => resolve(info)), data == 'already-enabled' ? 0 : 3000))
+      .then(data => setTimeout(() =>Geolocation.getCurrentPosition(info => resolve(info)), data == 'already-enabled' ? 0 : 6000))
       .catch(err => reject(err));
   });
 };

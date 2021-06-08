@@ -31,8 +31,8 @@ const SignUp = ({navigation}) => {
     setLoading(true);
     const {latitude, longitude} = (await getCurrentPosition()).coords;
     if (latitude && longitude) {
-      let otp = await signUp({latitude, longitude, ...data});
-      if (otp) navigation.navigate('ENTER OTP', {otp});
+      let dataForOtpScreen = await signUp({latitude, longitude, ...data});
+      if (dataForOtpScreen) navigation.navigate('ENTER OTP', dataForOtpScreen);
     }
     setLoading(false);
   };

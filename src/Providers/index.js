@@ -29,6 +29,7 @@ const Providers = ({children}) => {
 export default Providers;
 
 export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') => {
+  console.log(params)
   try {
     await checkConnection();
     let url = `${BASE_URL}${subfix}?` + new URLSearchParams(params);

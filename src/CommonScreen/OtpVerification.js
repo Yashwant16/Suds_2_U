@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, Text, View, SafeAreaView, ImageBackground, Image, TouchableOpacity, Alert, ToastAndroid} from 'react-native';
 import Colors from '../../Constants/Colors';
 import OTPTextView from 'react-native-otp-textinput';
@@ -10,16 +10,21 @@ import {AuthContext} from '../Providers/AuthProvider';
 import LoadingView from '../Components/LoadingView';
 
 const OTPverification = ({navigation, route}) => {
-  const {saveUserData, resendOtp} = useContext(AuthContext);
+  const {saveUserData, resendOtp,otpVerified} = useContext(AuthContext);
   const [otpInput, setOtpInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState(route.params?.otp)
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     console.log(otp, otpInput);
     if (otp + '' == otpInput) {
-      navigation.navigate(type.current == WASHER ? 'COMPLETE PROFILE' : 'TERMS & CONDITIONS');
-      type.current == WASHER ? saveUserData('COMPLETE PROFILE') : saveUserData('TERMS & CONDITIONS');
+      setLoading(true)
+      let success  = await otpVerified()
+      setLoading(false)
+      if(success){
+        navigation.navigate(type.current == WASHER ? 'COMPLETE PROFILE' : 'TERMS & CONDITIONS');
+        type.current == WASHER ? saveUserData('COMPLETE PROFILE') : saveUserData('TERMS & CONDITIONS');
+      }
     } else Alert.alert('Incorrect OTP', 'Please enter the correct OTP code you recieved on your phone.');
   };
 
@@ -33,8 +38,6 @@ const OTPverification = ({navigation, route}) => {
   useEffect(()=>{
     ToastAndroid.show(route.params?.otp+'', 5000)
   }, [])
-
-  // useEffect(() => setOtp(route?.params?.otp), []);
 
   return (
     <View style={styles.container}>
