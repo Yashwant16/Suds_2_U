@@ -157,7 +157,7 @@ export default class MyNotificationsScreen extends React.Component {
           </TouchableOpacity>
 
         </View>
-        <SafeAreaView style={{ backgroundColor: '#e28c39' }} />
+        {/* <SafeAreaView style={{ backgroundColor: '#e28c39' }} /> */}
       </View>
     );
   };

@@ -123,7 +123,7 @@ const AuthProvider = ({ children }) => {
     console.log("Saved user data : ", savedUserData);
     if (savedUserData) {
       setUserData(savedUserData);
-      if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
+      if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'CustomerHomeStack' : 'CustomerHomeStack');
       else {
         changeStack('AuthStack');
         // setTimeout(() => navigate(savedUserData.stage), 100);
@@ -143,6 +143,7 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         signUp,
+        CustomersignUp,
         getAuthStatus,
         login,
         userData,

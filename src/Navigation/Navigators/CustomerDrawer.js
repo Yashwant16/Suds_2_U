@@ -1,6 +1,7 @@
 import React from 'react';
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList,} from '@react-navigation/drawer';
 import {Button, Image, StyleSheet, Text, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import EditProfile from '../../CustomerScreen/EditProfile'
 import HomeScreen from '../../CustomerScreen/HomeScreen'
 // import HomeScreen from '../../CustomerScreen/HomeScreen'
@@ -14,6 +15,7 @@ import Rewairds_History from '../../CustomerScreen/Rewairds_History'
 import Colors from '../../../Constants/Colors';
 import { changeStack } from '../NavigationService';
 const Drawer = createDrawerNavigator();
+
 
 const CustomerDrawer = () => {
   return (
@@ -112,6 +114,10 @@ const DrawerProfile = () => (
       <View style={{flexDirection:'row',alignItems:'center',alignSelf:'center'}}>
        <Image style={{width: 15, height: 15, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch',tintColor:'#F5BA05'}} source={require('../../../Assets/location.png')} />
       <Text style={{color: '#fff', textAlign: 'center', fontSize: 16}}>san fracisco usa</Text>
+ 
+      </View>
+      <View style={{width:130,height:35,backgroundColor:'#F5BA05',borderRadius:20,marginTop:10,justifyContent:'center'}}> 
+<Text style={{textAlign:'center',fontWeight:'bold',fontSize:16}}>08 Drops</Text>
       </View>
     </View>
   </View>

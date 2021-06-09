@@ -178,7 +178,6 @@
 				5E93DA7E3200899E6BE216EB /* Pods-Suds_2_U-Suds_2_UTests.debug.xcconfig */,
 				8A4A435FB8E821DE1E2AE827 /* Pods-Suds_2_U-Suds_2_UTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

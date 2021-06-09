@@ -2,7 +2,7 @@ import React from 'react';
 import {Text, View, Image, SafeAreaView, ImageBackground} from 'react-native';
 import CtaButton from '../Components/CtaButton';
 import {CUSTOMER, type, WASHER} from '../Navigation/NavigationService';
-
+// console.log('user type',global.usertype)
 const UserTypeScreen = ({navigation}) => {
   return (
     <View
@@ -58,6 +58,7 @@ const UserTypeScreen = ({navigation}) => {
                 onPress={() => {
                   navigation.navigate('chooseScreen');
                   type.current = CUSTOMER;
+                  // global.usertype='CUSTOMER'
                 }}
                 title="Customer"
               />
@@ -65,6 +66,7 @@ const UserTypeScreen = ({navigation}) => {
                 onPress={() => {
                   navigation.navigate('chooseScreen');
                   type.current = WASHER;
+                  // global.usertype='WASHER'
                 }}
                 title="Car Washer"
               />
