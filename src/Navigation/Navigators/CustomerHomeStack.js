@@ -19,6 +19,17 @@ import ScheduleBook from '../../CustomerScreen/ScheduleBook';
 import OnTheWay from '../../CustomerScreen/OnTheWay';
 import OnDemand from '../../CustomerScreen/OnDemand';
 import WorkInProgress from '../../CustomerScreen/WorkInProgress';
+import SelectTypeOfVehicle from '../../CustomerScreen/SelectTypeOfVehicle';
+import SelectVender from '../../CustomerScreen/SelectVender';
+import VenderProfile from '../../CustomerScreen/VenderProfile';
+import RvsBusMH from '../../CustomerScreen/RvsBusMH';
+import Car0rTruck from '../../CustomerScreen/Car0rTruck';
+import BusinessWash from '../../CustomerScreen/BusinessWash';
+import HeavyEquipment from '../../CustomerScreen/HeavyEquipment';
+import MotorCycles from '../../CustomerScreen/MotorCycles';
+import TractorTrailors from '../../CustomerScreen/TractorTrailors';
+import Boats from '../../CustomerScreen/Boats';
+import ReviewRating from '../../CustomerScreen/ReviewRating';
 import { nav } from '../../CustomerScreen/HomeScreen';
 import TripSwitch from '../../Components/TirpSwitch';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
@@ -50,6 +61,17 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="OnDemand" component={OnDemand} />
       <Stack.Screen name="On The Way" component={OnTheWay} />
       <Stack.Screen name="Work In Progress" component={WorkInProgress} />
+      <Stack.Screen name="Select Type" component={SelectTypeOfVehicle} />
+      <Stack.Screen name="Select a Vender" component={SelectVender} />
+      <Stack.Screen name="RVs Bus M V" component={RvsBusMH} />
+      <Stack.Screen name="Vender Profile" component={VenderProfile} />
+      <Stack.Screen name="Car or Truck" component={Car0rTruck} />
+      <Stack.Screen name="Business Wash" component={BusinessWash} />
+      <Stack.Screen name="Heavy Equipment" component={HeavyEquipment} />
+      <Stack.Screen name="MotorCycles" component={MotorCycles} />
+      <Stack.Screen name="Boats" component={Boats} />
+      <Stack.Screen name="Tractor Trailors" component={TractorTrailors} />
+      <Stack.Screen name="Review Rating" component={ReviewRating} />
     </Stack.Navigator>
   );
 };

@@ -5,7 +5,6 @@ import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { CheckBox } from 'react-native-elements'
 
 export default class MyNotificationsScreen extends React.Component {
 
@@ -14,46 +13,53 @@ export default class MyNotificationsScreen extends React.Component {
       this.state = {
         isChecked:'',
         Data: [
-        
+        {
+            category_id:1,
+            category_name:'BOATS UNDER 20 FEET'
+        },{
+            category_id:2,
+            category_name:'BOATS OVER 20 FEET'
+        },
+       
         ],
       }
     }
-    componentDidMount = async () => {
-      this.userdetails();
+    // componentDidMount = async () => {
+    //   this.userdetails();
       
-      }
-      userdetails = async () => {
-        let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
-        console.log(savedUserData.api_token);
+    //   }
+    //   userdetails = async () => {
+    //     let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
+    //     console.log(savedUserData.api_token);
     
-        return fetch('http://suds-2-u.com/sudsadmin/api/vehicleType', {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'App-Key':savedUserData.api_token,
-            'Content-Type': 'application/json'
-          },
-          // body: JSON.stringify(params)
-        })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            // this.setState({ isLoading: false })
-            console.log("responseJson onLoginPressHandle", responseJson)
-            if (responseJson.response === true) {
+    //     return fetch('http://suds-2-u.com/sudsadmin/api/vehicleType', {
+    //       method: 'GET',
+    //       headers: {
+    //         Accept: 'application/json',
+    //         'App-Key':savedUserData.api_token,
+    //         'Content-Type': 'application/json'
+    //       },
+    //       // body: JSON.stringify(params)
+    //     })
+    //       .then((response) => response.json())
+    //       .then((responseJson) => {
+    //         // this.setState({ isLoading: false })
+    //         console.log("responseJson onLoginPressHandle", responseJson)
+    //         if (responseJson.response === true) {
               
-    this.setState({Data:responseJson.data})
-              // this.props.navigation.navigate('Main')
-            }
-            else if (responseJson.response === false) {
-              // alert(responseJson.message)
-            }
-          })
-          .catch((error) => {
-            // this.setState({ isLoading: false })
-            console.error(error);
-          });
+    // this.setState({Data:responseJson.data})
+    //           // this.props.navigation.navigate('Main')
+    //         }
+    //         else if (responseJson.response === false) {
+    //           // alert(responseJson.message)
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         // this.setState({ isLoading: false })
+    //         console.error(error);
+    //       });
     
-      };
+    //   };
 
 
     renderItem = ({ item, index }) => {
@@ -61,7 +67,7 @@ export default class MyNotificationsScreen extends React.Component {
       return(
       <View style={{ padding: 21,flex:1,margin:10,marginHorizontal:18, backgroundColor:'#fff',borderRadius:5,paddingVertical:10,shadowOpacity:0.3,shadowOffset: { width: 1, height: 1 },}}>
 <TouchableOpacity onPress={()=>{
-  {(item.category_id== 1)?navigation.navigate('Car or Truck'): (item.category_id == 2)?navigation.navigate('Tractor Trailors'):(item.category_id == 6)?navigation.navigate('Heavy Equipment'):(item.category_id == 5)?navigation.navigate('RVs Bus M V'):(item.category_id== 7)?navigation.navigate('Business Wash'):navigation.navigate('Select Package') }
+//   {(item.category_id== 1)?navigation.navigate('Car or Truck'): (item.category_id == 2)?navigation.navigate('Tractor Trailors'):(item.category_id == 5)?navigation.navigate('RVs Bus M V'):(item.category_id == 5)?navigation.navigate('RVs Bus M V'):navigation.navigate('Select Package') }
 }}> 
 
   <View style={{flexDirection:'row',marginTop:5,justifyContent:'space-evenly',flex:1}}>
@@ -69,12 +75,12 @@ export default class MyNotificationsScreen extends React.Component {
     <Text style={{marginHorizontal:5,fontSize:16,color:'#000',fontWeight:'bold'}}>{item.category_name}</Text>
     {/* <Text style={{marginHorizontal:5,fontSize:16,color:'#e28c39',fontWeight:'bold'}}>$25.00</Text> */}
     </View>
-    <CheckBox
+    <CheckBox               
             style={{ padding: 0,alignItems:'flex-end',flex:1,marginRight:8}}
             onClick={()=>{
-              //  this.setState({
-              //        isChecked:!this.state.isChecked
-              //    })
+               this.setState({
+                     isChecked:!this.state.isChecked
+                 })
                }}  
             isChecked={this.state.isChecked}
             checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{width:22,height:22,tintColor:Colors.blue_color}}/>}
@@ -94,7 +100,7 @@ export default class MyNotificationsScreen extends React.Component {
                  <SafeAreaView/>
                 <View style={{alignItems:'center',width:'100%',}}> 
                 {/* <View style={{backgroundColor:'#e28c39',height:60,width:'100%',justifyContent:'center',paddingHorizontal:20}}>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Upgrade your packages with the following add-ons</Text>
+                    // <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Upgrade your packages with the following add-ons</Text>
                 </View> */}
        <FlatList
       
@@ -112,7 +118,7 @@ export default class MyNotificationsScreen extends React.Component {
                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                         <TouchableOpacity
                             elevation={5}
-                            // onPress={() => { navigation.navigate('Select a Vender'); }}
+                            onPress={() => { navigation.navigate('Select a Vender'); }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}

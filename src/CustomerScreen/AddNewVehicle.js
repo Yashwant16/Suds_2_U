@@ -5,61 +5,117 @@ import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 // import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DropDownPicker from 'react-native-dropdown-picker';
 export default class MyNotificationsScreen extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      card_no: "",
-      card_name: '',
-      expire_month: '',
-      expire_year: '',
+      Make: "",
+      Model: '',
+      Year: '',
+      Engine: '',
       cvv_no: '',
-      password: "",choosenIndex: 0 
+      password: "",
+      choosenIndex: 0 ,
     }
   }
+  addVehicle = async () => {
+    let user_token = await AsyncStorage.getItem('user_token');
+    this.setState({ isLoading: true })
+
+    let params = {
+        user_id:this.state.user_id,
+        make:this.state.Make,
+        year:this.state.Year,
+        model:this.state.Model,
+        engine:this.state.Engine,
+        vehicle_type:this.state.vehicle_type,
+        category_id:this.state.category_id,
+        image:this.state.image,
+    };
+    return fetch(BASE_URL + 'addVehicle', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + user_token,
+            Accept: 'application/json',
+            // 'App-Key': 'ABCDEFGHIJK',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+    })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            this.setState({ isLoading: false })
+            console.log("responseJson onLoginPressHandle", responseJson)
+            if (responseJson.success === true) {
+                this.props.navigation.navigate('App')
+              
+                // this.props.navigation.navigate('Main')
+            }
+            else if (responseJson.success === false) {
+                // alert(responseJson.message)
+            }
+        })
+        .catch((error) => {
+            this.setState({ isLoading: false })
+            console.error(error);
+        });
+
+};
   render() {
     const { navigation } = this.props;
     return (
       <View style={{ flex: 1 }}>
         <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-        {/* <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={82}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.navigate('BookWasher_Now') }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: '600', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Add New Vehicle</Text>
-          }
-        /> */}
-
+     
         <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
           <SafeAreaView />
           <ScrollView>
-          <View style={{ alignItems: 'center', marginTop: 15 }}>
+          <View style={{ alignItems: 'center', marginTop: 15,flex:1 }}>
           {/* <Picker style={styles.pickerStyle}  
-                        selectedValue={this.state.language}  
-                        onValueChange={(itemValue, itemPosition) =>  
-                            this.setState({language: itemValue, choosenIndex: itemPosition})}  
+                        // selectedValue={this.state.language}  
+                        // onValueChange={(itemValue, itemPosition) =>  
+                        //     this.setState({language: itemValue, choosenIndex: itemPosition})}  
                     >  
                      <Picker.Item label="Select" value="" /> 
                     <Picker.Item label="Java" value="java" />  
                     <Picker.Item label="JavaScript" value="js" />  
                     <Picker.Item label="React Native" value="rn" />  
                 </Picker>  */}
+                <View  style={{ flex:1,
+    width: '93%',
+    borderWidth: 0,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 0,
+    // height: 50,
+    color: '#000',
+    borderRadius: 25, paddingLeft: 15,
+    marginTop: 10,
+    
+    }}> 
+              
+<DropDownPicker
 
+    items={[
+        {label: 'Item 1', value: 'item1'},
+        {label: 'Item 2', value: 'item2'},
+        {label: 'Item 1', value: 'item1'},
+        {label: 'Item 2', value: 'item2'},
+    ]}
+    dropDownStyle={{backgroundColor:'red',shadowOpacity:1}}
+    defaultIndex={0}
+    containerStyle={{height:50,width:'93%',borderRadius:30}}
+   style={{borderRadius:60,height:60,width:'93%',borderColor:'#fff',}}
+   
+    onChangeItem={item => console.log(item.label, item.value)}
+/>
+</View> 
 <TextInput
               style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
+              onChangeText={(Make) => this.setState({ Make })}
+              value={this.state.Make}
               placeholder="Make"
 
               placeholderTextColor={Colors.text_color}
@@ -67,27 +123,24 @@ export default class MyNotificationsScreen extends React.Component {
 
 <TextInput
               style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
+              onChangeText={(Year) => this.setState({ Year })}
+              value={this.state.Year}
               placeholder="Year"
-
               placeholderTextColor={Colors.text_color}
               autoCapitalize='none' />
                  <TextInput
               style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
+              onChangeText={(Model) => this.setState({ Model })}
+              value={this.state.Model}
               placeholder="Model"
-
               placeholderTextColor={Colors.text_color}
               autoCapitalize='none' />
 
             <TextInput
               style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
+              onChangeText={(Engine) => this.setState({ Engine })}
+              value={this.state.Engine}
               placeholder="Engine"
-
               placeholderTextColor={Colors.text_color}
               autoCapitalize='none' />
 
@@ -101,7 +154,7 @@ export default class MyNotificationsScreen extends React.Component {
               </View>
             <TouchableOpacity
               elevation={5}
-              onPress={() => { navigation.navigate('Select Package'); }}
+              onPress={() => { navigation.navigate('Select a Vender'); }}
               style={styles.auth_btn}
               underlayColor='gray'
               activeOpacity={0.8}

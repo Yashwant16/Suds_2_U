@@ -18,6 +18,14 @@ const AuthProvider = ({children}) => {
     return json.otp;
   };
 
+
+  const CustomersignUp = async data => {
+    let json = await callApi('signup', 'ABCDEFGHIJK', {...data, device_token: DEVICE_TOKEN});
+    if (!json) return;
+    setUserData({...json.data, password: data.password});
+    return json.otp;
+  };
+
   const login = async loginData => {
     let json = await callApi('login', 'ABCDEFGHIJK', {...loginData, device_token: DEVICE_TOKEN}, jsonResponse => {
       Alert.alert('Error', jsonResponse.message, [
@@ -32,7 +40,7 @@ const AuthProvider = ({children}) => {
     if (!json) return;
     setUserData(json.data);
     await saveUserData('AUTH_DONE', json.data);
-    changeStack(json.data.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
+    changeStack(json.data.role_as == WASHER ? 'CustomerHomeStack' : 'CustomerHomeStack');
     return 'success';
   };
 
@@ -71,7 +79,7 @@ const AuthProvider = ({children}) => {
     console.log(savedUserData);
     if (savedUserData) {
       setUserData(savedUserData);
-      if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
+      if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'CustomerHomeStack' : 'CustomerHomeStack');
       else {
         changeStack('AuthStack');
         setTimeout(() => navigate(savedUserData.stage), 100);
@@ -90,6 +98,7 @@ const AuthProvider = ({children}) => {
     <AuthContext.Provider
       value={{
         signUp,
+        CustomersignUp,
         getAuthStatus,
         login,
         userData,

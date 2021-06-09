@@ -4,6 +4,8 @@ import UserTypeScreen from '../../CommonScreen/UserTypeScreen';
 import {defaultScreenOptions} from '../NavigationService';
 import ChooseScreen from '../../CommonScreen/ChooseScreen';
 import LoginScreen from '../../CommonScreen/WasherLogin';
+import CustomerLogin from '../../CommonScreen/CustomerLogin';
+import CustomerSignUp from '../../CommonScreen/CustomerSignUp';
 import SignUp from '../../CommonScreen/SignUp';
 import OTPverification from '../../CommonScreen/OtpVerification';
 import TermsConditions from '../../CommonScreen/TermsConditions';
@@ -24,6 +26,8 @@ const AuthStack = () => {
       <Stack.Screen name="chooseScreen" component={ChooseScreen} options={{headerTitle: 'GET STARTED NOW'}} />
       <Stack.Screen name="LOGIN" component={LoginScreen} />
       <Stack.Screen name="REGISTER" component={SignUp} />
+      <Stack.Screen name=" LOGIN " component={CustomerLogin} />
+      <Stack.Screen name=" REGISTER " component={CustomerSignUp} />
       <Stack.Screen name="ENTER OTP" component={OTPverification} />
       <Stack.Screen name="FORGOT PASSWORD" component={ForgotPassword} />
       <Stack.Screen name="COMPLETE PROFILE" component={CompleteProfile} initialParams={{authStack: true}}/>
