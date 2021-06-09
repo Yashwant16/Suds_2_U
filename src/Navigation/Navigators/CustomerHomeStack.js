@@ -23,6 +23,7 @@ import { nav } from '../../CustomerScreen/HomeScreen';
 import TripSwitch from '../../Components/TirpSwitch';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
 import CustomerDrawer from './CustomerDrawer';
+import SelectVehicle from '../../CustomerScreen/BookWasherNow';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,7 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="OnDemand" component={OnDemand} />
       <Stack.Screen name="On The Way" component={OnTheWay} />
       <Stack.Screen name="Work In Progress" component={WorkInProgress} />
+      <Stack.Screen name="SELECT VEHICLES" component={SelectVehicle} />
     </Stack.Navigator>
   );
 };

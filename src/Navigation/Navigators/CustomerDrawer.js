@@ -1,18 +1,18 @@
 import React from 'react';
-import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList,} from '@react-navigation/drawer';
+import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList,} from '@react-navigation/drawer';
 import {Button, Image, StyleSheet, Text, View} from 'react-native';
 // import EditProfile from '../../CustomerScreen/EditProfile'
 import HomeScreen from '../../CustomerScreen/HomeScreen'
 // import HomeScreen from '../../CustomerScreen/HomeScreen'
-import BookWasherNow from '../../CustomerScreen/BookWasherNow'
+import SelectVehicle from '../../CustomerScreen/BookWasherNow'
 import ChangePassword from '../../CustomerScreen/ChangePassword'
 import Promotions from '../../CustomerScreen/Promotions'
 import Payments from '../../CustomerScreen/Payments'
 import HelpScreen from '../../CustomerScreen/HelpScreen'
 import EditProfile from '../../CustomerScreen/EditProfile'
 import Rewairds_History from '../../CustomerScreen/Rewairds_History'
-import Logout from '../../CustomerScreen/Logout'
 import Colors from '../../../Constants/Colors';
+import { changeStack } from '../NavigationService';
 const Drawer = createDrawerNavigator();
 
 const CustomerDrawer = () => {
@@ -39,9 +39,9 @@ const CustomerDrawer = () => {
         options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/pencil.png')} />}}
       />
          <Drawer.Screen
-        name="Book Washer Now"
-        component={BookWasherNow}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/car-steering-wheel.png')} />}}
+        name="SELECT VEHICLE"
+        component={SelectVehicle}
+        options={{title:"Book Washer Now", drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/car-steering-wheel.png')} />}}
       />
          <Drawer.Screen
         name="Rewards/History"
@@ -68,17 +68,7 @@ const CustomerDrawer = () => {
         component={HelpScreen}
         options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/help.png')} />}}
       />
-          <Drawer.Screen
-        name="Logout"
-        component={Logout}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/logout.png')} />}}
-      />
-       
-      {/* <Drawer.Screen
-        name="CUSTOMER SIGNUP"
-        component={SignUP}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/list.png')} />}}
-      /> */}
+
     </Drawer.Navigator>
   );
 };
@@ -87,33 +77,35 @@ const Icon = ({color, size, focused, iconSource}) => <Image style={{height: 28, 
 
 export default CustomerDrawer;
 
-const Login = ({navigation}) => (
-  <View>
-    <Text>Login</Text>
-    <Button title="Go to register" onPress={() => navigation.openDrawer()} />
-    <Button title="Go to register" onPress={() => navigation.navigate('signup')} />
-  </View>
-);
-
-const SignUP = () => (
-  <View>
-    <Text>Edit Details</Text>
-  </View>
-);
 
 const CustomDrawerContent = props => {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerProfile />
       <DrawerItemList {...props} />
+      <Logout/>
     </DrawerContentScrollView>
+  );
+};
+
+
+const Logout = () => {
+  // const {logout} = useContext(AuthContext);
+  return (
+    <DrawerItem
+      label="LOG OUT"
+      labelStyle={[styles.drawerLable, {color: 'white'}]}
+      style={styles.drawerItem}
+      icon={() => <Icon color={'white'} iconSource={require('../../../Assets/logout.png')} />}
+      onPress={()=>changeStack('AuthStack')}
+    />
   );
 };
 
 const DrawerProfile = () => (
   <View style={{width: '100%',  marginTop: 0,  padding: 16, alignItems: 'center'}}>
     <View style={{marginTop: 10, width: 90, height: 90, borderColor: '#fff', borderRadius: 10, borderWidth: 3, alignItems: 'center', alignSelf: 'center'}}>
-        <Image style={{width: 88, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch',borderRadius:10}} source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}} />
+        <Image style={{width: 88, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'cover',borderRadius:10}} source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}} />
       </View>
     <View>
       <Text style={{color:Colors.blue_color, fontSize: 18, paddingBottom: 6,marginTop:10,fontWeight:'bold'}}>Dynamu Frayne</Text>

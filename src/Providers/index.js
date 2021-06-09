@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import AppProvider from './AppProvider';
 import AuthProvider from './AuthProvider';
 import BookingProvider from './BookingProvider';
@@ -10,7 +10,7 @@ import PackageProvider from './PackageProvider';
 
 const BASE_URL = 'http://suds-2-u.com/sudsadmin/api/';
 
-const Providers = ({children}) => {
+const Providers = ({ children }) => {
   return (
     <AppProvider>
       <AuthProvider>
@@ -35,15 +35,15 @@ export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') 
     let url = `${BASE_URL}${subfix}?` + new URLSearchParams(params);
     let res = await fetch(url, {
       method: method,
-      headers: {'App-Key': AppKey, 'Content-Type': 'application/json'},
+      headers: { 'App-Key': AppKey, 'Content-Type': 'application/json' },
     });
     let jsonResponse = await res.json();
     console.log(jsonResponse);
-    if (isEmptyResponse(jsonResponse)) return {...jsonResponse, empty:true};
-    else if (!jsonResponse.response) {
+    if (!jsonResponse.response) {
       if (onFalse) onFalse(jsonResponse);
       else Alert.alert('Alert', jsonResponse.message);
-    } else return jsonResponse;
+    } else if (isEmptyResponse(jsonResponse)) return { ...jsonResponse, empty: true }
+    else return jsonResponse;
   } catch (error) {
     console.log(error);
   }

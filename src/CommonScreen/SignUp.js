@@ -8,8 +8,9 @@ import {useForm} from 'react-hook-form';
 import {getCurrentPosition} from '../Services/LocationServices';
 import {AuthContext} from '../Providers/AuthProvider';
 import LoadingView from '../Components/LoadingView';
+import { type, WASHER } from '../Navigation/NavigationService';
 const SignUp = ({navigation}) => {
-  const {signUp} = useContext(AuthContext);
+  const {signUp,customerSignUp} = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -31,7 +32,7 @@ const SignUp = ({navigation}) => {
     setLoading(true);
     const {latitude, longitude} = (await getCurrentPosition()).coords;
     if (latitude && longitude) {
-      let dataForOtpScreen = await signUp({latitude, longitude, ...data});
+      let dataForOtpScreen =  type.current==WASHER ? await signUp({latitude, longitude, ...data}) :  await customerSignUp({latitude, longitude, ...data}) 
       if (dataForOtpScreen) navigation.navigate('ENTER OTP', dataForOtpScreen);
     }
     setLoading(false);

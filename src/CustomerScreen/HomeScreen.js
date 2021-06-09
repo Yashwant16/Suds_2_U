@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, 
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import { ImageBackground } from 'react-native';
+import { navigate } from '../Navigation/NavigationService';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -70,7 +71,7 @@ export default class MyNotificationsScreen extends React.Component {
 
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => { navigation.navigate('Book Washer Now'); }}
+                  onPress={() => navigate("SELECT VEHICLES")}
                   style={styles.auth_btn}
                   underlayColor='gray'
                   activeOpacity={0.8}

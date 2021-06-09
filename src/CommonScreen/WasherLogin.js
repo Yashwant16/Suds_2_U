@@ -9,6 +9,7 @@ import ControllerInput from '../Components/ControllerInput';
 import { AuthContext } from '../Providers/AuthProvider';
 import { useForm } from 'react-hook-form';
 import LoadingView from '../Components/LoadingView';
+import { changeStack } from '../Navigation/NavigationService';
 const LoginScreen = ({navigation}) => {
   const {login} = useContext(AuthContext);
   const [loading, setLoading] = useState(loading)
@@ -62,8 +63,8 @@ const LoginScreen = ({navigation}) => {
                   secure
                 />
 
-                <CtaButton title="Sign In" primary onPress={handleSubmit(onSubmit)} />
-
+                {/* <CtaButton title="Sign In" primary onPress={handleSubmit(onSubmit)} /> */}
+                <CtaButton title="Sign In" primary onPress={()=>changeStack('CustomerHomeStack')} />
                 <LinkButton title="Forgot Your Password" onPress={() => navigation.navigate('FORGOT PASSWORD')} />
               </InputsContainer>
               <TouchableOpacity

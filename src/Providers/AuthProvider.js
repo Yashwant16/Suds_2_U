@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => messaging().getToken().then((token) => console.log("-------------------------------", token)), [])
 
   const signUp = async signUpData => {
+    console.log("Washer sign up")
     setLoginData(signUpData)
     let json = await callApi('washregistration', 'ABCDEFGHIJK', { ...signUpData, device_token: await messaging().getToken() });
     if (!json) return;
@@ -21,27 +22,38 @@ const AuthProvider = ({ children }) => {
     return { otp: json.otp, id: json.data.id };
   };
 
+  const customerSignUp = async signUpData => {
+    console.log("Customer sign up")
+    setLoginData(signUpData)
+    let json = await callApi('signup', 'ABCDEFGHIJK', { ...signUpData, device_token: await messaging().getToken() });
+    if (!json) return;
+    setUserData({ ...json.data, password: signUpData.password });
+    return { otp: json.otp, id: json.data.id };
+  };
+
   const login = async loginData => {
     setLoginData(loginData)
-    let json = await callApi('login', 'ABCDEFGHIJK', { ...loginData, device_token: await messaging().getToken() }, jsonResponse => {
-      console.log({ bro: jsonResponse.id, full: jsonResponse })
-      if (jsonResponse.data?.api_token) setUserData(jsonResponse.data)
-      if (jsonResponse.api_token) setUserData(jsonResponse); // this makes sure to save the id and api-token in the userData state even if the response was false
-      Alert.alert('Alert', jsonResponse.message, [
-        {
-          text: 'Ok',
-          onPress: () => {
-            if (jsonResponse.upload_status == '0') navigate('UPDATE DOCUMENT', { authStack: true })
-            else if (jsonResponse.otp && jsonResponse.id) navigate('ENTER OTP', { otp: jsonResponse.otp });
-            else if (jsonResponse.message.toLowerCase().includes('terms')) navigate('TERMS & CONDITIONS', { loginData });
-          },
-        },
-      ]);
-    });
-    if (!json) return;
-    setUserData(json.data);
-    await saveUserData('AUTH_DONE', json.data);
-    changeStack(json.data.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
+    setUserData(loginData)
+    changeStack('CustomerHomeStack')
+    // let json = await callApi('login', 'ABCDEFGHIJK', { ...loginData, device_token: await messaging().getToken() }, jsonResponse => {
+    //   console.log({ bro: jsonResponse.id, full: jsonResponse })
+    //   if (jsonResponse.data?.api_token) setUserData(jsonResponse.data)
+    //   if (jsonResponse.api_token) setUserData(jsonResponse); // this makes sure to save the id and api-token in the userData state even if the response was false
+    //   Alert.alert('Alert', jsonResponse.message, [
+    //     {
+    //       text: 'Ok',
+    //       onPress: () => {
+    //         if (jsonResponse.upload_status == '0') navigate('UPDATE DOCUMENT', { authStack: true })
+    //         else if (jsonResponse.otp && jsonResponse.id) navigate('ENTER OTP', { otp: jsonResponse.otp });
+    //         else if (jsonResponse.message.toLowerCase().includes('terms')) navigate('TERMS & CONDITIONS', { loginData });
+    //       },
+    //     },
+    //   ]);
+    // });
+    // if (!json) return;
+    // setUserData(json.data);
+    // await saveUserData('AUTH_DONE', json.data);
+    // changeStack(json.data.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
     return 'success';
   };
 
@@ -154,7 +166,8 @@ const AuthProvider = ({ children }) => {
         setOnlineStatus,
         forgotPassword,
         otpVerified,
-        documentVerified
+        documentVerified,
+        customerSignUp
       }}>
       {children}
     </AuthContext.Provider>

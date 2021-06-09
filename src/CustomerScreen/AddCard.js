@@ -22,23 +22,6 @@ export default class MyNotificationsScreen extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        {/* <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={82}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.navigate('Payments') }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>DEBIT/CREDIT CARD</Text>
-          }
-        /> */}
-
         <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
           <SafeAreaView />
           <View style={{ alignItems: 'center', marginTop: 15 }}>
