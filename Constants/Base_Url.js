@@ -1,1 +1,1 @@
-export const BASE_URL = "http://clarigo.in/suds/api/";
+export const BASE_URL = "http://suds-2-u.com/sudsadmin/api/";

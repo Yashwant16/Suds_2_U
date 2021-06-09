@@ -124,9 +124,10 @@ export default class OnJob extends React.Component {
 
       
     render(){
+      const { navigation } = this.props;
   return (
   <View style={{flex:1}}>
-          <Header
+          {/* <Header
                     statusBarProps={{ barStyle: 'light-content' }}
                     height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -140,7 +141,7 @@ export default class OnJob extends React.Component {
                     centerComponent={
                         <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>ON-DEMAND SERVICES</Text>
                     }
-                />
+                /> */}
       <MapView
         style={{flex: 1}}
         initialRegion={{
@@ -180,7 +181,7 @@ export default class OnJob extends React.Component {
       </MapView>
       <TouchableOpacity
                             elevation={5}
-                            onPress={() => { this.props.navigation.navigate(''); }}
+                            onPress={() => {  }}
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}

@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, ImageBackground,Picker } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, ImageBackground,Picker ,SafeAreaView} from 'react-native';
+
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
-import RNPickerSelect from 'react-native-picker-select';
+// import RNPickerSelect from 'react-native-picker-select';
 import { ScrollView } from 'react-native';
 
 export default class MyNotificationsScreen extends React.Component {
@@ -20,11 +20,11 @@ export default class MyNotificationsScreen extends React.Component {
     }
   }
   render() {
-
+    const { navigation } = this.props;
     return (
       <View style={{ flex: 1 }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        <Header
+        <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
+        {/* <Header
           statusBarProps={{ barStyle: 'light-content' }}
           height={82}
           containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -39,7 +39,7 @@ export default class MyNotificationsScreen extends React.Component {
           centerComponent={
             <Text style={{ width: '100%', color: '#fff', fontWeight: '600', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Add New Vehicle</Text>
           }
-        />
+        /> */}
 
         <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
           <SafeAreaView />
@@ -101,7 +101,7 @@ export default class MyNotificationsScreen extends React.Component {
               </View>
             <TouchableOpacity
               elevation={5}
-              onPress={() => { this.props.navigation.navigate('SelectPackage'); }}
+              onPress={() => { navigation.navigate('Select Package'); }}
               style={styles.auth_btn}
               underlayColor='gray'
               activeOpacity={0.8}

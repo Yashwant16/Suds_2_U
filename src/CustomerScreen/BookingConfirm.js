@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, FlatList, ImageBackground } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, FlatList, ImageBackground ,SafeAreaView} from 'react-native';
+
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box'
@@ -19,10 +19,11 @@ export default class MyNotificationsScreen extends React.Component {
     }
 
     render() {
+        const { navigation } = this.props;
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                <Header
+                {/* <Header
                     statusBarProps={{ barStyle: 'light-content' }}
                     height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -36,7 +37,7 @@ export default class MyNotificationsScreen extends React.Component {
                     centerComponent={
                         <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>BOOKING CONFIRM</Text>
                     }
-                />
+                /> */}
     
                     <View style={{ alignItems: 'center', width: '100%',padding:21,flex:1 }}>
 
@@ -88,7 +89,8 @@ export default class MyNotificationsScreen extends React.Component {
                   
                         <TouchableOpacity
                             elevation={5}
-                            onPress={() => { this.props.navigation.navigate('BookingDetail'); }}
+                            onPress={() => { navigation.navigate('On The Way'); }}
+                          
                             style={styles.auth_btn}
                             underlayColor='gray'
                             activeOpacity={0.8}

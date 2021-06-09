@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet, View, Text,StatusBar,TouchableOpacity,Image} from 'react-native';
 
-import CalendarPicker from 'react-native-calendar-picker';
+// import CalendarPicker from 'react-native-calendar-picker';
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 
@@ -19,15 +19,17 @@ import Colors from '../../Constants/Colors';
         ),
       };
 componentWillMount(){
-    this.props.navigation.navigate('Login')   
+  const { navigation } = this.props;
+   navigation.navigate('AuthStack')   
 }
 
     render() {
+      const { navigation } = this.props;
   return (
     <View style={{flex:1,backgroundColor:'#fff'}}>
 
         {/* <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' /> */}
-                <Header
+                {/* <Header
                     statusBarProps={{ barStyle: 'light-content' }}
                     height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -41,8 +43,12 @@ componentWillMount(){
                     centerComponent={
                         <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>SCHEDULE</Text>
                     }
-                />
+                /> */}
      
+     {/* <TouchableOpacity 
+onPress={() => { navigation.navigate('AuthStack'); }}>
+  <Text style={{textAlign:'center',fontSize:22}}>LOGOUT</Text>
+     </TouchableOpacity> */}
 <SafeAreaView style={{backgroundColor:'#e28c39'}}/>
     </View>
   );

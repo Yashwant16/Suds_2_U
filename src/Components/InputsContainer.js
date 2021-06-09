@@ -1,11 +1,13 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 
-export default InputsContainer = ({children})=>(
+const InputsContainer = ({children})=>(
     <View style={styles.container}>
         {children}
     </View>
 )
+
+export default InputsContainer
 
 const styles = StyleSheet.create({
     container:{

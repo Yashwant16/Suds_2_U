@@ -1,69 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import 'react-native-gesture-handler';
+import React, { useEffect } from 'react';
+import { Platform, StatusBar, UIManager } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import Navigation from './src/Navigation/Navigators/RootStack';
+import { navigationRef } from './src/Navigation/NavigationService';
+import Providers from './src/Providers';
+import messaging from '@react-native-firebase/messaging';
 
- import React, { useState } from 'react';
- import {
-   SafeAreaView,
-   StyleSheet,
-   ScrollView,
-   View,
-   Text,
-   StatusBar,
- } from 'react-native';
- import AppNavigator from './Navigations/AppNavigator';
- import { MenuProvider } from 'react-native-popup-menu';
-import CustomHeader from './src/Components/CustomHeader';
-import { StackRouter } from 'react-navigation';
- 
- 
- 
- export default App =({route})=> {
-   // componentDidMount() {
-   //     SplashScreen.hide();
-   // }
-   
-   const [nav, setNav]=useState({})
-   return (
-     <MenuProvider>
-       {/* <StatusBar translucent backgroundColor="transparent" barStyle="light-content" /> */}
-       {/* <CustomHeader route={nav}/> */}
-       <View style={styles.scrollView}>
-         {/* <SafeAreaView style={{ backgroundColor: '#000' }}> */}
-           <View style={{flex:1}}>
-             <AppNavigator onNavigationStateChange={(prevNav, nextNav, navAction)=>setNav(nextNav)} />
-           </View>
-         {/* </SafeAreaView> */}
-       </View>
-     </MenuProvider>
-   );
-   
- };
- 
- const styles = StyleSheet.create({
-   scrollView: {
-     backgroundColor: 'white',
-    //  height: '100%',
-    flex:1,
-     width: '100%'
-   },
- 
- });
- 
- // import React from 'react';
- // import { StyleSheet, Text, View } from 'react-native';
- // import { PaymentScreen } from './src/management/Login';
- 
- 
- 
- 
- // export default function App() {
- //   return (
- //       <PaymentScreen />
- //   );
- // }
- 
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+const App = () => {
+  useEffect(() => messaging().subscribeToTopic('mike'));
+  return (
+    <Providers>
+      <NavigationContainer ref={navigationRef}>
+        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+        <Navigation />
+      </NavigationContainer>
+    </Providers>
+  );
+};
+
+export default App;

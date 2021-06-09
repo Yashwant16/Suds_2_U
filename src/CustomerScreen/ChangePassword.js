@@ -5,14 +5,7 @@ import CtaButton from '../Components/CtaButton';
 import CustomHeader from '../Components/CustomHeader';
 
 export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Change Password',
-    drawerIcon: ({tintColor}) => (
-      <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/padlock.png')} />
-      </View>
-    ),
-  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -21,9 +14,10 @@ export default class MyNotificationsScreen extends React.Component {
     };
   }
   render() {
+    const { navigation } = this.props;
     return (
       <View style={{flex: 1}}>
-        <CustomHeader title="CHANGE PASSWORD" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} />
+        {/* <CustomHeader title="CHANGE PASSWORD" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} /> */}
         <View style={{flex: 1}}>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1, justifyContent:'space-evenly'}} source={require('../../Assets/imageBG.png')}>
             <Image style={{width:200, height:200, tintColor:'#fff', alignSelf:'center'}} source={require('../../Assets/padlock.png')}/>
@@ -33,7 +27,7 @@ export default class MyNotificationsScreen extends React.Component {
                 <CustomInput secure label="NEW PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
                 <CustomInput secure label="CONFIRM PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
 
-                <CtaButton title="Submit" primary onPress={() => this.props.navigation.navigate('CustomerApp')} />
+                <CtaButton title="Submit" primary onPress={() => {}} />
               </View>
             </View>
           </ImageBackground>
