@@ -32,7 +32,6 @@ const CompleteProfile = ({navigation, route}) => {
             country: {name: data.country_name, id: data.country},
             state: {name: data.state_name, id: data.state},
             city: {name: data.city_name, id: data.city},
-            phone_number: data.mobile,
           });
         }
       })
@@ -52,6 +51,7 @@ const CompleteProfile = ({navigation, route}) => {
   };
 
   const onSubmit = async data => {
+    console.log(data)
     setLoading(true);
     let success = await completeProfile({...data, country: data.country.id, state: data.state.id, city: data.city.id}, route.params?.authStack);
     setLoading(false);
@@ -72,7 +72,7 @@ const CompleteProfile = ({navigation, route}) => {
               control={control}
               errors={errors}
               rules={{required: true, pattern: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/}}
-              fieldName="phone_number"
+              fieldName="mobile"
               placeholder="Phone Number"
               keyboardType="phone-pad"
               curved

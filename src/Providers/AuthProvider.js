@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { callApi } from '.';
-import { changeStack, navigate, WASHER } from '../Navigation/NavigationService';
+import { changeStack, CUSTOMER, navigate, type, WASHER } from '../Navigation/NavigationService';
 import messaging from '@react-native-firebase/messaging';
 
 export const AuthContext = React.createContext();
@@ -34,26 +34,26 @@ const AuthProvider = ({ children }) => {
   const login = async loginData => {
     setLoginData(loginData)
     setUserData(loginData)
-    changeStack('CustomerHomeStack')
-    // let json = await callApi('login', 'ABCDEFGHIJK', { ...loginData, device_token: await messaging().getToken() }, jsonResponse => {
-    //   console.log({ bro: jsonResponse.id, full: jsonResponse })
-    //   if (jsonResponse.data?.api_token) setUserData(jsonResponse.data)
-    //   if (jsonResponse.api_token) setUserData(jsonResponse); // this makes sure to save the id and api-token in the userData state even if the response was false
-    //   Alert.alert('Alert', jsonResponse.message, [
-    //     {
-    //       text: 'Ok',
-    //       onPress: () => {
-    //         if (jsonResponse.upload_status == '0') navigate('UPDATE DOCUMENT', { authStack: true })
-    //         else if (jsonResponse.otp && jsonResponse.id) navigate('ENTER OTP', { otp: jsonResponse.otp });
-    //         else if (jsonResponse.message.toLowerCase().includes('terms')) navigate('TERMS & CONDITIONS', { loginData });
-    //       },
-    //     },
-    //   ]);
-    // });
-    // if (!json) return;
-    // setUserData(json.data);
-    // await saveUserData('AUTH_DONE', json.data);
-    // changeStack(json.data.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
+    // changeStack('CustomerHomeStack')
+    let json = await callApi(type.current == CUSTOMER ? 'customerlogin' : 'login', 'ABCDEFGHIJK', { ...loginData, device_token: await messaging().getToken() }, jsonResponse => {
+      console.log({ bro: jsonResponse.id, full: jsonResponse })
+      if (jsonResponse.data?.api_token) setUserData(jsonResponse.data)
+      if (jsonResponse.api_token) setUserData(jsonResponse); // this makes sure to save the id and api-token in the userData state even if the response was false
+      Alert.alert('Alert', jsonResponse.message, [
+        {
+          text: 'Ok',
+          onPress: () => {
+            if (jsonResponse.upload_status == '0') navigate('UPDATE DOCUMENT', { authStack: true })
+            else if (jsonResponse.otp && jsonResponse.id) navigate('ENTER OTP', { otp: jsonResponse.otp });
+            else if (jsonResponse.message.toLowerCase().includes('terms')) navigate('TERMS & CONDITIONS', { loginData });
+          },
+        },
+      ]);
+    });
+    if (!json) return;
+    setUserData(json.data);
+    await saveUserData('AUTH_DONE', json.data);
+    changeStack(json.data.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
     return 'success';
   };
 
@@ -65,7 +65,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const completeProfile = async (data, isFromAuthStack) => {
-    let json = await callApi('save_complete_profile', userData.api_token, { ...data, user_id: userData.id });
+    let json = await callApi(type.current == WASHER ? 'save_complete_profile' : 'updateUserPofile', userData.api_token, { ...data, user_id: userData.id });
     if (!json) return;
     await saveUserData(isFromAuthStack ? 'UPDATE DOCUMENT' : 'AUTH_DONE');
     return 'success';
@@ -106,6 +106,12 @@ const AuthProvider = ({ children }) => {
 
   const forgotPassword = async emailid => await callApi('forget_password', 'ABCDEFGHIJK', { emailid });
 
+  const addCard = async data => await callApi('addCard', userData.api_token, { ...data, user_id: userData.id });
+
+  const updateCard = async data => await callApi('updateCard', userData.api_token, { ...data, user_id: userData.id });
+
+  const getCardDetails = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
+
   const otpVerified = async () => {
     let json = await callApi('otpVerify', userData.api_token, { id: userData.id })
     if (json) setUserData(json.data)
@@ -113,7 +119,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const documentVerified = async () => {
-    let json =await callApi('documentVerify', userData.api_token, { id: userData.id })
+    let json = await callApi('documentVerify', userData.api_token, { id: userData.id })
     if (json) setUserData(json.data)
     return json
   };
@@ -123,7 +129,7 @@ const AuthProvider = ({ children }) => {
     console.log("Saved user data : ", savedUserData);
     if (savedUserData) {
       setUserData(savedUserData);
-      if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'CustomerHomeStack' : 'CustomerHomeStack');
+      if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
       else {
         changeStack('AuthStack');
         // setTimeout(() => navigate(savedUserData.stage), 100);
@@ -143,7 +149,6 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         signUp,
-        CustomersignUp,
         getAuthStatus,
         login,
         userData,
@@ -168,7 +173,10 @@ const AuthProvider = ({ children }) => {
         forgotPassword,
         otpVerified,
         documentVerified,
-        customerSignUp
+        customerSignUp,
+        addCard,
+        getCardDetails,
+        updateCard
       }}>
       {children}
     </AuthContext.Provider>
@@ -176,3 +184,4 @@ const AuthProvider = ({ children }) => {
 };
 
 export default AuthProvider;
+

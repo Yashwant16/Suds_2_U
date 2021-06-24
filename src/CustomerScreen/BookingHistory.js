@@ -48,7 +48,6 @@ const BookingHistory = ({navigation}) => {
 export default BookingHistory;
 
 const Item = ({item, navigation}) => {
-
   return (
     <TouchableOpacity style={{padding: 16, flex: 1}} onPress={() => navigation.navigate('BOOKING DETAILS', {id : item.booking_id})}>
       <View style={{flexDirection: 'row'}}>

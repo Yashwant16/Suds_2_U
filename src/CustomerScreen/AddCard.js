@@ -1,128 +1,135 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, ImageBackground,SafeAreaView } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { View, ImageBackground, StyleSheet, Alert } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import ControllerInput from '../Components/ControllerInput';
+import CtaButton from '../Components/CtaButton';
+import CustomPicker from '../Components/CustomPicker';
+import LoadingView from '../Components/LoadingView';
+import { AuthContext } from '../Providers/AuthProvider';
 
-import { Header, Icon, Avatar } from 'react-native-elements';
-import Colors from '../../Constants/Colors';
+const routingNumbers = [
+  { name: '1', id: 1 },
+  { name: '2', id: 2 },
+  { name: '3', id: 3 },
+  { name: '4', id: 4 },
+];
 
-export default class MyNotificationsScreen extends React.Component {
+const asynFunction = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({ data: routingNumbers });
+    }, 2000);
+  });
+};
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      card_no: "",
-      card_name: '',
-      expire_month: '',
-      expire_year: '',
-      cvv_no: '',
-      password: "",
+const AddCard = () => {
+  const { getCardDetails, addCard, updateCard } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [id, setId] = useState() //card_id : it will be undefined if there are no previous cards
+  const { control, handleSubmit, reset, formState } = useForm();
+
+  const onSubmit = async data => {
+    console.log({ ...data, id });
+    setLoading(true);
+    id ? await updateCard({ ...data, id }) : await addCard(data) // if id is not undefined that means user is going to edit the card details.
+    setLoading(false);
+  };
+
+  useEffect(() => getUserCardDetails(), []);
+
+  const getUserCardDetails = async () => {
+    setFetching(true);
+    let json = await getCardDetails();
+    console.log(json);
+    setFetching(false);
+    if (json?.response && json?.data?.length > 0) {
+      reset({ ...json.data[0], })
+      setId(json.data[0]?.id)
     }
-  }
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={{ flex: 1 }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
-          <SafeAreaView />
-          <View style={{ alignItems: 'center', marginTop: 15 }}>
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(card_no) => this.setState({ card_no })}
-              value={this.state.card_no}
-              placeholder="Card Number"
+  };
 
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(card_name) => this.setState({ card_name })}
-              value={this.state.card_name}
-              placeholder="Name on Card"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '93%' }}>
-              <TextInput
-                style={[styles.short_textInput,]}
-                onChangeText={(expire_month) => this.setState({ expire_month })}
-                value={this.state.expire_month}
-                placeholder="Expire Month"
-
-                placeholderTextColor={Colors.text_color}
-                autoCapitalize='none' />
-              <TextInput
-                style={[styles.short_textInput,]}
-                onChangeText={(expire_year) => this.setState({ expire_year })}
-                value={this.state.expire_year}
-                placeholder="Expire Year"
-
-                placeholderTextColor={Colors.text_color}
-                autoCapitalize='none' />
-            </View>
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
-              placeholder="CVV Number"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TouchableOpacity
-              elevation={5}
-              onPress={() => { }}
-              style={styles.auth_btn}
-              underlayColor='gray'
-              activeOpacity={0.8}
-            // disabled={this.state.disableBtn}
-            >
-              <Text style={{ fontSize: 16, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Submit </Text>
-            </TouchableOpacity>
+  return (
+    <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
+      <LoadingView fetching={fetching} loading={loading}>
+        <ScrollView style={styles.container}>
+          <ControllerInput
+            control={control}
+            errors={formState.errors}
+            rules={{ required: true }}
+            fieldName="card_number"
+            placeholder="Card Number"
+            keyboardType="numeric"
+            curved
+          />
+          <ControllerInput
+            control={control}
+            errors={formState.errors}
+            rules={{ required: true }}
+            fieldName="holder_name"
+            placeholder="Name on Card"
+            keyboardType="numeric"
+            curved
+          />
+          <View style={{ flexDirection: 'row' }}>
+            <ControllerInput
+              containerStyle={{ width: '48%' }}
+              control={control}
+              errors={formState.errors}
+              rules={{ required: true }}
+              fieldName="expiry_month"
+              placeholder="Expire Month"
+              keyboardType="numeric"
+              curved
+            />
+            <View style={{ width: 10, height: 10 }} />
+            <ControllerInput
+              containerStyle={{ width: '48%' }}
+              control={control}
+              errors={formState.errors}
+              rules={{ required: true }}
+              fieldName="expiry_year"
+              placeholder="Expire Year"
+              keyboardType="numeric"
+              curved
+            />
           </View>
-          <SafeAreaView />
-        </ImageBackground>
+          <ControllerInput
+            control={control}
+            errors={formState.errors}
+            fieldName="cvv_no"
+            placeholder="CVV Number"
+            keyboardType="numeric"
+            curved
+            rules={{ required: true }}
+          />
+          <CtaButton onPress={handleSubmit(onSubmit)} primary title="Save" style={{ width: '100%', marginTop: 8 }} />
+        </ScrollView>
+      </LoadingView>
+    </ImageBackground>
+  );
+};
 
-      </View>
-    );
-  }
-}
+export default AddCard;
 
 const styles = StyleSheet.create({
-  auth_textInput: {
-
-    alignSelf: 'center',
-    width: '93%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 50,
-    color: '#000',
-    borderRadius: 25, paddingLeft: 15,
-    marginTop: 10,
-
+  imgBg: {
+    flex: 1,
   },
-  short_textInput: {
-
-    alignSelf: 'center',
-    width: '46%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 50,
-    color: '#000',
-    borderRadius: 25, paddingLeft: 15,
-    marginTop: 10,
-
+  container: {
+    width: '100%',
+    height: '100%',
+    paddingTop: 15,
+    paddingHorizontal: 30,
   },
-  auth_btn: {
-    marginTop: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.blue_color,
-    borderRadius: 5,
-    width: '90%',
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
+  text: {
+    fontWeight: 'bold',
+    padding: 18,
+    fontSize: 16,
+    width: '100%',
+    borderRadius: 50,
+    backgroundColor: 'white',
+    marginTop: 8,
   },
-})
-
+});

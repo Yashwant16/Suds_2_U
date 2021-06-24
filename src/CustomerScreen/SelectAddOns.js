@@ -11,7 +11,7 @@ export default class MyNotificationsScreen extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        isChecked:'',
+        selectedAddon : null,
         Data: [
         
           {
@@ -61,10 +61,10 @@ export default class MyNotificationsScreen extends React.Component {
             style={{ padding: 0,alignItems:'flex-end',flex:1,marginRight:15}}
             onClick={()=>{
                  this.setState({
-                     isChecked:!this.state.isChecked
+                     selectedAddon : index
                  })
                }}
-            isChecked={this.state.isChecked}
+            isChecked={this.state.selectedAddon==index}
             checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{width:22,height:22}}/>}
             unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{width:22,height:22}}/>}
         />
@@ -104,6 +104,7 @@ export default class MyNotificationsScreen extends React.Component {
             showsVerticalScrollIndicator={false}
             data={this.state.Data}
             renderItem={this.renderItem}
+            keyExtractor={(item, index)=>index}
           // ListEmptyComponent={this.ListEmpty}
           />
           

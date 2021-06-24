@@ -1,51 +1,45 @@
 // React Native Calendar Picker using react-native-calendar-picker
 
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, StatusBar, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 // import TimePicker from 'react-native-simple-time-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import CalendarPicker from 'react-native-calendar-picker';
-import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
+import { Icon } from 'react-native-elements/dist/icons/Icon';
 
-export default class MyNotificationsScreen extends React.Component {
+const ScheduleBook = ({ navigation, route }) => {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isChecked: '',
-      coupnecode: '',
-      hours: 'Select Hours',
-      minutes: 'Select Minutes',
-      weekday: [
-        'Mon',
-        'Tue',
-        'Wed',
-        'Thur',
-        'Fri',
-        'Sat',
-        'Sun'
-      ],
-      months: [
-        'January',
-        'Febraury',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ]
-
-
-    }
-  }
-  onDateChange = (date, type) => {
+  const [state, setState] = useState({
+    isChecked: '',
+    coupnecode: '',
+    hours: 'Select Hours',
+    minutes: 'Select Minutes',
+    weekday: [
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thur',
+      'Fri',
+      'Sat',
+      'Sun'
+    ],
+    months: [
+      'January',
+      'Febraury',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ]
+  })
+  const onChange = (date, type) => {
     //function to handle the date change
     console.log('date..', date)
     if (type === 'END_DATE') {
@@ -55,27 +49,19 @@ export default class MyNotificationsScreen extends React.Component {
       // setSelectedStartDate(date);
     }
   };
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
 
-        {/* <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' /> */}
-        {/* <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={79}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.navigate('SelectAddOns') }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>SCHEDULE</Text>
-          }
-        /> */}
+  const onDChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [show, setShow] = useState(false);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }} >
+      <ScrollView style={{flex:1, backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
             Donge Ram 350 Truck
@@ -89,12 +75,12 @@ export default class MyNotificationsScreen extends React.Component {
             // allowBackwardRangeSelect={false}
             minDate={new Date(2021, 1, 1)}
             maxDate={new Date(2050, 6, 3)}
-            weekdays={this.state.weekday}
-            months={this.state.months}
+            weekdays={state.weekday}
+            months={state.months}
             previousTitle="<"
-            nextTitle=" >"
-            previousTitleStyle={{ fontSize: 45, color: '#AD4B00',  width: 55, height: 55, marginBottom: -10, marginTop: -10, }}
-            nextTitleStyle={{ fontSize: 45, color: '#AD4B00', height: 55, width: 55, marginBottom: -10, marginTop: -10,marginRight:-13 }}
+            nextTitle=">"
+            previousTitleStyle={{ fontSize: 45, fontWeight: '100', color: '#AD4B00', width: 55, height: 55, marginBottom: -10, marginTop: -10, }}
+            nextTitleStyle={{ fontSize: 45, fontWeight: '100', color: '#AD4B00', height: 55, width: 55, marginBottom: -10, marginTop: -10, marginRight: -28 }}
             todayBackgroundColor="#e6ffe6"
             selectMonthTitle={{ color: 'red' }}
             todayTextStyle={{
@@ -109,11 +95,10 @@ export default class MyNotificationsScreen extends React.Component {
             selectedDayTextColor="#000000"
             scaleFactor={350}
             textStyle={{
-              // fontFamily: 'Cochin',
               color: '#000000',
               fontSize: 15, fontWeight: 'bold'
             }}
-            onDateChange={this.onDateChange()}
+            onDateChange={onChange}
           />
           <View style={styles.textStyle}>
             <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', }}>
@@ -124,44 +109,42 @@ export default class MyNotificationsScreen extends React.Component {
           </Text>
           </View>
           <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 15, fontWeight: 'bold' }}>Select Time</Text>
-<View style={{alignItems:'center'}}>
-          <View style={{marginTop:25,paddingTop:5, width: '85%',alignSelf:'center', height: 55, borderRadius: 10, backgroundColor: '#ccc', }}>
-            <DateTimePicker
-              placeholderText="Select Date"
-              // testID="dateTimePicker"
-              timeZoneOffsetInMinutes={0}
-              value={true}
-              mode={'time'}
-              is24Hour={true}
-              display='inline'
-              // onChange={onChange}
-              style={{ color: '#000', borderWidth:0,marginRight:55,borderColor:'red' }}
-              textColor={'#000'}
-            />
-          </View>
+
+          <TouchableOpacity onPressIn={() => setShow(true)} style={{ marginTop: 15, padding: 15, width: '85%', alignSelf: 'center', alignItems: 'center', borderRadius: 10, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#ccc', }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#555' }}>{(new Date(date).toLocaleTimeString())}</Text>
+          </TouchableOpacity>
+
+          <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 10, fontWeight: 'bold', color: Colors.blue_color }}>Total Hours: 2</Text>
         </View>
-        <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 20, fontWeight: 'bold',color:Colors.blue_color }}>Total Hours: 2</Text>
-        </View>
-        <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 10, }}>
+        </ScrollView>
+        <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginTop: 10, }}>
 
           <TouchableOpacity
             elevation={5}
-            onPress={() => { navigation.navigate('Booking Confirm'); }}
+            onPress={() => { navigation.navigate('Packages', route.params) }}
             style={styles.auth_btn}
             underlayColor='gray'
-            activeOpacity={0.8}
-          // disabled={this.state.disableBtn}
-          >
-            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' ,marginTop:3}}>CONTINUE</Text>
+            activeOpacity={0.8}>
+            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>CONTINUE</Text>
 
           </TouchableOpacity>
 
         </View>
-        {/* <SafeAreaView style={{ backgroundColor: '#e28c39' }} /> */}
-      </View>
-    );
-  };
+     
+      {show && <DateTimePicker
+        testID="dateTimePicker"
+        value={date}
+        mode={'time'}
+        is24Hour={true}
+        display="default"
+        onChange={onDChange}
+      />}
+    </View>
+  )
+
 }
+
+export default ScheduleBook
 
 const styles = StyleSheet.create({
   container: {

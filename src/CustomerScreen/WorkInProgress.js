@@ -1,135 +1,77 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, FlatList, ImageBackground } from 'react-native';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import Colors from '../../Constants/Colors';
-import CheckBox from 'react-native-check-box'
-import { ScrollView } from 'react-native';
-// import { CheckBox } from 'react-native-elements'
+import { Overlay, Icon } from 'react-native-elements';
+import { BookingContext } from '../Providers/BookingProvider';
+import LoadingView from '../Components/LoadingView';
 
-export default class MyNotificationsScreen extends React.Component {
+const WorkInProgress = ({ navigation, route }) => {
+    const [deadline, setDeadline] = useState(Date.now() + 3600000);
+    const [timeRemaining, setTimeRemaining] = useState(deadline - Date.now())
+    const [loading, setLoading] = useState(false);
+    const booking = useMemo(() => route.params?.booking, [route])
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isChecked: '',
-            coupnecode:''
+    useEffect(() => {
+        const interval = setInterval(() => setTimeRemaining(deadline - Date.now()), 1000);
+        return () => clearInterval(interval);
+    }, [deadline]);
+    return (
+        <View style={styles.container}>
+            <LoadingView containerStyle={{ height: '100%' }} loading={loading}>
 
-        }
-    }
-
-    render() {
-        const { navigation } = this.props;
-        return (
-            <View style={{ flex: 1 }}>
-                <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                {/* <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('SelectAddOns') }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>WORK IN PROGRESS</Text>
-                    }
-                /> */}
-    
-                    <View style={{ alignItems: 'center', width: '100%',padding:21,flex:1 }}>
-
-                    <Image style={{ width: 85, height: 85, tintColor: '#0AFF06', marginTop:30 }} source={require('../../Assets/checkmark.png')} />
-                       
-<Text style={{fontSize:22,marginVertical:10,fontWeight:'bold',color:'#262121',marginTop:50}}>Congratulations!</Text>
-               
-                                      
-<Text style={{fontSize:14,marginVertical:1,fontWeight:'bold',color:'#262121'}}>Your services has been started now!</Text>
-    
-                <View style={{ flexDirection:'row',alignItems: 'center', justifyContent:'center' ,height:'100%',marginTop:-70}}>
-
-
-<View style={{marginBottom:36,}}> 
-    <Text style={{fontSize:65,fontWeight:'bold'}}>59:</Text>
-    <Text style={{textAlign:'center'}}>Hours</Text>
-</View>
-<View style={{marginBottom:36}}> 
-<Text style={{fontSize:65,fontWeight:'bold'}}>48</Text>
-<Text style={{textAlign:'center'}}>Minutes</Text>
-</View>
-
+                <View style={{ alignItems: 'center', width: '100%', padding: 21 }}>
+                    <Image style={{ width: 85, height: 85, tintColor: '#0AFF06', marginTop: 30 }} source={require('../../Assets/checkmark.png')} />
+                    <Text style={{ fontSize: 22, marginVertical: 10, fontWeight: 'bold', color: 'gray', marginTop: 30 }}>Congratulation!</Text>
+                    <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', color: 'gray' }}>Your service has started now!</Text>
                 </View>
 
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 110 }}>{parseMilllisecond(timeRemaining)}</Text>
+                    <View style={{ flexDirection: 'row', width: '55%', justifyContent: 'space-between' }}>
+                        <Text style={{ color: '#999' }}>Hours</Text>
+                        <Text style={{ color: '#999' }}>Minutes</Text>
                     </View>
-                    
-                    <View style={{backgroundColor:'red', justifyContent: 'flex-end' ,flexDirection:'row'}}>
+                </View>
 
+                <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('JOB FINISHED', { booking })} style={[styles.btns, { backgroundColor: Colors.blue_color }]}>
+                        <Text style={styles.btnText}>Need Help?</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>navigation.navigate('Select Add Ons')} style={[styles.btns, { backgroundColor: Colors.dark_orange }]}>
+                        <Text style={styles.btnText}>+ Add Add-on</Text>
+                    </TouchableOpacity>
+                </View>
 
+            </LoadingView>
+        </View>
+    );
+};
+export default WorkInProgress;
 
-                    <TouchableOpacity
-                            elevation={5}
-                            onPress={() => { navigation.navigate('Help'); }}
-                            style={styles.auth_btn1}
-                            underlayColor='gray'
-                            activeOpacity={0.8}
-                        // disabled={this.state.disableBtn}
-                        >
-                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Need Help?</Text>
-
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            elevation={5}
-                            onPress={() => { navigation.navigate('Booking Detail'); }}
-                            style={styles.auth_btn}
-                            underlayColor='gray'
-                            activeOpacity={0.8}
-                        // disabled={this.state.disableBtn}
-                        >
-                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>+ Add Ads-on</Text>
-
-                        </TouchableOpacity>
-
-                    </View>
-                   
-             
-            </View>
-        );
-    }
-}
+const parseMilllisecond = ms => {
+    const zeroPad = (num, places) => String(num).padStart(places, '0');
+    let minute = Math.floor(ms / 60000);
+    let second = Math.floor((ms % 60000) / 1000);
+    return `${zeroPad(minute, 2)}:${zeroPad(second, 2)}`;
+};
 
 const styles = StyleSheet.create({
-    auth_textInput: {
-
-        alignSelf: 'center',
-        width: '60%',
-        // borderWidth: 1,
-        borderBottomWidth: 0,
-        height: 40,fontSize:16,
-        color: Colors.text_color,
-        marginTop: 5,
-        backgroundColor:'#fff',padding:5,borderRadius:5
-
+    container: {
+        flex: 1,
+        position: 'relative',
     },
-    auth_btn: {
 
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: '#e28c39',
-
+    btns: {
+        padding: 20,
         width: '50%',
-        height: 65,
-        justifyContent: 'center',
+        textAlign: 'center',
     },
-    auth_btn1: {
 
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: Colors.blue_color,
-
-        width: '50%',
-        height: 65,
-        justifyContent: 'center',
+    btnText: {
+        color: 'white',
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
-})
+});

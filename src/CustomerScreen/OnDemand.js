@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements';
 import { getCurrentPosition, subscribeLocationLocation } from '../Services/LocationServices';
-import { changeStack, navigate } from '../Navigation/NavigationService';
+import { bookingType, changeStack, navigate, ON_DEMAND } from '../Navigation/NavigationService';
 
 const OnDemand = () => {
 
@@ -66,7 +66,10 @@ const OnDemand = () => {
           <Icon name="gps-fixed" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigate("SELECT VEHICLE")}
+          onPress={() => {
+            bookingType.current = ON_DEMAND
+            navigate("Select Vehicle Type")
+          }}
           style={styles.auth_btn}
           activeOpacity={0.8}>
           <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>CONFIRM LOCATION</Text>

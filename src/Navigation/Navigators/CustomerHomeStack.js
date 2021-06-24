@@ -5,7 +5,6 @@ import {Image, TouchableOpacity} from 'react-native';
 import DriverDrawer from './DriverDrawer';
 import {useNavigation, useRoute} from '@react-navigation/core';
 import OnJob from '../../DriverScreen/OnJob';
-// import WorkInProgress from '../../DriverScreen/WorkInProgress';
 import JobFinished from '../../DriverScreen/JobFinished';
 
 import AddNewVehicle from '../../CustomerScreen/AddNewVehicle';
@@ -23,7 +22,7 @@ import SelectTypeOfVehicle from '../../CustomerScreen/SelectTypeOfVehicle';
 import SelectVender from '../../CustomerScreen/SelectVender';
 import VenderProfile from '../../CustomerScreen/VenderProfile';
 import RvsBusMH from '../../CustomerScreen/RvsBusMH';
-import Car0rTruck from '../../CustomerScreen/Car0rTruck';
+import CarOrTruck from '../../CustomerScreen/CarOrTruck';
 import BusinessWash from '../../CustomerScreen/BusinessWash';
 import HeavyEquipment from '../../CustomerScreen/HeavyEquipment';
 import MotorCycles from '../../CustomerScreen/MotorCycles';
@@ -31,10 +30,14 @@ import TractorTrailors from '../../CustomerScreen/TractorTrailors';
 import Boats from '../../CustomerScreen/Boats';
 import ReviewRating from '../../CustomerScreen/ReviewRating';
 import { nav } from '../../CustomerScreen/HomeScreen';
-import TripSwitch from '../../Components/TirpSwitch';
-import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
 import CustomerDrawer from './CustomerDrawer';
-import SelectVehicle from '../../CustomerScreen/BookWasherNow';
+import SelectVehicleType from '../../CustomerScreen/SelectTypeOfVehicle';
+import Packages from '../../CustomerScreen/Packages';
+import ConfirmRvBusMH from '../../CustomerScreen/ConfirmRvMH';
+import ConfirmHeavyEquipment from '../../CustomerScreen/ConfirmHeavyEquipment';
+import ConfirmBusniesswash from '../../CustomerScreen/ConfirmBusinesswash';
+import BookingDetails from '../../DriverScreen/BookingDetails';
+import PayPal from '../../CustomerScreen/PayPal';
 
 const Stack = createStackNavigator();
 
@@ -53,7 +56,7 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="DASHBOARD" options={{headerLeft: () => <Icon navigation={nav.current} />, headerTitle: title}} component={CustomerDrawer} />
       <Stack.Screen name="Add New Vehicle" component={AddNewVehicle} />
       <Stack.Screen name="Select Package" component={SelectPackage} />
-      <Stack.Screen name="Add Card" component={AddCard} />
+      <Stack.Screen name="Creddit/Debit Card" component={AddCard} />
       <Stack.Screen name="Select Add Ons" component={SelectAddOns} />
       <Stack.Screen name="Booking Review" component={BookingReview} />
       <Stack.Screen name="Booking Confirm" component={BookingConfirm} />
@@ -63,16 +66,24 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="On The Way" component={OnTheWay} />
       <Stack.Screen name="Work In Progress" component={WorkInProgress} />
       <Stack.Screen name="Select Type" component={SelectTypeOfVehicle} />
-      <Stack.Screen name="Select a Vender" component={SelectVender} />
+      <Stack.Screen name="Select a Vendor" component={SelectVender} />
       <Stack.Screen name="RVs Bus M V" component={RvsBusMH} />
       <Stack.Screen name="Vender Profile" component={VenderProfile} />
-      <Stack.Screen name="Car or Truck" component={Car0rTruck} />
+      <Stack.Screen name="Car or Truck" component={CarOrTruck} />
       <Stack.Screen name="Business Wash" component={BusinessWash} />
       <Stack.Screen name="Heavy Equipment" component={HeavyEquipment} />
       <Stack.Screen name="MotorCycles" component={MotorCycles} />
       <Stack.Screen name="Boats" component={Boats} />
       <Stack.Screen name="Tractor Trailors" component={TractorTrailors} />
       <Stack.Screen name="Review Rating" component={ReviewRating} />
+      <Stack.Screen name="Select Vehicle Type" component={SelectVehicleType} />
+      <Stack.Screen name="Vehicle Categories" component={SelectVehicleType} />
+      <Stack.Screen name="Packages" component={Packages} />
+      <Stack.Screen name="Rv, Bus and Motor Home" component={ConfirmRvBusMH} />
+      <Stack.Screen name="Heavy Equipments" component={ConfirmHeavyEquipment} />
+      <Stack.Screen name=" Business wash " component={ConfirmBusniesswash} />
+      <Stack.Screen name="BOOKING DETAILS" component={BookingDetails} />
+      <Stack.Screen name="PAYPAL" component={PayPal} />
     </Stack.Navigator>
   );
 };

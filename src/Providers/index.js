@@ -9,6 +9,8 @@ import EarningProvider from './EarningsProvider';
 import PackageProvider from './PackageProvider';
 
 const BASE_URL = 'http://suds-2-u.com/sudsadmin/api/';
+export const ERROR = 5
+export const LOADING = 6
 
 const Providers = ({ children }) => {
   return (
@@ -29,13 +31,17 @@ const Providers = ({ children }) => {
 export default Providers;
 
 export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') => {
-  console.log(params)
   try {
     await checkConnection();
-    let url = `${BASE_URL}${subfix}?` + new URLSearchParams(params);
+    let formData = new FormData()
+    Object.entries(params).forEach(([key, value]) => key == "image" ? formData.append("image", {uri: value.uri, name: value.fileName, type: 'image/jpeg'}) : formData.append(key, value))
+    console.log(params)
+    console.log(JSON.stringify(formData))
+    let url = `${BASE_URL}${subfix}?`
     let res = await fetch(url, {
       method: method,
-      headers: { 'App-Key': AppKey, 'Content-Type': 'application/json' },
+      headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
+      body: formData
     });
     let jsonResponse = await res.json();
     console.log(jsonResponse);

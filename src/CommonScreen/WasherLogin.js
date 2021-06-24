@@ -63,8 +63,8 @@ const LoginScreen = ({navigation}) => {
                   secure
                 />
 
-                {/* <CtaButton title="Sign In" primary onPress={handleSubmit(onSubmit)} /> */}
-                <CtaButton title="Sign In" primary onPress={()=>changeStack('CustomerHomeStack')} />
+                <CtaButton title="Sign In" primary onPress={handleSubmit(onSubmit)} />
+                {/* <CtaButton title="Sign In" primary onPress={()=>changeStack('CustomerHomeStack')} /> */}
                 <LinkButton title="Forgot Your Password" onPress={() => navigation.navigate('FORGOT PASSWORD')} />
               </InputsContainer>
               <TouchableOpacity

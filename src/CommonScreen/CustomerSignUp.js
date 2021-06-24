@@ -9,7 +9,7 @@ import {getCurrentPosition} from '../Services/LocationServices';
 import {AuthContext} from '../Providers/AuthProvider';
 import LoadingView from '../Components/LoadingView';
 const CustomersignUp = ({navigation}) => {
-  const {CustomersignUp} = useContext(AuthContext);
+  const {customersignUp} = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -31,7 +31,7 @@ const CustomersignUp = ({navigation}) => {
     setLoading(true);
     const {latitude, longitude} = (await getCurrentPosition()).coords;
     if (latitude && longitude) {
-      let otp = await CustomersignUp({latitude, longitude, ...data});
+      let otp = await customersignUp({latitude, longitude, ...data});
       if (otp) navigation.navigate('ENTER OTP', {otp});
     }
     setLoading(false);

@@ -1,6 +1,7 @@
-import React, {useContext, useEffect, useReducer} from 'react';
-import {callApi} from '.';
-import {AuthContext} from './AuthProvider';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
+import { callApi, ERROR, LOADING } from '.';
+import { AuthContext } from './AuthProvider';
+import NetInfo from '@react-native-community/netinfo';
 
 export const BookingContext = React.createContext();
 
@@ -24,14 +25,14 @@ const initialState = {
   pagecount: 0,
 };
 
-const reducer = (state, {type, payload}) => {
+const reducer = (state, { type, payload }) => {
   switch (type) {
     case ACTIONS.OnFail:
-      return {...state, loading: false, refreshing: false, type: ACTIONS.OnFail};
+      return { ...state, loading: false, refreshing: false, type: ACTIONS.OnFail };
     case ACTIONS.OnInit:
       return initialState;
     case ACTIONS.Start:
-      return {...initialState, loading: true, type: ACTIONS.Start};
+      return { ...initialState, loading: true, type: ACTIONS.Start };
     case ACTIONS.OnStartSuccess:
       return {
         ...state,
@@ -41,7 +42,7 @@ const reducer = (state, {type, payload}) => {
         hasLoadedAllItems: payload.bookingHistory.length < 10,
       };
     case ACTIONS.LoadMore:
-      return {...state, pagecount: state.pagecount + 1, loading: true, type: ACTIONS.LoadMore};
+      return { ...state, pagecount: state.pagecount + 1, loading: true, type: ACTIONS.LoadMore };
     case ACTIONS.OnLoadMoreSuccess:
       return {
         ...state,
@@ -51,7 +52,7 @@ const reducer = (state, {type, payload}) => {
         hasLoadedAllItems: payload.bookingHistory.length < 10,
       };
     case ACTIONS.Refresh:
-      return {...state, pagecount: 0, refreshing: true, type: ACTIONS.Refresh};
+      return { ...state, pagecount: 0, refreshing: true, type: ACTIONS.Refresh };
     case ACTIONS.OnRefreshSuccess:
       return {
         ...state,
@@ -65,43 +66,76 @@ const reducer = (state, {type, payload}) => {
   }
 };
 
-const BookingProvider = ({children}) => {
-  const {userData} = useContext(AuthContext);
+const BookingProvider = ({ children }) => {
+  const { userData } = useContext(AuthContext);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [vehicles, setVehicles] = useState(LOADING)
 
-  useEffect(() => onStateChange(state), [state]);
+  useEffect(() => { onStateChange(state) }, [state]);
 
   const onStateChange = async state => {
     console.log(state);
     if (state.type.includes('on')) return;
-    let json = await fakeCallApi('bookinghistory', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
-    if (json) dispatch({type: `on${state.type}Success`, payload: {bookingHistory: json.data}});
-    else dispatch({type: ACTIONS.OnFail});
+    let json = await fakeCallApi('bookinghistory', userData.api_token, { user_id: userData.id, pagecount: state.pagecount });
+    if (json) dispatch({ type: `on${state.type}Success`, payload: { bookingHistory: json.data } });
+    else dispatch({ type: ACTIONS.OnFail });
   };
 
-  const getSingleBookingDetails = async booking_id => await callApi('singlebookingdetails', userData.api_token, {booking_id:booking_id});
+  const getSingleBookingDetails = async booking_id => await callApi('singlebookingdetails', userData.api_token, { booking_id: booking_id });
 
-  const acceptJob = async booking_id => await callApi('accept_job', userData.api_token, {user_id: userData.id, booking_id});
+  const acceptJob = async booking_id => await callApi('accept_job', userData.api_token, { user_id: userData.id, booking_id });
 
-  const rejectJob = async booking_id => await callApi('reject_job', userData.api_token, {user_id: userData.id, booking_id});
+  const rejectJob = async booking_id => await callApi('reject_job', userData.api_token, { user_id: userData.id, booking_id });
 
-  const finishedjob = async data => callApi('finishedjob', userData.api_token, {...data,user_id:userData.id})
+  const finishedjob = async data => callApi('finishedjob', userData.api_token, { ...data, user_id: userData.id })
 
-  const onMyWay = async washer_id => callApi('onMyWay', userData.api_token, {user_id:userData.id, washer_id})
+  const onMyWay = async washer_id => callApi('onMyWay', userData.api_token, { user_id: userData.id, washer_id })
 
-  const startJob = async booking_id => callApi('startjob', userData.api_token, {booking_id})
+  const startJob = async booking_id => callApi('startjob', userData.api_token, { booking_id })
 
-  const addMoreMinutes = async (booking_id, extra_time) => callApi('addMoreTime', userData.api_token, {booking_id, extra_time })
+  const addMoreMinutes = async (booking_id, extra_time) => callApi('addMoreTime', userData.api_token, { booking_id, extra_time })
 
-  return <BookingContext.Provider value={{state, dispatch, acceptJob, rejectJob, getSingleBookingDetails, finishedjob, onMyWay, addMoreMinutes, startJob}}>{children}</BookingContext.Provider>;
+  const getMake = async () => customCallApi('make', userData.api_token, {}, 'GET', 'Make')
+
+  const getYear = async (Make) => customCallApi('year', userData.api_token, { Make }, 'POST', 'Year')
+
+  const getModel = async (Year) => customCallApi('model', userData.api_token, { Year }, 'POST', 'Model')
+
+  const addNewVehicle = async data => callApi('addVehicle', userData.api_token, {...data, user_id : userData.id, category_id : 1})
+
+  const getVehicles = async () => {
+    setVehicles(LOADING)
+    let json = await callApi('viewVehicle', userData.api_token, { user_id: userData.id })
+    if (json) setVehicles(json.data)
+    else setVehicles(ERROR)
+  }
+
+  return <BookingContext.Provider value={{
+    state,
+    dispatch,
+    acceptJob,
+    rejectJob,
+    getSingleBookingDetails,
+    finishedjob,
+    onMyWay,
+    addMoreMinutes,
+    startJob,
+    getVehicles,
+    vehicles,
+    getMake,
+    getYear,
+    getModel,
+    addNewVehicle
+  }}>{children}</BookingContext.Provider>;
 };
+
 
 export default BookingProvider;
 
-const fakeCallApi = (subfix, AppKey, {pagecount}, onFalse, method = 'POST') => {
+const fakeCallApi = (subfix, AppKey, { pagecount }, onFalse, method = 'POST') => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve({data: Data.slice(pagecount * 10, (pagecount + 1) * 10)});
+      resolve({ data: Data.slice(pagecount * 10, (pagecount + 1) * 10) });
       // resolve({data:[]})
     }, 500);
   });
@@ -229,3 +263,45 @@ let Data = [
     updated_at: '2021-04-07',
   },
 ];
+
+
+const customCallApi = async (subfix, AppKey, params, method = 'POST', nameLable) => {
+  console.log("CUSTOME CALL API")
+  try {
+    await checkConnection();
+    let formData = new FormData()
+    Object.entries(params).forEach(([key, value]) => formData.append(key, value))
+    console.log(formData)
+    let url = `${'http://suds-2-u.com/sudsadmin/api/'}${subfix}?`
+    let res = await fetch(url, {
+      method: method,
+      headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
+      body: method == 'GET' ? undefined : formData
+    });
+    let results = JSON.parse(await res.text()).results.map(r => { return { id: r.objectId, name: r[nameLable] } })
+
+    return getUniques(results)
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const checkConnection = async () => {
+  let state = await NetInfo.fetch();
+  if (!state.isConnected) {
+    Alert.alert('Connection', 'You are not connected to the internet');
+    throw 'Not connected';
+  }
+};
+
+const getUniques = (results) => {
+  let labels = [], newArr = []
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    if (!labels.includes(r.name)) {
+      newArr.push(r)
+      labels.push(r.name)
+    }
+  }
+  return {data : newArr}
+}

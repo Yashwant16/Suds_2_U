@@ -31,7 +31,7 @@ const BookingDetails = ({route}) => {
             <Text style={[styles.text]}>{booking?.wash_location}</Text>
             <Text style={[styles.text]}>CA-94507</Text>
             <Divider style={{marginTop: 10, marginBottom: 10}} />
-            <Detail bold title={booking?.vehicledetails[0]?.model} detail="$39.00" />
+            <Detail bold title={booking?.vehicledetails[0]?.model} detail={'$'+WashPrice(booking).toFixed(2)} />
             {booking?.extraaddonsdetails?.map(ext => (
               <Detail key={ext.id} title={ext.add_ons_name} detail={'$' + parseFloat(ext.add_ons_price).toFixed(2)} />
             ))}
@@ -70,12 +70,13 @@ const Detail = ({title, detail, bold, detailColored}) => (
 
 const TipItem = ({amount, selected, onPress}) => (
   <TouchableOpacity
-    // onPressIn={onPress}
     activeOpacity={1}
     style={{padding: 16, backgroundColor: selected ? Colors.blue_color : 'white', borderRadius: 10, flex: 1, alignItems: 'center', margin: 5}}>
     <Text style={{color: selected ? 'white' : 'black', fontWeight: 'bold'}}>{amount}</Text>
   </TouchableOpacity>
 );
+
+const WashPrice = (booking) => booking?.total - booking?.extraaddonsdetails?.map(ext=>ext.add_ons_price).reduce((p,c)=>parseFloat(p)+parseFloat(c))
 
 const styles = StyleSheet.create({
   imgBg: {

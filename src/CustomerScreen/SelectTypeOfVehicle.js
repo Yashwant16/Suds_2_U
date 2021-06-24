@@ -1,218 +1,268 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar,SafeAreaView, TouchableOpacity, TextInput,Button,FlatList ,ImageBackground} from 'react-native';
-
-import { Header, Icon, Avatar } from 'react-native-elements';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, FlatList, Alert} from 'react-native';
 import Colors from '../../Constants/Colors';
-import CheckBox from 'react-native-check-box'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { CheckBox } from 'react-native-elements'
+import CheckBox from 'react-native-check-box';
+import {bookingType, changeStack, navigate, ON_DEMAND} from '../Navigation/NavigationService';
+import {useNavigation} from '@react-navigation/core';
 
-export default class MyNotificationsScreen extends React.Component {
+const bigRigPackages = [
+  {
+    name: 'Bronze',
+    description: 'Truck Only',
+    price: '$99.00',
+  },
+  {
+    name: 'Silver',
+    description: 'Truck and Tractor',
+    price: '$199.00',
+  },
+  {
+    name: 'Gold',
+    description: 'Tractor and Trailor',
+    price: '$249.00',
+  },
+];
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        isChecked:'',
-        Data: [
-        
+const vaccumCementPackages = [
+  {
+    name: 'Bronze',
+    price: '$125.00',
+  },
+  {
+    name: 'Silver',
+    price: '$175.00',
+  },
+  {
+    name: 'Gold',
+    description: 'Dot ready',
+    price: '$225.00',
+  },
+];
+
+const boxAndFleetPackages = [
+  {
+    name: 'Bronze',
+    price: '$99.00',
+  },
+  {
+    name: 'Silver',
+    price: '$149.00',
+  },
+  {
+    name: 'Gold',
+    price: '$199.00',
+  },
+];
+
+const tractorTrailorCategories = [
+  {
+    vehicleType: 'BIG RIGS',
+    checked: false,
+    navigateTo: 'Packages',
+    params: {packages: bigRigPackages, packageType: 'Big Rigs'},
+  },
+  {
+    vehicleType: 'VACUM/CEMENT',
+    checked: false,
+    navigateTo: 'Packages',
+    params: {packages: vaccumCementPackages, packageType: 'Vaccum/Cement'},
+  },
+  {
+    vehicleType: 'BOX & FLEET',
+    checked: false,
+    navigateTo: 'Packages',
+    params: {packages: boxAndFleetPackages, packageType: 'Box & Fleet'},
+  },
+];
+
+const motorcyclePackages = [
+  {
+    name: 'Bronze',
+    price: '$25.00',
+  },
+  {
+    name: 'Silver',
+    price: '$35.00',
+  },
+  {
+    name: 'Gold',
+    price: '$45.00',
+  },
+];
+
+const boatsOver20FeetPackages = [
+  {
+    name: 'Bronze',
+    price: '$125.00',
+  },
+  {
+    name: 'Silver',
+    price: '$199.00',
+  },
+  {
+    name: 'Gold',
+    price: '$265.00',
+  },
+];
+
+const boatsUnder20FeetPackages = [
+  {
+    name: 'Bronze',
+    price: '$99.00',
+  },
+  {
+    name: 'Silver',
+    price: '$159.00',
+  },
+  {
+    name: 'Gold',
+    price: '$199.00',
+  },
+];
+
+const boatCategories = [
+  {
+    checked: false,
+    vehicleType: 'BOATS UNDER 20 FEET',
+    navigateTo: 'Packages',
+    params: {packages: boatsUnder20FeetPackages, packageType: 'Boats under 20 feet'},
+  },
+  {
+    checked: false,
+    vehicleType: 'BOATS OVER 20 FEET',
+    navigateTo: 'Packages',
+    params: {packages: boatsOver20FeetPackages, packageType: 'Boats over 20 feet'},
+  },
+];
+
+const SelectVehicleType = ({route}) => {
+  const navigation = useNavigation();
+  useEffect(() => navigation.setOptions({title: route.params?.title}), []);
+  const [selectedType, setSelectedType] = useState();
+  const [types, setTypes] = useState(
+    route.params?.types
+      ? route.params?.types
+      : [
           {
-            vehicle_name: 'Car or Truck ',
-           id:1
+            vehicleType: 'Car or Truck ',
+            checked: false,
+            navigateTo: 'Car or Truck',
           },
           {
-            vehicle_name: 'Tractor Trailors',
-           id:2
+            vehicleType: 'Tractor Trailors',
+            checked: false,
+            navigateTo: 'Vehicle Categories',
+            params: {types: tractorTrailorCategories, title: 'Tractor Trailors'},
           },
           {
-            vehicle_name: 'Boats ',
-           id:3
+            vehicleType: 'Boats ',
+            checked: false,
+            navigateTo: 'Vehicle Categories',
+            params: {types: boatCategories, title: 'Boats'},
           },
           {
-            vehicle_name: 'Motorcycles ',
-           id:4
+            vehicleType: 'Motorcycles ',
+            checked: false,
+            navigateTo: 'Packages',
+            params: {packages: motorcyclePackages, packageType: 'Motorcycle'},
           },
-       
+
           {
-            vehicle_name: 'Rv s, Bus, M.H. ',
-         id:5
+            vehicleType: 'Rv s, Bus, M.H. ',
+            checked: false,
+            navigateTo: 'RVs Bus M V',
           },
           {
-            vehicle_name: 'Heavy Equipment ',
-           id:6
+            vehicleType: 'Heavy Equipment ',
+            checked: false,
+            navigateTo: 'Heavy Equipment',
           },
           {
-            vehicle_name: 'Business Wash ',
-           id:7
+            vehicleType: 'Business Wash ',
+            checked: false,
+            navigateTo: 'Business Wash',
           },
         ],
-      }
-    }
-    componentDidMount = async () => {
-      this.userdetails();
-      alert('dvd')
-      }
-      userdetails = async () => {
-        let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
-        console.log(savedUserData.api_token);
-    
-        return fetch('http://suds-2-u.com/sudsadmin/api/vehicleType', {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'App-Key':savedUserData.api_token,
-            'Content-Type': 'application/json'
-          },
-          // body: JSON.stringify(params)
-        })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            // this.setState({ isLoading: false })
-            console.log("responseJson onLoginPressHandle", responseJson)
-            if (responseJson.response === true) {
-              
-    this.setState({userData:responseJson.data})
-              // this.props.navigation.navigate('Main')
-            }
-            else if (responseJson.response === false) {
-              // alert(responseJson.message)
-            }
-          })
-          .catch((error) => {
-            // this.setState({ isLoading: false })
-            console.error(error);
-          });
-    
-      };
+  );
 
-    renderItem = ({ item, index }) => {
-      const { navigation } = this.props;
-      return(
-      <View style={{ padding: 21,flex:1,margin:10,marginHorizontal:18, backgroundColor:'#fff',borderRadius:5,paddingVertical:10,shadowOpacity:0.3,shadowOffset: { width: 1, height: 1 },}}>
-<TouchableOpacity onPress={()=>{}}> 
+  const onCheck = i => {
+    setSelectedType(cv => (cv == i ? undefined : i));
+    setTypes(items => {
+      types[i].checked = true;
+      items.splice(i, 1, {...items[i], checked: !items[i].checked});
+      return [...items];
+    });
+  };
 
-  <View style={{flexDirection:'row',marginTop:5,justifyContent:'space-evenly',flex:1}}>
-    <View style={{flexDirection:'row'}}>
-    <Text style={{marginHorizontal:5,fontSize:16,color:'#000',fontWeight:'bold'}}>{item.name}</Text>
-    {/* <Text style={{marginHorizontal:5,fontSize:16,color:'#e28c39',fontWeight:'bold'}}>$25.00</Text> */}
-    </View>
-    <CheckBox
-            style={{ padding: 0,alignItems:'flex-end',flex:1,marginRight:8}}
-            onClick={()=>{
-                 this.setState({
-                     isChecked:!this.state.isChecked
-                 })
-               }}
-            isChecked={this.state.isChecked}
-            checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{width:22,height:22,tintColor:Colors.blue_color}}/>}
-            unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{width:22,height:22,tintColor:Colors.blue_color}}/>}
-        />
-  </View>
-  </TouchableOpacity>
-      </View>
-      )
-    }
+  const onContinue = () => {
+    if (selectedType == undefined) Alert.alert('Select Type', 'Please select a vehicle type.');
+    else if (types[selectedType].navigateTo == 'Packages') navigate(bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor', types[selectedType]?.params);
+    else navigate(types[selectedType].navigateTo, types[selectedType]?.params);
+  };
+  return (
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+      <FlatList keyExtractor={item => item.vehicleType} style={{width: '100%'}} data={types} renderItem={({item, index}) => <RenderItem item={item} onCheck={() => setSelectedType(cv => (cv == index ? undefined : index))} checked={selectedType == index} />} ItemSeparatorComponent={() => <View style={{marginTop: -15}} />} />
+      <View style={{alignItems: 'center', marginTop: 'auto'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <TouchableOpacity 
+          elevation={5} 
+          onPress={onContinue} 
+          style={styles.auth_btn} 
+          underlayColor="gray" 
+          activeOpacity={0.8}>
+            <Text style={{fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold'}}>Continue</Text>
+          </TouchableOpacity>
 
-    render() {
-      const { navigation } = this.props;
-      return (
-        <View style={{flex:1,backgroundColor:'#fff'}}>
-                          <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                          {/* <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                  height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('SelectPackage') }}>
-                        <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-                 </TouchableOpacity> 
-                    }
-                  centerComponent={
-                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>SELECT ADD-ONS</Text>
-                }
-                /> */}
-                   {/* <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}> */}
-                <SafeAreaView/>
-                <View style={{alignItems:'center',width:'100%',}}> 
-                {/* <View style={{backgroundColor:'#e28c39',height:60,width:'100%',justifyContent:'center',paddingHorizontal:20}}>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Upgrade your packages with the following add-ons</Text>
-                </View> */}
-       <FlatList
-      
-            style={{ width:'100%',marginBottom:20}}
-            showsVerticalScrollIndicator={false}
-            data={this.state.Data}
-            renderItem={this.renderItem}
-          // ListEmptyComponent={this.ListEmpty}
-          />
-          
-       
-       </View>
-       <View style={{justifyContent:'flex-end',flex:1,alignItems:'center',marginTop:10}}>
-       {/* <View style={{backgroundColor:'#e28c39',height:60,width:'100%',justifyContent:'center',paddingHorizontal:20}}>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Estimates Wash Duration 30 Mins</Text>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Sub-Total: $99.00</Text>
-                </View> */}
-                <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                        <TouchableOpacity
-                            elevation={5}
-                            onPress={() => { navigation.navigate('Select a Vender'); }}
-                            style={styles.auth_btn}
-                            underlayColor='gray'
-                            activeOpacity={0.8}
-                        // disabled={this.state.disableBtn}
-                        >
-                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label,fontWeight:'bold'}}>Continue</Text>
-                         
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            elevation={5}
-                            onPress={() => { navigation.navigate('Booking Review'); }}
-                            style={styles.auth_btn}
-                            underlayColor='gray'
-                            activeOpacity={0.8}
-                        // disabled={this.state.disableBtn}
-                        >
-                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label,fontWeight:'bold'}}>Cancel</Text>
-                         
-                        </TouchableOpacity>
-                        </View>
-                        </View>
-       {/* </ImageBackground> */}
+          <TouchableOpacity
+            elevation={5}
+            onPress={()=>changeStack('CustomerHomeStack')}
+            style={styles.auth_btn}
+            underlayColor="gray"
+            activeOpacity={0.8}>
+            <Text style={{fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold'}}>Cancel</Text>
+          </TouchableOpacity>
         </View>
-      );
-    }
-  }
-  
-  const styles = StyleSheet.create({
-    auth_textInput: {
+      </View>
+    </SafeAreaView>
+  );
+};
 
-        alignSelf: 'center',
-        width: '93%',
-        // borderWidth: 1,
-        borderBottomWidth: 1,
-        height: 40,
-        color: Colors.text_color,
-        marginTop: 10,
+const RenderItem = ({item, onCheck, checked}) => {
+  const navigateTo = () => {
+    if (item.navigateTo == 'Packages') return bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor';
+    else return item.navigateTo;
+  };
+  return (
+    <TouchableOpacity onPress={() => navigate(navigateTo(), item.params)} style={styles.card}>
+      <Text style={{fontSize: 16, color: '#000', fontWeight: 'bold'}}>{item.vehicleType}</Text>
+      <CheckBox style={{}} onClick={onCheck} isChecked={checked} checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{width: 22, height: 22, tintColor: Colors.blue_color}} />} unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{width: 22, height: 22, tintColor: Colors.blue_color}} />} />
+    </TouchableOpacity>
+  );
+};
 
-    },
-    auth_btn: {
-       
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: Colors.buttom_color,
-    
-        width: '50%',
-        height: 65,
-        justifyContent: 'center',
-    },
-    add_btn: {
-      
-      backgroundColor:'#e28c39',
-  alignItems:'center',
-      width: '45%',
-      height: 40,
-      justifyContent: 'center',borderRadius:20
+export default SelectVehicleType;
+const styles = StyleSheet.create({
+  auth_btn: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: Colors.buttom_color,
+
+    width: '50%',
+    height: 65,
+    justifyContent: 'center',
   },
-})
+  card: {
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    shadowColor: '#555',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 3.5,
+    borderRadius: 10,
+    elevation: 5,
+    margin: 15,
+    padding: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+});

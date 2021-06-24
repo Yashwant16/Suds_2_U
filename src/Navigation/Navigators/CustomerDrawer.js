@@ -1,19 +1,18 @@
-import React from 'react';
-import {createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList,} from '@react-navigation/drawer';
-import {Button, Image, StyleSheet, Text, View} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-// import EditProfile from '../../CustomerScreen/EditProfile'
+import React, { useContext } from 'react';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList, } from '@react-navigation/drawer';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import HomeScreen from '../../CustomerScreen/HomeScreen'
-// import HomeScreen from '../../CustomerScreen/HomeScreen'
-import SelectVehicle from '../../CustomerScreen/BookWasherNow'
-import ChangePassword from '../../CustomerScreen/ChangePassword'
 import Promotions from '../../CustomerScreen/Promotions'
 import Payments from '../../CustomerScreen/Payments'
 import HelpScreen from '../../CustomerScreen/HelpScreen'
 import EditProfile from '../../CustomerScreen/EditProfile'
-import Rewairds_History from '../../CustomerScreen/Rewairds_History'
 import Colors from '../../../Constants/Colors';
-import { changeStack } from '../NavigationService';
+import OnDemand from '../../CustomerScreen/OnDemand';
+import { AuthContext } from '../../Providers/AuthProvider';
+import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
+import BookingHistory from '../../DriverScreen/BookingHistory';
+import WorkInProgress from '../../CustomerScreen/WorkInProgress'
+import BookingConfirmed from '../../CustomerScreen/BookingConfirm';
 const Drawer = createDrawerNavigator();
 
 
@@ -21,7 +20,7 @@ const CustomerDrawer = () => {
   return (
     <Drawer.Navigator
       drawerContentOptions={{
-        contentContainerStyle: {paddingTop: 0},
+        contentContainerStyle: { paddingTop: 0 },
         inactiveTintColor: 'white',
         activeTintColor: 'white',
         labelStyle: styles.drawerLable,
@@ -29,101 +28,105 @@ const CustomerDrawer = () => {
       }}
       drawerContent={CustomDrawerContent}
       initialRouteName="DASHBOARD"
-      drawerStyle={{backgroundColor: '#182245'}}>
+      drawerStyle={{ backgroundColor: '#182245' }}>
       <Drawer.Screen
         name="DASHBOARD"
         component={HomeScreen}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/home.png')} />}}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/home.png')} /> }}
       />
-         <Drawer.Screen
+      <Drawer.Screen
         name="EditProfile"
         component={EditProfile}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/pencil.png')} />}}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/pencil.png')} /> }}
       />
-         <Drawer.Screen
-        name="SELECT VEHICLE"
-        component={SelectVehicle}
-        options={{title:"Book Washer Now", drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/car-steering-wheel.png')} />}}
+      <Drawer.Screen
+        name="Book Washer Now"
+        component={OnDemand}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/car-steering-wheel.png')} /> }}
       />
-         <Drawer.Screen
-        name="Rewards/History"
-        component={Rewairds_History}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/document.png')} />}}
+      <Drawer.Screen
+        name="Booking History"
+        component={BookingHistory}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/document.png')} /> }}
       />
-        <Drawer.Screen
+      <Drawer.Screen
         name="Payments"
         component={Payments}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/dollar-symbol.png')} />}}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/dollar-symbol.png')} /> }}
       />
-         <Drawer.Screen
+      <Drawer.Screen
         name="Promotions"
         component={Promotions}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/coupon.png')} />}}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/coupon.png')} /> }}
       />
-         <Drawer.Screen
+      <Drawer.Screen
         name="Change Password"
-        component={ChangePassword}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/padlock.png')} />}}
+        component={DriverChangePassword}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/padlock.png')} /> }}
       />
-        <Drawer.Screen
+      <Drawer.Screen
         name="Help"
         component={HelpScreen}
-        options={{drawerIcon: ({color}) => <Icon color={color} iconSource={require('../../../Assets/help.png')} />}}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/help.png')} /> }}
       />
-
+      {/* <Drawer.Screen
+        name="Booking confirm"
+        component={BookingConfirmed}
+        options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/help.png')} /> }}
+      /> */}
     </Drawer.Navigator>
   );
 };
 
-const Icon = ({color, size, focused, iconSource}) => <Image style={{height: 28, width: 28, tintColor: color}} source={iconSource} />;
+const Icon = ({ color, size, focused, iconSource }) => <Image style={{ height: 28, width: 28, tintColor: color }} source={iconSource} />;
 
 export default CustomerDrawer;
-
 
 const CustomDrawerContent = props => {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerProfile />
       <DrawerItemList {...props} />
-      <Logout/>
+      <Logout />
     </DrawerContentScrollView>
   );
 };
 
-
 const Logout = () => {
-  // const {logout} = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
   return (
     <DrawerItem
       label="LOG OUT"
-      labelStyle={[styles.drawerLable, {color: 'white'}]}
+      labelStyle={[styles.drawerLable, { color: 'white' }]}
       style={styles.drawerItem}
       icon={() => <Icon color={'white'} iconSource={require('../../../Assets/logout.png')} />}
-      onPress={()=>changeStack('AuthStack')}
+      onPress={logout}
     />
   );
 };
 
-const DrawerProfile = () => (
-  <View style={{width: '100%',  marginTop: 0,  padding: 16, alignItems: 'center'}}>
-    <View style={{marginTop: 10, width: 90, height: 90, borderColor: '#fff', borderRadius: 10, borderWidth: 3, alignItems: 'center', alignSelf: 'center'}}>
-        <Image style={{width: 88, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'cover',borderRadius:10}} source={{uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'}} />
+const DrawerProfile = () => {
+  const { userData } = useContext(AuthContext)
+  return (
+    <View style={{ width: '100%', marginTop: 0, padding: 16, alignItems: 'center' }}>
+      <View style={{ marginTop: 10, width: 90, height: 90, borderColor: '#fff', borderRadius: 10, borderWidth: 3, alignItems: 'center', alignSelf: 'center' }}>
+        <Image style={{ width: 88, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'cover', borderRadius: 10 }} source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }} />
       </View>
-    <View>
-      <Text style={{color:Colors.blue_color, fontSize: 18, paddingBottom: 6,marginTop:10,fontWeight:'bold'}}>Dynamu Frayne</Text>
-      <View style={{flexDirection:'row',alignItems:'center',alignSelf:'center'}}>
-       <Image style={{width: 15, height: 15, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch',tintColor:'#F5BA05'}} source={require('../../../Assets/location.png')} />
-      <Text style={{color: '#fff', textAlign: 'center', fontSize: 16}}>san fracisco usa</Text>
- 
-      </View>
-      <View style={{width:130,height:35,backgroundColor:'#F5BA05',borderRadius:20,marginTop:10,justifyContent:'center'}}> 
-<Text style={{textAlign:'center',fontWeight:'bold',fontSize:16}}>08 Drops</Text>
+      <View>
+        <Text style={{ color: Colors.blue_color, fontSize: 18, paddingBottom: 6, marginTop: 10, fontWeight: 'bold' }}>{userData.name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
+          <Image style={{ width: 15, height: 15, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch', tintColor: '#F5BA05' }} source={require('../../../Assets/location.png')} />
+          <Text style={{ color: '#fff', textAlign: 'center', fontSize: 16 }}>san fracisco usa</Text>
+
+        </View>
+        <View style={{ width: 130, height: 35, backgroundColor: '#F5BA05', borderRadius: 20, marginTop: 10, justifyContent: 'center' }}>
+          <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>08 Drops</Text>
+        </View>
       </View>
     </View>
-  </View>
+  )
 
-
-);
+};
 
 const styles = StyleSheet.create({
   drawerItem: {

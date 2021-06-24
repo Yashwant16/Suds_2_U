@@ -33,7 +33,7 @@ const DriverChangePassword = () => {
           style={{width: '100%', height: '100%', flex: 1, justifyContent: 'space-evenly'}}
           source={require('../../Assets/imageBG.png')}>
           <LoadingView loading={loading}>
-            <Image style={{width: 200, height: 200, tintColor: '#fff', alignSelf: 'center'}} source={require('../../Assets/padlock.png')} />
+            <Image style={{width: 200, height: 200, tintColor: '#fff', alignSelf: 'center', marginBottom:50}} source={require('../../Assets/padlock.png')} />
             <View style={{justifyContent: 'flex-end', paddingBottom: 100, paddingHorizontal: 21, alignItems: 'center'}}>
               <View style={styles.inputs_container}>
                 <ControllerInput

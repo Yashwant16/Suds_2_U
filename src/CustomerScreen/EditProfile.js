@@ -1,165 +1,143 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { View, ImageBackground, StyleSheet, Image, Alert, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import Colors from '../../Constants/Colors';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
-import { ImageBackground } from 'react-native';
-// import Icon from 'react-native-vector-icons/Feather';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { ScrollView } from 'react-native';
-export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
+import ControllerInput from '../Components/ControllerInput';
+import CtaButton from '../Components/CtaButton';
+import CustomPicker from '../Components/CustomPicker';
+import LoadingView from '../Components/LoadingView';
+import { AuthContext } from '../Providers/AuthProvider';
+import { launchImageLibrary } from 'react-native-image-picker';
 
-    drawerLabel: 'Edit Password',
-    drawerIcon: ({ tintColor }) => (
-      <View>
+const EditProfile = ({ navigation, route }) => {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors },
+  } = useForm();
+  const { completeProfile, getCountries, getStates, getCities, getUserDetails } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [selectedImage, setSelectedImage] = useState()
 
-        <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/pencil.png')} />
-      </View>
-    ),
+  useEffect(() => {
+    setFetching(true);
+    getUserDetails()
+      .then(json => {
+        const { data } = json;
+        if (json) {
+          reset({
+            ...data,
+            country: { name: data.country_name, id: data.country },
+            state: { name: data.state_name, id: data.state },
+            city: { name: data.city_name, id: data.city },
+            phone_number: data.mobile,
+          });
+        }
+      })
+      .finally(() => setFetching(false));
+  }, []);
+
+  const getStateList = async () => {
+    const selectedCountryId = getValues('country')?.id;
+    if (selectedCountryId) return await getStates(selectedCountryId);
+    else Alert.alert('Select country', 'Please select a country first');
   };
-  constructor(props) {
-    super(props);
-    this.state = {
-      mobbile_no:'',preferredmethod:'', completeaddress:'',city:'',state:'',hourlyrate:'',
-      email: "",
-      password: "",    country: ''
 
-    }
-  }
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={{ flex: 1 }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        {/* <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={79}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-              <Image style={{ width: 25, height: 27, tintColor: '#fff', marginTop: 5, }} source={require('../../Assets/back_arrow.png')} />
+  const getCityList = async () => {
+    const selectedStateId = getValues('state')?.id;
+    if (selectedStateId) return await getCities(selectedStateId);
+    else Alert.alert('Select state', 'Please select a state first');
+  };
 
+  const onSubmit = async data => {
+    setLoading(true);
+    let success = await completeProfile({ ...data, country: data.country.id, state: data.state.id, city: data.city.id, image : 'selectedImage' }, route.params?.authStack);
+    setLoading(false);
+    if (success) navigation.goBack();
+  };
+
+  return (
+    <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
+      <ScrollView>
+        <LoadingView loading={loading} fetching={fetching}>
+          <View style={styles.header}>
+            <TouchableOpacity onPressIn={() => launchImageLibrary({}, (res) => {console.log(res?.assets[0]) ; setSelectedImage(res?.assets[0])})} style={{ borderColor: 'white', borderWidth: 4, padding: selectedImage ? 0 : 25 , borderRadius: 15 }}>
+            <Image style={{ width: selectedImage ? 100 : 50, height: selectedImage ? 100 : 50, borderRadius : selectedImage ? 11 : 0, resizeMode: 'cover'}} source={selectedImage ? selectedImage : require('../../Assets/icon/camera.png') } />
             </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>EDIT PROFILE</Text>
-          }
-        /> */}
- 
-        <ImageBackground style={{ width: '100%', flex: 1, height: '100%', }} source={require('../../Assets/bg_img.png')}>
-        <ScrollView>
-          <View style={{ backgroundColor: Colors.blue_color, width: '100%', height: 100, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ borderColor: '#fff', borderWidth: 3, width: 70, height: 70, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
-              <Image style={{ width: 25, height: 27, tintColor: '#fff', alignSelf: 'center' }} source={require('../../Assets/camera.png')} />
-
-            </View>
           </View>
-          <View style={{ padding: 18, alignItems: 'center' }}>
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(mobbile_no) => this.setState({ mobbile_no })}
-              value={this.state.mobbile_no}
+          <View style={styles.container}>
+            <ControllerInput
+              control={control}
+              errors={errors}
+              rules={{ required: true, pattern: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/ }}
+              fieldName="mobile"
               placeholder="Phone Number"
-              // secureTextEntry='true'
-              keyboardType='phone-pad'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
+              keyboardType="phone-pad"
+              curved
+            />
+            <ControllerInput
+              control={control}
+              errors={errors}
+              rules={{ required: true }}
+              fieldName="preferred_method_of_contact"
+              placeholder="Preferred Method Of Contact"
+              curved
+            />
+            <ControllerInput
+              control={control}
+              errors={errors}
+              rules={{ required: true }}
+              fieldName="complete_address"
+              placeholder="Complete Address"
+              curved
+            />
 
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(preferredmethod) => this.setState({ preferredmethod })}
-              value={this.state.preferredmethod}
-              placeholder="Preferred method of contact"
-              // secureTextEntry='true'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(completeaddress) => this.setState({ completeaddress })}
-              value={this.state.completeaddress}
-              placeholder="Address"
-              // secureTextEntry='true'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(city) => this.setState({ city })}
-              value={this.state.city}
-              placeholder="City"
-              // secureTextEntry='true'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(state) => this.setState({ state })}
-              value={this.state.state}
-              placeholder="State"
-              // secureTextEntry='true'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
+            <CustomPicker
+              asynFunction={getCountries}
+              fieldName="country"
+              rules={{ required: true }}
+              control={control}
+              errors={errors}
+              label="Country"
+            />
+            <CustomPicker asynFunction={getStateList} fieldName="state" rules={{ required: true }} control={control} errors={errors} label="State" />
+            <CustomPicker asynFunction={getCityList} fieldName="city" rules={{ required: true }} control={control} errors={errors} label="City" />
 
-<TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(country) => this.setState({ country })}
-              value={this.state.country}
-              placeholder="Country"
-              // secureTextEntry='true'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-
-{/* <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(hourlyrate) => this.setState({ hourlyrate })}
-              value={this.state.hourlyrate}
-              placeholder="Hourly Rate"
-              // secureTextEntry='true'
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' /> */}
-
-              <TouchableOpacity style={styles.auth_btn} >
-                <Text style={{color:'#fff',fontWeight:'bold',fontSize:16}}>Continue</Text>
-              </TouchableOpacity>
+            <CtaButton
+              primary
+              title={'Save'}
+              onPress={handleSubmit(onSubmit)}
+              style={{ width: '100%', marginTop: 8 }}
+            />
           </View>
-          </ScrollView>
-        </ImageBackground>
-        
-      </View>
-    );
-  }
-}
+          <View style={{ height: 32 }} />
+        </LoadingView>
+      </ScrollView>
+    </ImageBackground>
+  );
+};
 
-// const styles = StyleSheet.create({
-//   icon: {
-//     width: 24,
-//     height: 24,
-//   },
-// });
+export default EditProfile;
+
 const styles = StyleSheet.create({
-  auth_textInput: {
-
-    alignSelf: 'center',
-    width: '93%',
-    // borderWidth: 1,
-    fontSize: 16,
-    borderBottomWidth: 0,
-    backgroundColor: '#fff',
-    height: 50,
-    borderRadius: 25,
-    color: '#000',
-    marginTop: 10, paddingLeft: 20, fontWeight: 'bold'
-
+  imgBg: {
+    flex: 1,
   },
-  auth_btn: {
-    marginTop: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.buttom_color,
-    borderRadius: 25,
-    width: '90%',
-    height: 50,
-    justifyContent: 'center',alignItems:'center'
+  container: {
+    width: '100%',
+    height: '100%',
+    paddingTop: 15,
+    paddingHorizontal: 30,
   },
-})
+  header: {
+    width: '100%',
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.blue_color,
+  },
+});

@@ -4,8 +4,11 @@ import Colors from '../../Constants/Colors';
 
 export const navigationRef = React.createRef();
 export const type = React.createRef()
+export const bookingType = React.createRef()
 export const WASHER = '2'
 export const CUSTOMER = '3'
+export const ON_DEMAND = '4'
+export const SCHEDULED = '5'
 export let dontShow = false
 
 export function setTrue() {

@@ -12,6 +12,8 @@ target 'Suds_2_U' do
     :hermes_enabled => false
   )
 
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
+
   target 'Suds_2_UTests' do
     inherit! :complete
     # Pods for testing

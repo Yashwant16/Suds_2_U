@@ -6,6 +6,7 @@ import { ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BASE_URL from '../../Constants/Base_Url';
 import LoadingView from '../Components/LoadingView';
+import { bookingType, ON_DEMAND, SCHEDULED } from '../Navigation/NavigationService';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 export const nav = React.createRef(null);
@@ -14,50 +15,50 @@ export default class MyNotificationsScreen extends React.Component {
     super(props)
     nav.current = props.navigation;
     this.state = {
-      userData:''
+      userData: ''
     }
   }
   componentDidMount = async () => {
-  this.userdetails();
+    // this.userdetails();
   }
-  userdetails = async () => {
-    let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
-    console.log(savedUserData.api_token);
+  //   userdetails = async () => {
+  //     let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
+  //     console.log(savedUserData.api_token);
 
-    let params = {
-      // email: this.props.navigation.getParam(email),
-      user_id: savedUserData.id,
-     
+  //     let params = {
+  //       // email: this.props.navigation.getParam(email),
+  //       user_id: savedUserData.id,
 
-    };
-    return fetch('http://suds-2-u.com/sudsadmin/api/userdetails', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'App-Key':savedUserData.api_token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(params)
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        // this.setState({ isLoading: false })
-        console.log("responseJson onLoginPressHandle", responseJson)
-        if (responseJson.response === true) {
-          
-this.setState({userData:responseJson.data})
-          // this.props.navigation.navigate('Main')
-        }
-        else if (responseJson.response === false) {
-          // alert(responseJson.message)
-        }
-      })
-      .catch((error) => {
-        // this.setState({ isLoading: false })
-        console.error(error);
-      });
 
-  };
+  //     };
+  //     return fetch('http://suds-2-u.com/sudsadmin/api/userdetails', {
+  //       method: 'POST',
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'App-Key':savedUserData.api_token,
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(params)
+  //     })
+  //       .then((response) => response.json())
+  //       .then((responseJson) => {
+  //         // this.setState({ isLoading: false })
+  //         console.log("responseJson onLoginPressHandle", responseJson)
+  //         if (responseJson.response === true) {
+
+  // this.setState({userData:responseJson.data})
+  //           // this.props.navigation.navigate('Main')
+  //         }
+  //         else if (responseJson.response === false) {
+  //           // alert(responseJson.message)
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         // this.setState({ isLoading: false })
+  //         console.error(error);
+  //       });
+
+  //   };
   render() {
     const { navigation } = this.props;
     return (
@@ -72,7 +73,7 @@ this.setState({userData:responseJson.data})
           <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
           <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
         </View>
-        <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }}>
+        <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: 'https://images.unsplash.com/photo-1534308143481-c55f00be8bd7?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mzd8fHByb2ZpbGV8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80' }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 21 }}>
             <TouchableOpacity style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
               <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
@@ -94,23 +95,23 @@ this.setState({userData:responseJson.data})
               <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => { navigation.navigate('OnDemand'); }}
+                  onPress={() => {
+                    bookingType.current = ON_DEMAND;
+                    navigation.navigate('OnDemand')
+                    console.log(bookingType)
+                  }}
                   style={styles.auth_btn}
                   underlayColor='gray'
-                  activeOpacity={0.8}
-                // disabled={this.state.disableBtn}
-                >
+                  activeOpacity={0.8}>
                   <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>On-Demand</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => navigate("SELECT VEHICLES")}
+                  onPress={() => { bookingType.current = SCHEDULED; navigation.navigate('Select Vehicle Type'); }}
                   style={styles.auth_btn}
                   underlayColor='gray'
-                  activeOpacity={0.8}
-                // disabled={this.state.disableBtn}
-                >
+                  activeOpacity={0.8} >
                   <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>Schedule</Text>
                 </TouchableOpacity>
 
