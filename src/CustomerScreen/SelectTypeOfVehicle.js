@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, FlatList, Alert} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, FlatList, Alert } from 'react-native';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box';
-import {bookingType, changeStack, navigate, ON_DEMAND} from '../Navigation/NavigationService';
-import {useNavigation} from '@react-navigation/core';
+import { bookingType, changeStack, navigate, ON_DEMAND } from '../Navigation/NavigationService';
+import { useNavigation } from '@react-navigation/core';
 
 const bigRigPackages = [
   {
@@ -59,19 +59,19 @@ const tractorTrailorCategories = [
     vehicleType: 'BIG RIGS',
     checked: false,
     navigateTo: 'Packages',
-    params: {packages: bigRigPackages, packageType: 'Big Rigs'},
+    params: { packages: bigRigPackages, packageType: 'Big Rigs' },
   },
   {
     vehicleType: 'VACUM/CEMENT',
     checked: false,
     navigateTo: 'Packages',
-    params: {packages: vaccumCementPackages, packageType: 'Vaccum/Cement'},
+    params: { packages: vaccumCementPackages, packageType: 'Vaccum/Cement' },
   },
   {
     vehicleType: 'BOX & FLEET',
     checked: false,
     navigateTo: 'Packages',
-    params: {packages: boxAndFleetPackages, packageType: 'Box & Fleet'},
+    params: { packages: boxAndFleetPackages, packageType: 'Box & Fleet' },
   },
 ];
 
@@ -125,71 +125,71 @@ const boatCategories = [
     checked: false,
     vehicleType: 'BOATS UNDER 20 FEET',
     navigateTo: 'Packages',
-    params: {packages: boatsUnder20FeetPackages, packageType: 'Boats under 20 feet'},
+    params: { packages: boatsUnder20FeetPackages, packageType: 'Boats under 20 feet' },
   },
   {
     checked: false,
     vehicleType: 'BOATS OVER 20 FEET',
     navigateTo: 'Packages',
-    params: {packages: boatsOver20FeetPackages, packageType: 'Boats over 20 feet'},
+    params: { packages: boatsOver20FeetPackages, packageType: 'Boats over 20 feet' },
   },
 ];
 
-const SelectVehicleType = ({route}) => {
+const SelectVehicleType = ({ route }) => {
   const navigation = useNavigation();
-  useEffect(() => navigation.setOptions({title: route.params?.title}), []);
+  useEffect(() => navigation.setOptions({ title: route.params?.title }), []);
   const [selectedType, setSelectedType] = useState();
   const [types, setTypes] = useState(
     route.params?.types
       ? route.params?.types
       : [
-          {
-            vehicleType: 'Car or Truck ',
-            checked: false,
-            navigateTo: 'Car or Truck',
-          },
-          {
-            vehicleType: 'Tractor Trailors',
-            checked: false,
-            navigateTo: 'Vehicle Categories',
-            params: {types: tractorTrailorCategories, title: 'Tractor Trailors'},
-          },
-          {
-            vehicleType: 'Boats ',
-            checked: false,
-            navigateTo: 'Vehicle Categories',
-            params: {types: boatCategories, title: 'Boats'},
-          },
-          {
-            vehicleType: 'Motorcycles ',
-            checked: false,
-            navigateTo: 'Packages',
-            params: {packages: motorcyclePackages, packageType: 'Motorcycle'},
-          },
+        {
+          vehicleType: 'Car or Truck ',
+          checked: false,
+          navigateTo: 'Car or Truck',
+        },
+        {
+          vehicleType: 'Tractor Trailors',
+          checked: false,
+          navigateTo: 'Vehicle Categories',
+          params: { types: tractorTrailorCategories, title: 'Tractor Trailors' },
+        },
+        {
+          vehicleType: 'Boats ',
+          checked: false,
+          navigateTo: 'Vehicle Categories',
+          params: { types: boatCategories, title: 'Boats' },
+        },
+        {
+          vehicleType: 'Motorcycles ',
+          checked: false,
+          navigateTo: 'Packages',
+          params: { packages: motorcyclePackages, packageType: 'Motorcycle' },
+        },
 
-          {
-            vehicleType: 'Rv s, Bus, M.H. ',
-            checked: false,
-            navigateTo: 'RVs Bus M V',
-          },
-          {
-            vehicleType: 'Heavy Equipment ',
-            checked: false,
-            navigateTo: 'Heavy Equipment',
-          },
-          {
-            vehicleType: 'Business Wash ',
-            checked: false,
-            navigateTo: 'Business Wash',
-          },
-        ],
+        {
+          vehicleType: 'Rv s, Bus, M.H. ',
+          checked: false,
+          navigateTo: 'RVs Bus M V',
+        },
+        {
+          vehicleType: 'Heavy Equipment ',
+          checked: false,
+          navigateTo: 'Heavy Equipment',
+        },
+        {
+          vehicleType: 'Business Wash ',
+          checked: false,
+          navigateTo: 'Business Wash',
+        },
+      ],
   );
 
   const onCheck = i => {
     setSelectedType(cv => (cv == i ? undefined : i));
     setTypes(items => {
       types[i].checked = true;
-      items.splice(i, 1, {...items[i], checked: !items[i].checked});
+      items.splice(i, 1, { ...items[i], checked: !items[i].checked });
       return [...items];
     });
   };
@@ -199,27 +199,32 @@ const SelectVehicleType = ({route}) => {
     else if (types[selectedType].navigateTo == 'Packages') navigate(bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor', types[selectedType]?.params);
     else navigate(types[selectedType].navigateTo, types[selectedType]?.params);
   };
+  
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
-      <FlatList keyExtractor={item => item.vehicleType} style={{width: '100%'}} data={types} renderItem={({item, index}) => <RenderItem item={item} onCheck={() => setSelectedType(cv => (cv == index ? undefined : index))} checked={selectedType == index} />} ItemSeparatorComponent={() => <View style={{marginTop: -15}} />} />
-      <View style={{alignItems: 'center', marginTop: 'auto'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <TouchableOpacity 
-          elevation={5} 
-          onPress={onContinue} 
-          style={styles.auth_btn} 
-          underlayColor="gray" 
-          activeOpacity={0.8}>
-            <Text style={{fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold'}}>Continue</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <FlatList
+        keyExtractor={item => item.vehicleType}
+        style={{ width: '100%' }} data={types}
+        renderItem={({ item, index }) => <RenderItem item={item} onCheck={() => setSelectedType(cv => (cv == index ? undefined : index))} checked={selectedType == index} />}
+        ItemSeparatorComponent={() => <View style={{ marginTop: -15 }} />} />
+      <View style={{ alignItems: 'center', marginTop: 'auto' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <TouchableOpacity
+            elevation={5}
+            onPress={onContinue}
+            style={styles.auth_btn}
+            underlayColor="gray"
+            activeOpacity={0.8}>
+            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Continue</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             elevation={5}
-            onPress={()=>changeStack('CustomerHomeStack')}
+            onPress={() => changeStack('CustomerHomeStack')}
             style={styles.auth_btn}
             underlayColor="gray"
             activeOpacity={0.8}>
-            <Text style={{fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold'}}>Cancel</Text>
+            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -227,15 +232,15 @@ const SelectVehicleType = ({route}) => {
   );
 };
 
-const RenderItem = ({item, onCheck, checked}) => {
+const RenderItem = ({ item, onCheck, checked }) => {
   const navigateTo = () => {
     if (item.navigateTo == 'Packages') return bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor';
     else return item.navigateTo;
   };
   return (
     <TouchableOpacity onPress={() => navigate(navigateTo(), item.params)} style={styles.card}>
-      <Text style={{fontSize: 16, color: '#000', fontWeight: 'bold'}}>{item.vehicleType}</Text>
-      <CheckBox style={{}} onClick={onCheck} isChecked={checked} checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{width: 22, height: 22, tintColor: Colors.blue_color}} />} unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{width: 22, height: 22, tintColor: Colors.blue_color}} />} />
+      <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.vehicleType}</Text>
+      <CheckBox style={{}} onClick={onCheck} isChecked={checked} checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{ width: 22, height: 22, tintColor: Colors.blue_color }} />} unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{ width: 22, height: 22, tintColor: Colors.blue_color }} />} />
     </TouchableOpacity>
   );
 };
@@ -255,7 +260,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     shadowColor: '#555',
-    shadowOffset: {width: 1, height: 1},
+    shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 3.5,
     borderRadius: 10,

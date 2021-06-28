@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/core';
 import { ImageBackground } from 'react-native';
 import { bookingType, navigate, ON_DEMAND } from '../Navigation/NavigationService';
 import CheckBox from 'react-native-check-box'
+import { PackagesMethod } from '../Providers/PackageProvider';
 
 const defaultPackages = [
     {
@@ -31,6 +32,17 @@ const Packages = ({ route }) => {
     const onNext = () => {
         if (selectedPackage == undefined) Alert.alert('Select Package', 'Please select a package to continue.')
         else navigate('Select Add Ons')
+    }
+
+    const getPackages = async () => {
+        switch (PackagesMethod) {
+            case 'WITH_VENDOR':
+                
+                break;
+        
+            default:
+                break;
+        }
     }
 
     return (
@@ -66,7 +78,7 @@ const Packages = ({ route }) => {
 const RenderItem = ({ item, onCheck, checked }) => {
     return (
         <TouchableOpacity onPress={onCheck} activeOpacity={0.8} style={{ padding: 5, margin: 10, backgroundColor: '#fff', borderRadius: 5, paddingVertical: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-            <View style={{marginRight : 'auto', width : 30}}/>
+            <View style={{ marginRight: 'auto', width: 30 }} />
             <View style={{ padding: 5, alignItems: 'center' }}>
                 <Text style={{ fontSize: 22, fontWeight: 'bold', textAlign: 'center' }}>{item.price}</Text>
                 <View style={{ flexDirection: 'row', marginTop: 5, backgroundColor: Colors.blue_color, width: 160, justifyContent: 'center', alignItems: 'center', height: 35, borderRadius: 30 }}>
@@ -80,7 +92,7 @@ const RenderItem = ({ item, onCheck, checked }) => {
 
             </View>
             <CheckBox
-                style={{ padding: 5, marginLeft:'auto' }}
+                style={{ padding: 5, marginLeft: 'auto' }}
                 onClick={onCheck}
                 isChecked={checked}
                 checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{ width: 22, height: 22 }} />}
@@ -96,7 +108,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
         backgroundColor: Colors.buttom_color,
-        width  : '100%',
+        width: '100%',
         height: 65,
         justifyContent: 'center',
     },

@@ -4,6 +4,10 @@ import {AuthContext} from './AuthProvider';
 
 export const PackageContext = React.createContext();
 
+// export const PackagesMethod = React.createRef()
+// export const WITH_VENDOR = '1'
+// export const 
+
 const PackageProvider = ({children}) => {
   const {userData} = useContext(AuthContext);
 

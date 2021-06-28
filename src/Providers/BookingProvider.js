@@ -70,6 +70,7 @@ const BookingProvider = ({ children }) => {
   const { userData } = useContext(AuthContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [vehicles, setVehicles] = useState(LOADING)
+  const [vendorId, serVendorId] = useState()
 
   useEffect(() => { onStateChange(state) }, [state]);
 
@@ -101,7 +102,9 @@ const BookingProvider = ({ children }) => {
 
   const getModel = async (Year) => customCallApi('model', userData.api_token, { Year }, 'POST', 'Model')
 
-  const addNewVehicle = async data => callApi('addVehicle', userData.api_token, {...data, user_id : userData.id, category_id : 1})
+  const addNewVehicle = async data => callApi('addVehicle', userData.api_token, { ...data, user_id: userData.id, category_id: 1 })
+
+  const getVendor = async () => callApi('vendorlist', userData.api_token, { latitude: userData.latitude, longitude: userData.longitude })
 
   const getVehicles = async () => {
     setVehicles(LOADING)
@@ -125,7 +128,10 @@ const BookingProvider = ({ children }) => {
     getMake,
     getYear,
     getModel,
-    addNewVehicle
+    addNewVehicle,
+    getVendor,
+    vendorId, 
+    setVendorId
   }}>{children}</BookingContext.Provider>;
 };
 
@@ -303,5 +309,5 @@ const getUniques = (results) => {
       labels.push(r.name)
     }
   }
-  return {data : newArr}
+  return { data: newArr }
 }
