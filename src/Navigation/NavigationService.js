@@ -5,6 +5,7 @@ import Colors from '../../Constants/Colors';
 export const navigationRef = React.createRef();
 export const type = React.createRef()
 export const bookingType = React.createRef()
+export const afterScheduleScreen = React.createRef()
 export const WASHER = '2'
 export const CUSTOMER = '3'
 export const ON_DEMAND = '4'
@@ -39,6 +40,7 @@ export const defaultScreenOptions = {
   headerTitleStyle: {color: 'white'},
   headerTitleAlign: 'center',
   headerTintColor: 'white',
+  detachPreviousScreen : false,
   ...TransitionPresets.SlideFromRightIOS,
   // cardStyle: {backgroundColor: '#000'},
 };

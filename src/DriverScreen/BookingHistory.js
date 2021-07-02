@@ -17,7 +17,7 @@ const BookingHistory = ({navigation}) => {
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <SafeAreaView />
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={{fontWeight: 'bold', color: Colors.text_white, fontSize: 18}}>Rewards:</Text>
 
         {[...Array(10)].map((v, i) => (
@@ -27,7 +27,7 @@ const BookingHistory = ({navigation}) => {
             source={require('../../Assets/drop.png')}
           />
         ))}
-      </View>
+      </View> */}
       <FlatList
         keyExtractor={item => item.booking_id}
         style={{width: '100%', height: 200}}

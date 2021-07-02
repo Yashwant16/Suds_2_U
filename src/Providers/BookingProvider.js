@@ -70,7 +70,8 @@ const BookingProvider = ({ children }) => {
   const { userData } = useContext(AuthContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [vehicles, setVehicles] = useState(LOADING)
-  const [vendorId, serVendorId] = useState()
+  const [currentBooking, setCurrentBooking] = useState({})
+  const [customer_id, setCustomerId] = useState()
 
   useEffect(() => { onStateChange(state) }, [state]);
 
@@ -106,6 +107,14 @@ const BookingProvider = ({ children }) => {
 
   const getVendor = async () => callApi('vendorlist', userData.api_token, { latitude: userData.latitude, longitude: userData.longitude })
 
+  const getAddOns = async () => await callApi('addOns', userData.api_token, {}, null, 'GET')
+
+  const getNearByVendor = async () => callApi('automaticallyShowVendor', userData.api_token, { lat: userData.latitude, long: userData.longitude })
+
+  const applyCoupon = async coupan_code => await callApi('applycoupan', userData.api_token, { coupan_code })
+
+  const getPaymentIntent = async amount => await callApi('paymentorder', userData.api_token, { booking_id : 3, user_id :userData.id, amount  })
+
   const getVehicles = async () => {
     setVehicles(LOADING)
     let json = await callApi('viewVehicle', userData.api_token, { user_id: userData.id })
@@ -130,8 +139,14 @@ const BookingProvider = ({ children }) => {
     getModel,
     addNewVehicle,
     getVendor,
-    vendorId, 
-    setVendorId
+    getNearByVendor,
+    setCurrentBooking,
+    currentBooking,
+    getAddOns,
+    applyCoupon,
+    customer_id,
+    setCustomerId,
+    getPaymentIntent
   }}>{children}</BookingContext.Provider>;
 };
 
@@ -146,6 +161,12 @@ const fakeCallApi = (subfix, AppKey, { pagecount }, onFalse, method = 'POST') =>
     }, 500);
   });
 };
+
+export const calculateTotalPrice = (booking)=>{
+  let addOnsPrice = (booking?.selectedAddOns?.length == 0 ? 0 : booking?.selectedAddOns?.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)) || 0
+  let packagePrice = (parseFloat(booking?.packageDetails?.price)) || 0
+  return addOnsPrice + packagePrice
+}
 
 let Data = [
   {

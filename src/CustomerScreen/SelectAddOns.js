@@ -1,167 +1,128 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar,SafeAreaView, TouchableOpacity, TextInput,Button,FlatList ,ImageBackground} from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, FlatList, ImageBackground } from 'react-native';
 
-import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box'
-// import { CheckBox } from 'react-native-elements'
+import { BookingContext } from '../Providers/BookingProvider';
+import LoadingView from '../Components/LoadingView';
 
-export default class MyNotificationsScreen extends React.Component {
+const SelectAddOns = ({ navigation }) => {
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        selectedAddon : null,
-        Data: [
-        
-          {
-            name: 'Extra Trash - ',
-            date: '22 Jan',
-            dueAmount: '500 Rs',
-            content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-            image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-            like: '25',
-            comment: '50',
-          },
-          {
-            name: 'Pet Hair - ',
-            date: '22 Jan',
-            dueAmount: '500 Rs',
-            content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-            image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-            like: '25',
-            comment: '50',
-          },
-          {
-            name: 'Lifted Vehicle - ',
-            date: '22 Jan',
-            dueAmount: '500 Rs',
-            content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-            image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-            like: '25',
-            comment: '50',
-          },
-         
-       
-        ],
-      }
-    }
-  
+  const [addOns, setAddOns] = useState([])
+  const [fetching, setFetching] = useState(true)
+  const [selectedAddOns, setSelectedAddOns] = useState([])
+  const { getAddOns ,setCurrentBooking} = useContext(BookingContext)
 
-    renderItem = ({ item, index }) => (
-      <View style={{ padding: 21,flex:1,margin:10,marginHorizontal:18, backgroundColor:'#fff',borderRadius:5,paddingVertical:10,}}>
+  useEffect(() =>{ getAddOnList(); return ()=>setCurrentBooking(cv=>({...cv, extra_add_ons : undefined, selectedAddOns : undefined}))}, [])
 
-
-  <View style={{flexDirection:'row',marginTop:5,justifyContent:'space-evenly',flex:1}}>
-    <View style={{flexDirection:'row'}}>
-    <Text style={{marginHorizontal:5,fontSize:16,color:'#000',fontWeight:'bold'}}>{item.name}</Text>
-    <Text style={{marginHorizontal:5,fontSize:16,color:'#e28c39',fontWeight:'bold'}}>$25.00</Text>
-    </View>
-    <CheckBox
-            style={{ padding: 0,alignItems:'flex-end',flex:1,marginRight:15}}
-            onClick={()=>{
-                 this.setState({
-                     selectedAddon : index
-                 })
-               }}
-            isChecked={this.state.selectedAddon==index}
-            checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{width:22,height:22}}/>}
-            unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{width:22,height:22}}/>}
-        />
-  </View>
-
-      </View>
-    )
-    render() {
-      const { navigation } = this.props;
-      return (
-        <View style={{flex:1}}>
-                          <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                          {/* <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                  height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('SelectPackage') }}>
-                        <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-                 </TouchableOpacity> 
-                    }
-                  centerComponent={
-                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>SELECT ADD-ONS</Text>
-                }
-                /> */}
-                   <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
-                <SafeAreaView/>
-                <View style={{alignItems:'center',width:'100%',}}> 
-                <View style={{backgroundColor:'#e28c39',height:60,width:'100%',justifyContent:'center',paddingHorizontal:20}}>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Upgrade your packages with the following add-ons</Text>
-                </View>
-       <FlatList
-      
-            style={{ width:'100%',marginBottom:20}}
-            showsVerticalScrollIndicator={false}
-            data={this.state.Data}
-            renderItem={this.renderItem}
-            keyExtractor={(item, index)=>index}
-          // ListEmptyComponent={this.ListEmpty}
-          />
-          
-       
-       </View>
-       <View style={{justifyContent:'flex-end',flex:1,alignItems:'center',marginTop:10}}>
-       <View style={{backgroundColor:'#e28c39',height:60,width:'100%',justifyContent:'center',paddingHorizontal:20}}>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Estimates Wash Duration 30 Mins</Text>
-                    <Text style={{fontSize:17,color:'#fff',fontWeight:'700',textAlign:'center'}}>Sub-Total: $99.00</Text>
-                </View>
-                        <TouchableOpacity
-                            elevation={5}
-                            onPress={() => { navigation.navigate('Booking Review'); }}
-                            style={styles.auth_btn}
-                            underlayColor='gray'
-                            activeOpacity={0.8}
-                        // disabled={this.state.disableBtn}
-                        >
-                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label,fontWeight:'bold'}}>CONFIRM ADD-ONS</Text>
-                         
-                        </TouchableOpacity>
-                       
-                        </View>
-       </ImageBackground>
-        </View>
-      );
-    }
+  const getAddOnList = async () => {
+    setFetching(true)
+    let json = await getAddOns()
+    setFetching(false)
+    if (json?.data) setAddOns(json?.data)
   }
-  
-  const styles = StyleSheet.create({
-    auth_textInput: {
 
-        alignSelf: 'center',
-        width: '93%',
-        // borderWidth: 1,
-        borderBottomWidth: 1,
-        height: 40,
-        color: Colors.text_color,
-        marginTop: 10,
+  const onSelect = (item) => {
+    if (selectedAddOns.includes(item)) setSelectedAddOns(cv => cv.filter(v => v.id != item.id))
+    else setSelectedAddOns(cv => [...cv, item])
+  }
 
-    },
-    auth_btn: {
-       
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: Colors.buttom_color,
-    
-        width: '100%',
-        height: 60,
-        justifyContent: 'center',
-    },
-    add_btn: {
-      
-      backgroundColor:'#e28c39',
-  alignItems:'center',
-      width: '45%',
-      height: 40,
-      justifyContent: 'center',borderRadius:20
+  return (
+    <View style={{ flex: 1 }}>
+
+      <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
+        <LoadingView fetching={fetching} containerStyle={{ height: '100%' }}>
+          <SafeAreaView />
+
+
+
+          <View style={{ alignItems: 'center', width: '100%', }}>
+            <View style={{ backgroundColor: '#e28c39', height: 60, width: '100%', justifyContent: 'center', paddingHorizontal: 20 }}>
+              <Text style={{ fontSize: 17, color: '#fff', fontWeight: '700', textAlign: 'center' }}>Upgrade your packages with the following add-ons</Text>
+            </View>
+            <FlatList
+              style={{ width: '100%', marginBottom: 180 }}
+              showsVerticalScrollIndicator={false}
+              data={addOns}
+              renderItem={({ item, index }) => <RenderItem item={item} index={index} onSelect={() => onSelect(item)} isSelected={selectedAddOns.includes(item)} />}
+              keyExtractor={(item, index) => index}
+              ItemSeparatorComponent={() => <View style={{ margin: -5 }} />}
+            />
+
+          </View>
+
+          <View style={{ position: 'absolute', bottom: 0, right: 0, left: 0, alignItems: 'center', marginTop: 10 }}>
+            <View style={{ backgroundColor: '#e28c39', height: 60, width: '100%', justifyContent: 'center', paddingHorizontal: 20 }}>
+              <Text style={{ fontSize: 17, color: '#fff', fontWeight: '700', textAlign: 'center' }}>Estimates Wash Duration 30 Mins</Text>
+              <Text style={{ fontSize: 17, color: '#fff', fontWeight: '700', textAlign: 'center' }}>Sub-Total:  ${selectedAddOns.length == 0 ? 0 : selectedAddOns.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)}</Text>
+            </View>
+            <TouchableOpacity
+              elevation={5}
+              onPress={() => {
+                if(selectedAddOns.length>0) setCurrentBooking(cv=>({...cv,selectedAddOns, extra_add_ons:selectedAddOns.map(addOn=>addOn.id).reduce((p,c)=>p+','+c)}))
+                navigation.navigate('Booking Review');
+              }}
+              style={styles.auth_btn}
+              underlayColor='gray'
+              activeOpacity={0.8}>
+              <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>CONFIRM ADD-ONS</Text>
+            </TouchableOpacity>
+          </View>
+        </LoadingView>
+      </ImageBackground>
+
+    </View>
+  );
+}
+
+export default SelectAddOns
+
+const RenderItem = ({ item, index, onSelect, isSelected }) => (
+  <TouchableOpacity onPress={onSelect} style={{ padding: 21, flex: 1, margin: 10, marginHorizontal: 18, backgroundColor: '#fff', borderRadius: 5, paddingVertical: 10, }}>
+    <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'space-evenly', flex: 1 }}>
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={{ marginHorizontal: 5, fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.add_ons_name} - </Text>
+        <Text style={{ marginHorizontal: 5, fontSize: 16, color: '#e28c39', fontWeight: 'bold' }}>${parseFloat(item.add_ons_price).toFixed(2)}</Text>
+      </View>
+      <CheckBox
+        style={{ padding: 0, alignItems: 'flex-end', flex: 1, marginRight: 15 }}
+        onClick={onSelect}
+        isChecked={isSelected}
+        checkedImage={<Image source={require('../../Assets/icon/checked.png')} style={{ width: 22, height: 22 }} />}
+        unCheckedImage={<Image source={require('../../Assets/icon/unchecked.png')} style={{ width: 22, height: 22 }} />}
+      />
+    </View>
+  </TouchableOpacity>
+)
+
+const styles = StyleSheet.create({
+  auth_textInput: {
+
+    alignSelf: 'center',
+    width: '93%',
+    // borderWidth: 1,
+    borderBottomWidth: 1,
+    height: 40,
+    color: Colors.text_color,
+    marginTop: 10,
+
+  },
+  auth_btn: {
+
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: Colors.buttom_color,
+
+    width: '100%',
+    height: 60,
+    justifyContent: 'center',
+  },
+  add_btn: {
+
+    backgroundColor: '#e28c39',
+    alignItems: 'center',
+    width: '45%',
+    height: 40,
+    justifyContent: 'center', borderRadius: 20
   },
 })

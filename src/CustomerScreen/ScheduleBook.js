@@ -1,12 +1,13 @@
 // React Native Calendar Picker using react-native-calendar-picker
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 // import TimePicker from 'react-native-simple-time-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarPicker from 'react-native-calendar-picker';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { afterScheduleScreen } from '../Navigation/NavigationService';
 
 const ScheduleBook = ({ navigation, route }) => {
 
@@ -59,9 +60,13 @@ const ScheduleBook = ({ navigation, route }) => {
   const [date, setDate] = useState(new Date(1598051730000));
   const [show, setShow] = useState(false);
 
+  useEffect(() => {
+    return () => afterScheduleScreen.current = null
+  }, [])
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }} >
-      <ScrollView style={{flex:1, backgroundColor: '#fff' }}>
+      <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
             Donge Ram 350 Truck
@@ -116,21 +121,24 @@ const ScheduleBook = ({ navigation, route }) => {
 
           <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 10, fontWeight: 'bold', color: Colors.blue_color }}>Total Hours: 2</Text>
         </View>
-        </ScrollView>
-        <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginTop: 10, }}>
+      </ScrollView>
+      <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginTop: 10, }}>
 
-          <TouchableOpacity
-            elevation={5}
-            onPress={() => { navigation.navigate('Packages', route.params) }}
-            style={styles.auth_btn}
-            underlayColor='gray'
-            activeOpacity={0.8}>
-            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>CONTINUE</Text>
+        <TouchableOpacity
+          elevation={5}
+          onPress={() => {
+            if (afterScheduleScreen.current != null) navigation.navigate(afterScheduleScreen.current)
+            else navigation.navigate('Packages', route.params)
+          }}
+          style={styles.auth_btn}
+          underlayColor='gray'
+          activeOpacity={0.8}>
+          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>CONTINUE</Text>
 
-          </TouchableOpacity>
+        </TouchableOpacity>
 
-        </View>
-     
+      </View>
+
       {show && <DateTimePicker
         testID="dateTimePicker"
         value={date}

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
 import Colors from '../../Constants/Colors';
-import { bookingType, ON_DEMAND } from '../Navigation/NavigationService';
+import { bookingType, ON_DEMAND,afterScheduleScreen } from '../Navigation/NavigationService';
 const ConfirmBusniesswash = ({ navigation }) => {
+    useEffect(() => {
+        return () => afterScheduleScreen.current = null
+    }, [])
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
@@ -10,7 +13,7 @@ const ConfirmBusniesswash = ({ navigation }) => {
             <View style={{ width: '100%', padding: 21, alignItems: 'center' }}>
 
                 <Text style={{ fontSize: 21, fontWeight: 'bold' }}>Business wash</Text>
-                <Text style={{ fontSize: 21, padding: 10, textAlign : "center" }}>Area surface to be cleaned and washed</Text>
+                <Text style={{ fontSize: 21, padding: 10, textAlign: "center" }}>Area surface to be cleaned and washed</Text>
                 <Text style={{ fontSize: 21 }}>Area : 800 SQ feet</Text>
                 <Text style={{ fontSize: 21 }}>Price : $0.15 per foot</Text>
                 <View style={styles.card}>
@@ -23,7 +26,7 @@ const ConfirmBusniesswash = ({ navigation }) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <TouchableOpacity
                         elevation={5}
-                        onPress={() => { navigation.navigate(bookingType.current==ON_DEMAND?'Select Add Ons' : 'Select a Vendor') }}
+                        onPress={onNext}
                         style={styles.auth_btn}
                         underlayColor='gray'
                         activeOpacity={0.8} >

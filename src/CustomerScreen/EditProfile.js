@@ -10,6 +10,8 @@ import LoadingView from '../Components/LoadingView';
 import { AuthContext } from '../Providers/AuthProvider';
 import { launchImageLibrary } from 'react-native-image-picker';
 
+const partialImageUrl = "http://suds-2-u.com/sudsadmin/public/profile/"
+
 const EditProfile = ({ navigation, route }) => {
   const {
     control,
@@ -18,7 +20,7 @@ const EditProfile = ({ navigation, route }) => {
     getValues,
     formState: { errors },
   } = useForm();
-  const { completeProfile, getCountries, getStates, getCities, getUserDetails } = useContext(AuthContext);
+  const { completeProfile, getStates, getCities, getUserDetails } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [selectedImage, setSelectedImage] = useState()
@@ -27,8 +29,9 @@ const EditProfile = ({ navigation, route }) => {
     setFetching(true);
     getUserDetails()
       .then(json => {
-        const { data } = json;
         if (json) {
+          const { data } = json;
+          if(data.image) setSelectedImage({uri :partialImageUrl+data.image})
           reset({
             ...data,
             country: { name: data.country_name, id: data.country },
@@ -42,9 +45,7 @@ const EditProfile = ({ navigation, route }) => {
   }, []);
 
   const getStateList = async () => {
-    const selectedCountryId = getValues('country')?.id;
-    if (selectedCountryId) return await getStates(selectedCountryId);
-    else Alert.alert('Select country', 'Please select a country first');
+     return await getStates(231);
   };
 
   const getCityList = async () => {
@@ -55,18 +56,24 @@ const EditProfile = ({ navigation, route }) => {
 
   const onSubmit = async data => {
     setLoading(true);
-    let success = await completeProfile({ ...data, country: data.country.id, state: data.state.id, city: data.city.id, image : 'selectedImage' }, route.params?.authStack);
+    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, image : selectedImage }, route.params?.authStack);
     setLoading(false);
     if (success) navigation.goBack();
   };
+
+  const imageSelectCallBack = (res) => {
+    if (res.didCancel) return
+    console.log(res?.assets);
+    setSelectedImage(res?.assets[0])
+  }
 
   return (
     <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
       <ScrollView>
         <LoadingView loading={loading} fetching={fetching}>
           <View style={styles.header}>
-            <TouchableOpacity onPressIn={() => launchImageLibrary({}, (res) => {console.log(res?.assets[0]) ; setSelectedImage(res?.assets[0])})} style={{ borderColor: 'white', borderWidth: 4, padding: selectedImage ? 0 : 25 , borderRadius: 15 }}>
-            <Image style={{ width: selectedImage ? 100 : 50, height: selectedImage ? 100 : 50, borderRadius : selectedImage ? 11 : 0, resizeMode: 'cover'}} source={selectedImage ? selectedImage : require('../../Assets/icon/camera.png') } />
+            <TouchableOpacity onPressIn={() => launchImageLibrary({}, imageSelectCallBack)} style={{ borderColor: 'white', borderWidth: 4, padding: selectedImage ? 0 : 25, borderRadius: 15 }}>
+              <Image style={{ width: selectedImage ? 100 : 50, height: selectedImage ? 100 : 50, borderRadius: selectedImage ? 11 : 0, resizeMode: 'cover' }} source={selectedImage ? selectedImage : require('../../Assets/icon/camera.png')} />
             </TouchableOpacity>
           </View>
           <View style={styles.container}>
@@ -96,14 +103,6 @@ const EditProfile = ({ navigation, route }) => {
               curved
             />
 
-            <CustomPicker
-              asynFunction={getCountries}
-              fieldName="country"
-              rules={{ required: true }}
-              control={control}
-              errors={errors}
-              label="Country"
-            />
             <CustomPicker asynFunction={getStateList} fieldName="state" rules={{ required: true }} control={control} errors={errors} label="State" />
             <CustomPicker asynFunction={getCityList} fieldName="city" rules={{ required: true }} control={control} errors={errors} label="City" />
 

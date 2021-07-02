@@ -51,6 +51,7 @@ const CompleteProfile = ({navigation, route}) => {
   };
 
   const onSubmit = async data => {
+    delete data.image
     console.log(data)
     setLoading(true);
     let success = await completeProfile({...data, country: data.country.id, state: data.state.id, city: data.city.id}, route.params?.authStack);

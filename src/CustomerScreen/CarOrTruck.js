@@ -10,19 +10,32 @@ import { ActivityIndicator } from 'react-native';
 import { Alert } from 'react-native';
 
 const CarOrTruck = ({ navigation }) => {
-  const { getVehicles, vehicles } = useContext(BookingContext);
+  const { getVehicles, vehicles, getNearByVendor,setCurrentBooking} = useContext(BookingContext);
   const selectState = useState();
+  const [loading, setLoading] = useState(false)
   useEffect(() => getVehicles(), [])
 
-  const onNext = () => {
+  const onNext = async () => {
     if (!selectState[0]) Alert.alert("Select Vehicle", 'Please select a vehicle to continue.')
-    else navigation.navigate(bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor')
+    else {
+      setCurrentBooking(cv=>({...cv,vehicle_id : selectState[0]?.vehicle_id, vehicle : `${selectState[0].make} ${selectState[0].year} ${selectState[0].model}` }))
+      if (bookingType.current == ON_DEMAND) {
+        setLoading(true)
+        let json = await getNearByVendor()
+        setLoading(false)
+        if (json?.data) {
+          navigation.navigate('Packages', {packageParams :{ vendorId: json.data.id }})
+          setCurrentBooking(cv=>({...cv, washer_id : json.data.id}))
+        }
+      } else navigation.navigate('Select a Vendor')
+    }
+    
   }
 
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/bg_img.png')}>
-        <LoadingView>
+        <LoadingView loading={loading}>
           <View style={{ alignItems: 'center', width: '100%' }}>
             <List vehicles={vehicles} retry={getVehicles} selectState={selectState} />
           </View>
@@ -74,7 +87,7 @@ const RenderItem = ({ item, onClick, checked }) => (
   </TouchableOpacity>
 );
 
-const List = ({ vehicles, retry, selectState: [selectedVehicleId, setSelectedVehicleId] }) => {
+const List = ({ vehicles, retry, selectState: [selectedVehicle, setSelectedVehicle] }) => {
 
   switch (vehicles) {
     case ERROR:
@@ -97,7 +110,7 @@ const List = ({ vehicles, retry, selectState: [selectedVehicleId, setSelectedVeh
           ItemSeparatorComponent={() => <View style={{ margin: -15 }} />}
           ListFooterComponent={() => <View style={{ height: 200 }} />}
           renderItem={({ item, index }) => (
-            <RenderItem item={item} onClick={() => setSelectedVehicleId(item.vehicle_id)} checked={selectedVehicleId == item.vehicle_id} />
+            <RenderItem item={item} onClick={() => setSelectedVehicle(item)} checked={selectedVehicle?.vehicle_id == item.vehicle_id} />
           )}
         />
       );

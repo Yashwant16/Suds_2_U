@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {defaultScreenOptions} from '../NavigationService';
 import {Image, TouchableOpacity} from 'react-native';
 import DriverDrawer from './DriverDrawer';
@@ -63,7 +63,8 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="Schedule Book" component={ScheduleBook} />
       <Stack.Screen name="Booking Detail" component={BookingDetail} />
       <Stack.Screen name="OnDemand" component={OnDemand} />
-      <Stack.Screen name="On The Way" component={OnTheWay} />
+      <Stack.Screen name="OnDemandChangeLocation" component={OnDemand} options={{ ...TransitionPresets.ModalSlideFromBottomIOS, gestureEnabled: true, title : 'Change Location' }}/>
+      {/* <Stack.Screen name="On The Way" component={OnTheWay} /> */}
       <Stack.Screen name="Work In Progress" component={WorkInProgress} />
       <Stack.Screen name="Select Type" component={SelectTypeOfVehicle} />
       <Stack.Screen name="Select a Vendor" component={SelectVender} />
@@ -75,7 +76,7 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="MotorCycles" component={MotorCycles} />
       <Stack.Screen name="Boats" component={Boats} />
       <Stack.Screen name="Tractor Trailors" component={TractorTrailors} />
-      <Stack.Screen name="Review Rating" component={ReviewRating} />
+      <Stack.Screen name="Review Rating" component={ReviewRating}  />
       <Stack.Screen name="Select Vehicle Type" component={SelectVehicleType} />
       <Stack.Screen name="Vehicle Categories" component={SelectVehicleType} />
       <Stack.Screen name="Packages" component={Packages} />

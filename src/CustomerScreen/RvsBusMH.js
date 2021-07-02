@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
 import Colors from '../../Constants/Colors';
 import RNPickerSelect from 'react-native-picker-select';
 const RvBusMH = ({ navigation }) => {
 
+  const [length, setLength] = useState()
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -19,7 +20,7 @@ const RvBusMH = ({ navigation }) => {
           <RNPickerSelect
             placeholder={{ label: 'Choose length in feet...', value: null, color: '#9EA0A4' }}
             style={{ viewContainer: { width: '100%', alignSelf: 'center', }, inputAndroid: { color: 'black' }, inputIOS: { color: 'black' }, modalViewBottom: { height: 200 } }}
-            onValueChange={(value) => console.log(value)}
+            onValueChange={setLength}
             items={[...Array(13).keys()].map((v, i, arr) => { return { label: ((i + 3) * 5) + ' Feet', value: i + '' } })}
           />
         </View>
@@ -28,7 +29,7 @@ const RvBusMH = ({ navigation }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
             elevation={5}
-            onPress={() => { navigation.navigate('Rv, Bus and Motor Home'); }}
+            onPress={() => { navigation.navigate('Rv, Bus and Motor Home', {length :((parseFloat(length) + 3) * 5)}); }}
             style={styles.auth_btn}
             underlayColor='gray'
             activeOpacity={0.8} >

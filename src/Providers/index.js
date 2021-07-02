@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
 import AppProvider from './AppProvider';
 import AuthProvider from './AuthProvider';
@@ -13,6 +13,12 @@ export const ERROR = 5
 export const LOADING = 6
 
 const Providers = ({ children }) => {
+  console.log('brbr[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[')
+  useEffect(()=>{
+    fetch('http://192.168.1.8:3000/', {
+      method: 'GET' 
+    }).then(async res=>console.log(await res.text())).catch(err=>console.log(err));
+  }, [])
   return (
     <AppProvider>
       <AuthProvider>
@@ -41,7 +47,7 @@ export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') 
     let res = await fetch(url, {
       method: method,
       headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
-      body: formData
+      body: method=="GET" ? null : formData
     });
     let jsonResponse = await res.json();
     console.log(jsonResponse);

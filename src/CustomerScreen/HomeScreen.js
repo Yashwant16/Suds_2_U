@@ -18,53 +18,11 @@ export default class MyNotificationsScreen extends React.Component {
       userData: ''
     }
   }
-  componentDidMount = async () => {
-    // this.userdetails();
-  }
-  //   userdetails = async () => {
-  //     let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
-  //     console.log(savedUserData.api_token);
 
-  //     let params = {
-  //       // email: this.props.navigation.getParam(email),
-  //       user_id: savedUserData.id,
-
-
-  //     };
-  //     return fetch('http://suds-2-u.com/sudsadmin/api/userdetails', {
-  //       method: 'POST',
-  //       headers: {
-  //         Accept: 'application/json',
-  //         'App-Key':savedUserData.api_token,
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(params)
-  //     })
-  //       .then((response) => response.json())
-  //       .then((responseJson) => {
-  //         // this.setState({ isLoading: false })
-  //         console.log("responseJson onLoginPressHandle", responseJson)
-  //         if (responseJson.response === true) {
-
-  // this.setState({userData:responseJson.data})
-  //           // this.props.navigation.navigate('Main')
-  //         }
-  //         else if (responseJson.response === false) {
-  //           // alert(responseJson.message)
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         // this.setState({ isLoading: false })
-  //         console.error(error);
-  //       });
-
-  //   };
   render() {
     const { navigation } = this.props;
     return (
       <View style={{ flex: 1, }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
         <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
           <Text style={{ color: '#fff', margin: 6, marginTop: 10, fontSize: 16, fontWeight: '600' }}>Rewards</Text>
 
@@ -79,9 +37,9 @@ export default class MyNotificationsScreen extends React.Component {
               <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#60d0de', alignItems: 'center', justifyContent: 'center' }}>
+            {/* <TouchableOpacity style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#60d0de', alignItems: 'center', justifyContent: 'center' }}>
               <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/document.png')} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View style={{ flex: 1, justifyContent: 'flex-end', }}>
             <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom: -1 }} source={require('../../Assets/shape.png')} >
@@ -96,8 +54,7 @@ export default class MyNotificationsScreen extends React.Component {
                 <TouchableOpacity
                   elevation={5}
                   onPress={() => {
-                    bookingType.current = ON_DEMAND;
-                    navigation.navigate('OnDemand')
+                    navigation.navigate('OnDemand', {bookingType : ON_DEMAND, headerTitle : 'On Demand Services'})
                     console.log(bookingType)
                   }}
                   style={styles.auth_btn}
@@ -108,7 +65,10 @@ export default class MyNotificationsScreen extends React.Component {
 
                 <TouchableOpacity
                   elevation={5}
-                  onPress={() => { bookingType.current = SCHEDULED; navigation.navigate('Select Vehicle Type'); }}
+                  onPress={() => {
+                    navigation.navigate('OnDemand', {bookingType : SCHEDULED, headerTitle : 'Schedule a booking'})
+                    console.log(bookingType)
+                  }}
                   style={styles.auth_btn}
                   underlayColor='gray'
                   activeOpacity={0.8} >

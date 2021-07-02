@@ -13,6 +13,8 @@ import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
 import BookingHistory from '../../DriverScreen/BookingHistory';
 import WorkInProgress from '../../CustomerScreen/WorkInProgress'
 import BookingConfirmed from '../../CustomerScreen/BookingConfirm';
+import OnTheWay from '../../CustomerScreen/OnTheWay';
+import SelectVendor from '../../CustomerScreen/SelectVender';
 const Drawer = createDrawerNavigator();
 
 
@@ -70,8 +72,8 @@ const CustomerDrawer = () => {
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/help.png')} /> }}
       />
       {/* <Drawer.Screen
-        name="Booking confirm"
-        component={BookingConfirmed}
+        name="Select Vendor"
+        component={SelectVendor}
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/help.png')} /> }}
       /> */}
     </Drawer.Navigator>

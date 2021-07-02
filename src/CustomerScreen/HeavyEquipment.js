@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
 import Colors from '../../Constants/Colors';
 import RNPickerSelect from 'react-native-picker-select';
+import { Alert } from 'react-native';
 const RvBusMH = ({ navigation }) => {
 
+  const [hours, setHours] = useState()
+
+  const onNext = ()=>{
+    if(!hours) return Alert.alert('Alert', 'Please select time in hour.')
+    navigation.navigate('Heavy Equipments', {hours : parseFloat(hours)+1})
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -19,8 +26,8 @@ const RvBusMH = ({ navigation }) => {
           <RNPickerSelect
             placeholder={{ label: 'Choose time in hour...', value: null, color: '#9EA0A4' }}
             style={{ viewContainer: { width: '100%', alignSelf: 'center', }, inputAndroid: { color: 'black' }, inputIOS: { color: 'black' }, modalViewBottom: { height: 200 } }}
-            onValueChange={(value) => console.log(value)}
-            items={[...Array(23).keys()].map((v, i, arr) => { return { label:`${i+1} Hour${(i==0?'':'s')}`,value: i + 'Hour', key:i } })}
+            onValueChange={setHours}
+            items={[...Array(23).keys()].map((v, i, arr) => { return { label:`${i+1} Hour${(i==0?'':'s')}`,value: i +'', key:i } })}
           />
         </View>
       </View>
@@ -28,7 +35,7 @@ const RvBusMH = ({ navigation }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
             elevation={5}
-            onPress={() => { navigation.navigate('Heavy Equipments'); }}
+            onPress={onNext}
             style={styles.auth_btn}
             underlayColor='gray'
             activeOpacity={0.8} >
