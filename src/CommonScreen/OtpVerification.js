@@ -41,7 +41,8 @@ const OTPverification = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <View style={{flex: 1}}>
+      <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
         <ScrollView>
           <ImageBackground style={{width: '100%', height: '67%', flex: 1}} source={require('../../Assets/imageBG.png')}>
             <LoadingView loading={loading}>
@@ -83,7 +84,7 @@ const OTPverification = ({navigation, route}) => {
             </LoadingView>
           </ImageBackground>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </View>
   );
 };
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     justifyContent: 'flex-end',
     shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 3.5,
     borderRadius: 15,
     elevation: 5,

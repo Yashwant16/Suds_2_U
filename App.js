@@ -7,6 +7,9 @@ import { navigationRef } from './src/Navigation/NavigationService';
 import Providers from './src/Providers';
 import messaging from '@react-native-firebase/messaging';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons'
+
+Icon.loadFont();
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {

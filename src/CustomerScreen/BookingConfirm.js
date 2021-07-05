@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Alert } from 'react-native';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity,SafeAreaView } from 'react-native';
 import Colors from '../../Constants/Colors';
 import { afterScheduleScreen, bookingType, changeStack, ON_DEMAND } from '../Navigation/NavigationService';
 import { BookingContext, calculateTotalPrice } from '../Providers/BookingProvider';
@@ -8,7 +8,8 @@ import { BookingContext, calculateTotalPrice } from '../Providers/BookingProvide
 const BookingConfirmed = () => {
     const {currentBooking} = useContext(BookingContext)
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor : 'orange' }}>
+            <View style={{flex : 1, backgroundColor : 'white'}} >
             <View style={{ alignItems: 'center', width: '100%', padding: 21, flex: 1 }}>
                 <Image style={{ width: 85, height: 85, tintColor: '#0AFF06', marginTop: 30 }} source={require('../../Assets/checkmark.png')} />
                 <Text style={{ fontSize: 22, marginVertical: 10, fontWeight: 'bold', color: 'gray', marginTop: 30 }}>Booking Confirmed!</Text>
@@ -56,7 +57,8 @@ const BookingConfirmed = () => {
                     <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Go to Home Screen</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+            </View>
+        </SafeAreaView>
     );
 }
 

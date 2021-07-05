@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
 import { Rating } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
@@ -26,6 +27,7 @@ const SelectVendor = ({ route }) => {
     <View style={{ flex: 1, backgroundColor: '#eee' }}>
       <LoadingView fetching={fetching} fetchingColor={Colors.blue_color}>
         <FlatList
+        ListFooterComponent={()=><View style={{height : Platform.OS=="ios" ? 30 : 0}} />}
           keyExtractor={(item, i) => i}
           data={vendors}
           renderItem={({ item, index }) => <RenderItem item={item} index={index} route={route} onSelect={()=>setCurrentBooking(cv=>({...cv, washer_id : item.id}))} />}

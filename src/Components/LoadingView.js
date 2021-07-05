@@ -29,7 +29,7 @@ const Loading = ({color}) => (
         flex: 1,
         backgroundColor: '#00000050',
         position: 'absolute',
-        top: 56,
+        top: 0,
         bottom: 0,
         left: 0,
         right: 0,

@@ -205,10 +205,10 @@ const SelectVehicleType = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
       <FlatList
         keyExtractor={item => item.vehicleType}
-        style={{ width: '100%' }} data={types}
+        style={{ width: '100%', backgroundColor : 'white' }} data={types}
         renderItem={({ item, index }) => <RenderItem item={item} onCheck={() => setSelectedType(cv => (cv == index ? undefined : index))} checked={selectedType == index} onPress={() => setCurrentBooking(cv => ({ ...cv, vehicle: item?.vehicleType }))} />}
         ItemSeparatorComponent={() => <View style={{ marginTop: -15 }} />} />
       <View style={{ alignItems: 'center', marginTop: 'auto' }}>
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#555',
     shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 3.5,
     borderRadius: 10,
     elevation: 5,

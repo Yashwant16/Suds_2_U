@@ -68,9 +68,9 @@ const BookingReview = () => {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1,   backgroundColor: '#e28c39', }}>
             <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
-                <SafeAreaView />
+           
                 <ScrollView style={{ marginBottom: 31 }}>
                     <View style={{ alignItems: 'center', width: '100%', padding: 21 }}>
                         <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
@@ -138,7 +138,7 @@ const BookingReview = () => {
                 </View>
 
             </ImageBackground>
-        </View>
+        </SafeAreaView>
     );
 }
 

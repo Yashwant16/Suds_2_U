@@ -28,12 +28,11 @@ const SelectAddOns = ({ navigation }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor : Colors.blue_color }}>
 
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
         <LoadingView fetching={fetching} containerStyle={{ height: '100%' }}>
-          <SafeAreaView />
-
+     
 
 
           <View style={{ alignItems: 'center', width: '100%', }}>
@@ -71,7 +70,7 @@ const SelectAddOns = ({ navigation }) => {
         </LoadingView>
       </ImageBackground>
 
-    </View>
+    </SafeAreaView>
   );
 }
 

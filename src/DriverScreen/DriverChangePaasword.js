@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {StyleSheet, View, Image, ImageBackground, Alert} from 'react-native';
+import {StyleSheet, View, Image, ImageBackground, Alert, KeyboardAvoidingView} from 'react-native';
 import CustomInput from '../Components/CustomInput';
 import CtaButton from '../Components/CtaButton';
 import LoadingView from '../Components/LoadingView';
@@ -27,8 +27,8 @@ const DriverChangePassword = () => {
   };
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{flex: 1}}>
+    <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
         <ImageBackground
           style={{width: '100%', height: '100%', flex: 1, justifyContent: 'space-evenly'}}
           source={require('../../Assets/imageBG.png')}>
@@ -67,8 +67,7 @@ const DriverChangePassword = () => {
             </View>
           </LoadingView>
         </ImageBackground>
-      </View>
-    </View>
+      </KeyboardAvoidingView>
   );
 };
 export default DriverChangePassword;
@@ -81,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 3.5,
     elevation: 5,
     borderRadius: 15,

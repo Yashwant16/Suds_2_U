@@ -48,20 +48,21 @@ const Packages = ({ route }) => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
             <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
-                <LoadingView fetching={fetching} containerStyle={{ paddingBottom: 65 }}>
+                <LoadingView fetching={fetching}>
                     <View style={{ padding: 10, backgroundColor: Colors.dark_orange, }}>
                         <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 18 }}>{packageType}</Text>
                     </View>
+                    </LoadingView>
                     <FlatList
                         keyExtractor={(item) => item.package_id || item.id}
-                        style={{ width: '100%', marginBottom: 90  }}
+                        style={{ width: '100%',   }}
                         data={packages}
                         renderItem={({ item, index }) => <RenderItem item={item} onCheck={() => setSelectedPackage(cv => cv == index ? undefined : index)} checked={selectedPackage == index} />}
                         ItemSeparatorComponent={() => <View style={{ marginTop: -10 }} />}
                     />
-                </LoadingView>
+                
                 <View style={{ alignItems: 'center', marginTop: 'auto' }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <TouchableOpacity

@@ -8,6 +8,7 @@ import { BookingContext } from '../Providers/BookingProvider';
 import { ERROR, LOADING } from '../Providers';
 import { ActivityIndicator } from 'react-native';
 import { Alert } from 'react-native';
+import { SafeAreaView } from 'react-native';
 
 const CarOrTruck = ({ navigation }) => {
   const { getVehicles, vehicles, getNearByVendor,setCurrentBooking} = useContext(BookingContext);
@@ -33,7 +34,7 @@ const CarOrTruck = ({ navigation }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor : Colors.blue_color }}>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/bg_img.png')}>
         <LoadingView loading={loading}>
           <View style={{ alignItems: 'center', width: '100%' }}>
@@ -65,7 +66,7 @@ const CarOrTruck = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 };
 

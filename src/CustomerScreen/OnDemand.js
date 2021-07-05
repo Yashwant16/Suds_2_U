@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Text, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements';
@@ -11,6 +11,7 @@ const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 import Geocoder from 'react-native-geocoding';
 import { BookingContext } from '../Providers/BookingProvider';
 import { Alert } from 'react-native';
+import { Platform } from 'react-native';
 Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
 
 const GETTING_LOCATION = 'Getting Location...'
@@ -53,10 +54,10 @@ const OnDemand = ({ route }) => {
   const onPlaceSelected = (data, details = null) => {
     console.log(details)
     mapRef.current.animateCamera({
-      zoom: 18,
+      zoom: 15,
       pitch: 2,
       heading: 2,
-      altitude: 2,
+      altitude: 50,
       center: { latitude: details.geometry.location.lat, longitude: details.geometry.location.lng }
     }, { duration: 1000 })
     setState({ latitude: details.geometry.location.lat, longitude: details.geometry.location.lng, locationStatus: data?.description })
@@ -73,20 +74,14 @@ const OnDemand = ({ route }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 , backgroundColor:Colors.blue_color}}>
 
       <MapView
-        style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 }}
+        style={{ flex:1}}
         onRegionChangeComplete={({ latitude, longitude }) => getFormattedAddress(latitude, longitude)}
         showsCompass={false}
         ref={map => mapRef.current = map}
-        initialCamera={{
-          zoom: 15,
-          pitch: 2,
-          heading: 2,
-          altitude: 2,
-          center: { latitude: state.latitude, longitude: state.longitude }
-        }}>
+        initialRegion={{latitude: state.latitude, longitude: state.longitude , latitudeDelta : .009, longitudeDelta : .009 }}>
       </MapView>
 
       <View style={styles.jobDestination}>
@@ -98,7 +93,7 @@ const OnDemand = ({ route }) => {
         <TouchableOpacity
           onPress={() => { getOneTimeLocation() }}
           activeOpacity={0.7}
-          style={{ elevation: 2, borderRadius: 25, padding: 10, margin: 10, backgroundColor: 'white', alignSelf: 'flex-end' }}>
+          style={{ elevation: 2, shadowColor:'#555', shadowRadius : 5, shadowOpacity :.2,borderRadius: 25, padding: 10, margin: 10, backgroundColor: 'white', position : 'absolute', right : 0, bottom : 65 }}>
           <Icon name="gps-fixed" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -108,11 +103,11 @@ const OnDemand = ({ route }) => {
           <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', }}>CONFIRM LOCATION</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
         <Icon size={50} color="orange" name="place" style={{ paddingBottom: 35 }} />
       </View>
 
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -11,12 +11,17 @@ const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState({});
   const [loginData, setLoginData] = useState({})
 
-  useEffect(() => messaging().getToken().then((token) => console.log("-------------------------------", token)), [])
+  const getToken = async ()=>{
+    return 'random token'
+    // return await messaging().getToken()
+  }
+
+  // useEffect(() => messaging().getToken().then((token) => console.log("-------------------------------", token)), [])
 
   const signUp = async signUpData => {
     console.log("Washer sign up")
     setLoginData(signUpData)
-    let json = await callApi('washregistration', 'ABCDEFGHIJK', { ...signUpData, device_token: await messaging().getToken() });
+    let json = await callApi('washregistration', 'ABCDEFGHIJK', { ...signUpData, device_token:  await getToken()});
     if (!json) return;
     setUserData({ ...json.data, password: signUpData.password });
     return { otp: json.otp, id: json.data.id };
@@ -25,7 +30,7 @@ const AuthProvider = ({ children }) => {
   const customerSignUp = async signUpData => {
     console.log("Customer sign up")
     setLoginData(signUpData)
-    let json = await callApi('signup', 'ABCDEFGHIJK', { ...signUpData, device_token: await messaging().getToken() });
+    let json = await callApi('signup', 'ABCDEFGHIJK', { ...signUpData, device_token: await getToken() });
     if (!json) return;
     setUserData({ ...json.data, password: signUpData.password });
     return { otp: json.otp, id: json.data.id };
@@ -35,7 +40,7 @@ const AuthProvider = ({ children }) => {
     setLoginData(loginData)
     setUserData(loginData)
     // changeStack('CustomerHomeStack')
-    let json = await callApi(type.current == CUSTOMER ? 'customerlogin' : 'login', 'ABCDEFGHIJK', { ...loginData, device_token: await messaging().getToken() }, jsonResponse => {
+    let json = await callApi(type.current == CUSTOMER ? 'customerlogin' : 'login', 'ABCDEFGHIJK', { ...loginData, device_token: await getToken() }, jsonResponse => {
       console.log({ bro: jsonResponse.id, full: jsonResponse })
       if (jsonResponse.data?.api_token) setUserData(jsonResponse.data)
       if (jsonResponse.api_token) setUserData(jsonResponse); // this makes sure to save the id and api-token in the userData state even if the response was false

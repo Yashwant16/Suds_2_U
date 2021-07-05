@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ImageBackground} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ImageBackground, KeyboardAvoidingView} from 'react-native';
 
 import {ScrollView} from 'react-native';
 import CtaButton from '../Components/CtaButton';
@@ -39,16 +39,16 @@ const SignUp = ({navigation}) => {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         flexDirection: 'column',
         backgroundColor: 'white',
       }}>
-      <View style={{flex: 1}}>
+         <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
         <ScrollView>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1}} fadeDuration={0} source={require('../../Assets/imageBG.png')}>
-            <SafeAreaView />
             <LoadingView loading={loading}>
               <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>
               <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}} source={require('../../Assets/logo2.png')}></Image>
@@ -105,8 +105,8 @@ const SignUp = ({navigation}) => {
             </LoadingView>
           </ImageBackground>
         </ScrollView>
-      </View>
-    </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 export default SignUp;
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 3.5,
     borderRadius: 15,
     elevation: 5,

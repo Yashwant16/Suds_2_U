@@ -8,12 +8,9 @@ const UserTypeScreen = ({navigation}) => {
     <View
       style={{
         flex: 1,
-        flexDirection: 'column',
       }}>
-      <View style={{flex: 1}}>
-        <ImageBackground style={{width: '100%', height: '100%', flex: 1}} source={require('../../Assets/bg_img.png')}>
-          <SafeAreaView />
-
+        <ImageBackground style={{width: '100%',flex: 1}} source={require('../../Assets/bg_img.png')}>
+          <View style={{flex : 1}}>
           <View style={{flex: 1, padding: 21}}>
             <View style={{marginTop: 25}}>
               <Image
@@ -49,7 +46,7 @@ const UserTypeScreen = ({navigation}) => {
               style={{
                 alignItems: 'center',
                 width: '100%',
-                marginBottom: 5,
+                marginBottom: 40,
                 marginTop: 5,
                 padding: 5,
               }}>
@@ -72,9 +69,9 @@ const UserTypeScreen = ({navigation}) => {
               />
             </View>
           </View>
-          <SafeAreaView />
+          </View>
         </ImageBackground>
-      </View>
+      
     </View>
   );
 };
