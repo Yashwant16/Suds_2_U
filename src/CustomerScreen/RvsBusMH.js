@@ -8,7 +8,6 @@ const RvBusMH = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
       <SafeAreaView />
       <View style={{ width: '100%', padding: 21 }}>
 

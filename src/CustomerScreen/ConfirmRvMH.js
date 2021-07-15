@@ -9,7 +9,7 @@ const ConfirmRvBusMH = ({ navigation, route }) => {
   const length = useMemo(() => route?.params?.length, [route])
   const { setCurrentBooking } = useContext(BookingContext)
   const onNext = () => {
-    setCurrentBooking(cv=>({...cv,vehicle:"Rv's Bus and Motor Homes", packageDetails : {name : length+' Feet',price : length*6 }}))
+    setCurrentBooking(cv=>({...cv,feet :length, vehicle:"Rv's Bus and Motor Homes", packageDetails : {name : length+' Feet',price : length*6 }}))
     navigation.navigate(bookingType.current == ON_DEMAND ? 'Select Add Ons' : 'Select a Vendor');
     afterScheduleScreen.current = "Select Add Ons"
   }

@@ -30,6 +30,7 @@ const SignUp = ({navigation}) => {
 
   const onSubmit = async data => {
     setLoading(true);
+    console.log(data)
     const {latitude, longitude} = (await getCurrentPosition()).coords;
     if (latitude && longitude) {
       let dataForOtpScreen =  type.current==WASHER ? await signUp({latitude, longitude, ...data}) :  await customerSignUp({latitude, longitude, ...data}) 

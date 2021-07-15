@@ -59,20 +59,23 @@ const tractorTrailorCategories = [
   {
     vehicleType: 'BIG RIGS',
     checked: false,
+    category_id: 2,
     navigateTo: 'Packages',
-    params: { packageParams: { category_id: '1' }, packageType: 'Big Rigs' },
+    params: { packageParams: { category_id: '2', subcategory_id: '16' }, packageType: 'Big Rigs' },
   },
   {
     vehicleType: 'VACUM/CEMENT',
     checked: false,
+    category_id: 2,
     navigateTo: 'Packages',
-    params: { packageParams: { category_id: '1' }, packageType: 'Vaccum/Cement' },
+    params: { packageParams: { category_id: '2', subcategory_id: '17' }, packageType: 'Vaccum/Cement' },
   },
   {
     vehicleType: 'BOX & FLEET',
     checked: false,
+    category_id: 2,
     navigateTo: 'Packages',
-    params: { packageParams: { category_id: '1' }, packageType: 'Box & Fleet' },
+    params: { packageParams: { category_id: '2', subcategory_id: '28' }, packageType: 'Box & Fleet' },
   },
 ];
 
@@ -124,15 +127,17 @@ const boatsUnder20FeetPackages = [
 const boatCategories = [
   {
     checked: false,
+    category_id: 3,
     vehicleType: 'BOATS UNDER 20 FEET',
     navigateTo: 'Packages',
-    params: { packageParams: { category_id: '1' }, packageType: 'Boats under 20 feet' },
+    params: { packageParams: { category_id: '3', "subcategory_id": 20, }, packageType: 'Boats under 20 feet' },
   },
   {
     checked: false,
+    category_id: 3,
     vehicleType: 'BOATS OVER 20 FEET',
     navigateTo: 'Packages',
-    params: { packageParams: { category_id: '1' }, packageType: 'Boats over 20 feet' },
+    params: { packageParams: { category_id: '3', "subcategory_id": 21 }, packageType: 'Boats over 20 feet' },
   },
 ];
 
@@ -141,7 +146,7 @@ const SelectVehicleType = ({ route }) => {
   const [selectedType, setSelectedType] = useState();
   const { setCurrentBooking } = useContext(BookingContext)
 
-  useEffect(() => { navigation.setOptions({ title: route.params?.title||'Wash Type' }); return () => setCurrentBooking(cv => ({ ...cv, vehicle: undefined })) }, []);
+  useEffect(() => { navigation.setOptions({ title: route.params?.title || 'Wash Type' }); return () => setCurrentBooking(cv => ({ ...cv, vehicle: undefined })) }, []);
 
   const [types, setTypes] = useState(
     route.params?.types
@@ -149,40 +154,47 @@ const SelectVehicleType = ({ route }) => {
       : [
         {
           vehicleType: 'Car or Truck ',
+          category_id: 1,
           checked: false,
           navigateTo: 'Car or Truck',
         },
         {
           vehicleType: 'Tractor Trailors',
+          category_id: 2,
           checked: false,
           navigateTo: 'Vehicle Categories',
           params: { types: tractorTrailorCategories, title: 'Tractor Trailors' },
         },
         {
           vehicleType: 'Boats ',
+          category_id: 3,
           checked: false,
           navigateTo: 'Vehicle Categories',
           params: { types: boatCategories, title: 'Boats' },
         },
         {
           vehicleType: 'Motorcycles ',
+          category_id: 4,
           checked: false,
           navigateTo: 'Packages',
-          params: { packageParams: { category_id: '1' }, packageType: 'Motorcycle' },
+          params: { packageParams: { category_id: '4' }, packageType: 'Motorcycle' },
         },
 
         {
           vehicleType: 'Rv s, Bus, M.H. ',
+          category_id: 5,
           checked: false,
           navigateTo: 'RVs Bus M V',
         },
         {
           vehicleType: 'Heavy Equipment ',
+          category_id: 6,
           checked: false,
           navigateTo: 'Heavy Equipment',
         },
         {
           vehicleType: 'Business Wash ',
+          category_id: 7,
           checked: false,
           navigateTo: 'Business Wash',
         },
@@ -199,8 +211,9 @@ const SelectVehicleType = ({ route }) => {
   };
 
   const onContinue = () => {
-    if (selectedType == undefined) Alert.alert('Select Type', 'Please select a vehicle type.');
-    else if (types[selectedType].navigateTo == 'Packages') navigate(bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor', types[selectedType]?.params);
+    if (selectedType == undefined) return Alert.alert('Select Type', 'Please select a vehicle type.');
+    setCurrentBooking(cv => ({ ...cv, vehicle_type: types[selectedType].category_id }))
+    if (types[selectedType].navigateTo == 'Packages') navigate(bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor', types[selectedType]?.params);
     else navigate(types[selectedType].navigateTo, types[selectedType]?.params);
   };
 
@@ -208,7 +221,7 @@ const SelectVehicleType = ({ route }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
       <FlatList
         keyExtractor={item => item.vehicleType}
-        style={{ width: '100%', backgroundColor : 'white' }} data={types}
+        style={{ width: '100%', backgroundColor: 'white' }} data={types}
         renderItem={({ item, index }) => <RenderItem item={item} onCheck={() => setSelectedType(cv => (cv == index ? undefined : index))} checked={selectedType == index} onPress={() => setCurrentBooking(cv => ({ ...cv, vehicle: item?.vehicleType }))} />}
         ItemSeparatorComponent={() => <View style={{ marginTop: -15 }} />} />
       <View style={{ alignItems: 'center', marginTop: 'auto' }}>
@@ -237,6 +250,7 @@ const SelectVehicleType = ({ route }) => {
 };
 
 const RenderItem = ({ item, onCheck, checked, onPress }) => {
+  const { setCurrentBooking } = useContext(BookingContext)
   const navigateTo = () => {
     if (item.navigateTo == 'Packages') return bookingType.current == ON_DEMAND ? 'Packages' : 'Select a Vendor';
     else return item.navigateTo;
@@ -244,7 +258,7 @@ const RenderItem = ({ item, onCheck, checked, onPress }) => {
 
   const onItemPress = () => {
     onPress()
-    console.log(item.params, 'bbrobrobrobrobrbro')
+    setCurrentBooking(cv => ({ ...cv, vehicle_type: item.category_id, ...item.params }))
     navigate(navigateTo(), item.params)
   }
 

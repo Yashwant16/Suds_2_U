@@ -10,6 +10,8 @@ target 'Suds_2_U' do
   config = use_native_modules!
 
   pod 'Firebase/Analytics'
+  pod 'Braintree', '~> 4'
+  pod 'Braintree/DataCollector'
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -19,6 +21,10 @@ target 'Suds_2_U' do
 
 
 
+
+  pod 'RNPaypal', :path => '../node_modules/react-native-paypal'
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
   target 'Suds_2_UTests' do
     inherit! :complete

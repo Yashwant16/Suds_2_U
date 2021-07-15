@@ -1,6 +1,9 @@
 import { Alert, PermissionsAndroid, Platform, ToastAndroid } from 'react-native';
 import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import Geocoder from 'react-native-geocoding';
 import Geolocation from 'react-native-geolocation-service';
+Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
+let watchID
 
 const [YES, NO, WAIT] = [1, 2, 3]
 
@@ -11,8 +14,8 @@ const requestLocationPermission = async () => {
       console.log("You can use the fine location");
       return true
     } else {
-      Alert.alert('Notice', 'Ezezu needs your location to work properly.', { cancelable: false })
-      console.log("Camera permission denied");
+      Alert.alert('Notice', 'We needs your location to work properly.', { cancelable: false })
+      console.log("Location permission denied");
       return false
     }
   } catch (err) {
@@ -30,7 +33,7 @@ export const askLocationService = async () => {
         return result == 'already-enabled' ? YES : YES
       } else return NO
     } else {
-      let result = await Geolocation.requestAuthorization("whenInUse")
+      let result = await Geolocation.requestAuthorization("always")
       if (result == "granted" || result == "restricted") return YES
       else return NO
     }
@@ -48,15 +51,36 @@ export const getCurrentPosition = () => {
   })
 };
 
+export const getFormattedAddress = async (lat, lng) => {
+  try {
+    let json = await Geocoder.from(lat, lng)
+    return json.results[0].formatted_address
+  } catch (error) {
+    console.log(error)
+    return "Error getting address"
+  }
+}
+
+export const getCurrentAddress = async ()=>{
+  try {
+    let {latitude, longitude} = (await getCurrentPosition()).coords
+    return await getFormattedAddress(latitude, longitude)
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 export const subscribeLocationLocation = () => {
+  if(watchID) Geolocation.clearWatch(watchID)
   watchID = Geolocation.watchPosition(
     (position) => {
-      console.log(position)
+      console.log("subscribe", position)
     },
     (error) => {
+      console.log("subscribe error", error)
       // setLocationStatus(error.message);
     },
-    { enableHighAccuracy: false, maximumAge: 1000 }
+    { enableHighAccuracy: true, distanceFilter : 5}//[TODO]: remove the distance filter
   );
+  console.log('watch id', watchID)
 };

@@ -4,9 +4,7 @@ import {AuthContext} from '../Providers/AuthProvider';
 
 const Splash = ({navigation}) => {
   const {getAuthStatus} = useContext(AuthContext);
-  useEffect(() => {
-    setTimeout(() => getAuthStatus(), 2000);
-  }, []);
+  useEffect(() =>  getAuthStatus(), []);
   return (
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />

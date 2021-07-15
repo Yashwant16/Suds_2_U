@@ -1,6 +1,6 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import <Firebase.h>
-
+#import "RNPaypal.h"
 #import "AppDelegate.h"
 
 
@@ -34,9 +34,11 @@ static void InitializeFlipper(UIApplication *application) {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [GMSServices provideAPIKey:@"AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM"]; // add this line using the api key obtained from Google Console
+  [[RNPaypal sharedInstance] configure];
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
+
   
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
@@ -59,6 +61,12 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [[RNPaypal sharedInstance] application:application openURL:url options:options];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

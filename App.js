@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Platform, StatusBar, UIManager } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Navigation from './src/Navigation/Navigators/RootStack';
@@ -8,6 +8,8 @@ import Providers from './src/Providers';
 import messaging from '@react-native-firebase/messaging';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import LoadingView from './src/Components/LoadingView';
+import { AppContext } from './src/Providers/AppProvider';
 
 Icon.loadFont();
 
@@ -16,8 +18,24 @@ if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 }
+
+const config = {
+  screens: {
+    DriverHomeStack: 'booking/:booking_id',
+    CustomerHomeStack : 'customer_booking/:booking_id'
+  }
+}
+
+const linking = {
+  prefixes: ['https://suds2u.com', 'suds2u://'],
+  config
+}
+
+export const appIsOpen = React.createRef()
+
+
 const App = () => {
-  useEffect(() => messaging().subscribeToTopic('mike'));
+  useEffect(()=>appIsOpen.current=true, [])
   return (
     <StripeProvider
       publishableKey="pk_test_51J60G0Kr8szE4qfQ1i3QuKJnxPqWYCZ7wLlnOVWdvGcGN9EvA8WFX2Q6phXQsiQxsEHHoMFBF1YkDfwdub29lAUR000zSHyZnL"
@@ -25,7 +43,8 @@ const App = () => {
       // merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
     >
       <Providers>
-        <NavigationContainer ref={navigationRef}>
+        <LoadingView />
+        <NavigationContainer linking={linking} ref={navigationRef}>
           <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
           <Navigation />
         </NavigationContainer>

@@ -8,7 +8,7 @@ import { BookingContext } from '../Providers/BookingProvider';
 import LoadingView from '../Components/LoadingView';
 
 const WorkInProgress = ({ navigation, route }) => {
-  const [deadline, setDeadline] = useState(Date.now() + 3600000);
+  const [deadline, setDeadline] = useState(route.params?.booking.totaltime * 1000);
   const [timeRemaining, setTimeRemaining] = useState(deadline - Date.now())
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,12 +28,13 @@ const WorkInProgress = ({ navigation, route }) => {
   }
 
   useEffect(() => {
+    console.log(JSON.stringify(booking, null, 2))
     const interval = setInterval(() => setTimeRemaining(deadline - Date.now()), 1000);
     return () => clearInterval(interval);
   }, [deadline]);
   return (
     <View style={styles.container}>
-      <LoadingView containerStyle={{height : '100%'}} loading={loading}>
+      <LoadingView containerStyle={{ height: '100%' }} loading={loading}>
         <View style={styles.detailContainer}>
           <Text style={{ fontWeight: 'bold', fontSize: 28 }}>$99.00</Text>
           <View style={styles.rankContainer}>
@@ -42,12 +43,16 @@ const WorkInProgress = ({ navigation, route }) => {
           </View>
           <Text style={{ fontWeight: 'bold' }}>Estimates wash duration 1.5hrs</Text>
         </View>
-        <View style={{marginVertical :-8}}/>
-        <View style={[styles.detailContainer, { flexDirection: 'row' }]}>
-          <Text style={{ fontWeight: 'bold' }}>Extra Trash - </Text>
-          <Text style={{ fontWeight: 'bold', color: Colors.dark_orange }}>$15.00</Text>
-          <Image style={{ height: 24, width: 24, tintColor: 'black', marginLeft: 'auto' }} source={require('../../Assets/icon/checked.png')}></Image>
-        </View>
+        <View style={{ marginVertical: -8 }} />
+        {booking.extraaddonsdetails &&
+          booking.extraaddonsdetails.map((addOn, i) => {
+            return (<View key={i} style={[styles.detailContainer, { flexDirection: 'row' }]}>
+              <Text style={{ fontWeight: 'bold',  }}>{addOn.add_ons_name}</Text>
+              <Text style={{ fontWeight: 'bold',marginLeft : 16, color: Colors.dark_orange }}>${parseFloat(addOn?.add_ons_price).toFixed(2)}</Text>
+              <Image style={{ height: 24, width: 24, tintColor: 'black', marginLeft: 'auto' }} source={require('../../Assets/icon/checked.png')}></Image>
+            </View>)
+          })
+        }
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontWeight: 'bold', fontSize: 110 }}>{parseMilllisecond(timeRemaining)}</Text>
           <View style={{ flexDirection: 'row', width: '55%', justifyContent: 'space-between' }}>
@@ -56,7 +61,7 @@ const WorkInProgress = ({ navigation, route }) => {
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', marginTop : 'auto' }}>
+        <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
           <TouchableOpacity onPress={() => navigation.navigate('JOB FINISHED', { booking })} style={[styles.btns, { backgroundColor: Colors.blue_color }]}>
             <Text style={styles.btnText}>Job Finished</Text>
           </TouchableOpacity>
@@ -75,9 +80,9 @@ export default WorkInProgress;
 
 const parseMilllisecond = ms => {
   const zeroPad = (num, places) => String(num).padStart(places, '0');
-  let minute = Math.floor(ms / 60000);
-  let second = Math.floor((ms % 60000) / 1000);
-  return `${zeroPad(minute, 2)}:${zeroPad(second, 2)}`;
+  let hour = Math.floor(ms / 3600000);
+  let minute = Math.floor((ms % 3600000) / 60000);
+  return `${zeroPad(hour, 2)}:${zeroPad(minute, 2)}`;
 };
 
 const AddMoreMinutesOverlay = ({ onAdd }) => {
@@ -93,7 +98,7 @@ const AddMoreMinutesOverlay = ({ onAdd }) => {
         <Icon name="remove" color='black' size={40} />
       </TouchableOpacity>
     </View>
-    <TouchableOpacity onPress={()=>onAdd(minutes*60)} style={{ padding: 15, marginTop: 5, backgroundColor: Colors.blue_color, alignItems: 'center', borderRadius: 5 }}>
+    <TouchableOpacity onPress={() => onAdd(minutes * 60)} style={{ padding: 15, marginTop: 5, backgroundColor: Colors.blue_color, alignItems: 'center', borderRadius: 5 }}>
       <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>Add</Text>
     </TouchableOpacity>
   </View>)

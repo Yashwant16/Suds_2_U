@@ -64,7 +64,7 @@ const CustomerHomeStack = () => {
       <Stack.Screen name="Booking Detail" component={BookingDetail} />
       <Stack.Screen name="OnDemand" component={OnDemand} />
       <Stack.Screen name="OnDemandChangeLocation" component={OnDemand} options={{ ...TransitionPresets.ModalSlideFromBottomIOS, gestureEnabled: true, title : 'Change Location' }}/>
-      {/* <Stack.Screen name="On The Way" component={OnTheWay} /> */}
+      <Stack.Screen name="On The Way" component={OnTheWay} />
       <Stack.Screen name="Work In Progress" component={WorkInProgress} />
       <Stack.Screen name="Select Type" component={SelectTypeOfVehicle} />
       <Stack.Screen name="Select a Vendor" component={SelectVender} />

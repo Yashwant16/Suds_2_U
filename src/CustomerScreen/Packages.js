@@ -36,7 +36,6 @@ const Packages = ({ route }) => {
     useEffect(() => {getPackageList();   return ()=>setCurrentBooking(cv=>({...cv, package : undefined, packageDetails : undefined}))}, [route])
 
     const getPackageList = async () => {
-        console.log(packageParams)
         if (!packageParams) return
         setFetching(true)
         let json = await getPackages(packageParams)

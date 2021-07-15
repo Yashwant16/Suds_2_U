@@ -1,11 +1,11 @@
-import React, {} from 'react';
+import React, { useState } from 'react';
 
 
 export const AppContext = React.createContext();
 
 const AppProvider = ({children}) => {
-    
-  return <AppContext.Provider value={{}}>{children}</AppContext.Provider>;
+  const [loading, setLoading] = useState(false)
+  return <AppContext.Provider value={{loading, setLoading}}>{children}</AppContext.Provider>;
 };
 
 export default AppProvider;

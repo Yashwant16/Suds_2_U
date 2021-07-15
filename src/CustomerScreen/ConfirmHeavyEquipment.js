@@ -11,7 +11,7 @@ const ConfirmHeavyEquipment = ({ navigation, route }) => {
   const hours = useMemo(() => route?.params?.hours, [route])
   const { setCurrentBooking } = useContext(BookingContext)
   const onNext = () => {
-    setCurrentBooking(cv => ({ ...cv, vehicle: "Heavy Equipment", packageDetails: { name: hours + ' Feet', price: hours * 119 } }))
+    setCurrentBooking(cv => ({ ...cv,hours, vehicle: "Heavy Equipment", packageDetails: { name: hours + ' Feet', price: hours * 119 } }))
     navigation.navigate(bookingType.current == ON_DEMAND ? 'Booking Review' : 'Select a Vendor');
     afterScheduleScreen.current = "Booking Review"
   }

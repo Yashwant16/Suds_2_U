@@ -5,7 +5,7 @@ import { Rating } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import LoadingView from '../Components/LoadingView';
 import { navigate } from '../Navigation/NavigationService';
-import { LOADING } from '../Providers';
+import { LOADING, partialProfileUrl } from '../Providers';
 import { BookingContext } from '../Providers/BookingProvider';
 
 const SelectVendor = ({ route }) => {
@@ -23,6 +23,11 @@ const SelectVendor = ({ route }) => {
     if (json?.data) setVendors(json.data)
   }
 
+  const onVendrSelec = (item)=>{
+    navigate('Vender Profile', {...route.params,  packageParams: { vendor_id: item.id }})
+    setCurrentBooking(cv=>({...cv, washer_id : item.id}))
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: '#eee' }}>
       <LoadingView fetching={fetching} fetchingColor={Colors.blue_color}>
@@ -30,25 +35,25 @@ const SelectVendor = ({ route }) => {
         ListFooterComponent={()=><View style={{height : Platform.OS=="ios" ? 30 : 0}} />}
           keyExtractor={(item, i) => i}
           data={vendors}
-          renderItem={({ item, index }) => <RenderItem item={item} index={index} route={route} onSelect={()=>setCurrentBooking(cv=>({...cv, washer_id : item.id}))} />}
+          renderItem={({ item, index }) => <RenderItem item={item} index={index} route={route} onSelect={()=>onVendrSelec(item)} />}
           ItemSeparatorComponent={() => <View style={{ margin: -7.5 }} />} />
       </LoadingView>
     </View>
   );
-
 }
 
 export default SelectVendor
 
-const RenderItem = ({ item, index, route }) => (
-  <TouchableOpacity style={[styles.card]} onPress={() => { navigate('Vender Profile', route.params) }} >
-    <Image style={{ width: '100%', height: 180, borderRadius: 5, opacity:0.5 }} source={{ uri: "https://i.pinimg.com/474x/cb/b4/15/cbb4158c9b17117a2b58fbbcdc99ab14.jpg" }} />
+const RenderItem = ({ item,onSelect }) => {
+  return(
+  <TouchableOpacity style={[styles.card]} onPress={onSelect} >
+    <Image style={{ width: '100%', height: 180, borderRadius: 5 }} source={{ uri:item.image?partialProfileUrl+item.image : "https://i.pinimg.com/474x/cb/b4/15/cbb4158c9b17117a2b58fbbcdc99ab14.jpg" }} />
     <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-evenly', alignSelf: 'flex-start', alignItems: 'center' }}>
       <Text style={{ marginRight: 15, fontSize: 18, color: '#555', fontWeight: 'bold' }}>{item.name}</Text>
       <Rating readonly startingValue={parseFloat(item.rating)} imageSize={20} />
     </View>
   </TouchableOpacity>
-)
+)}
 
 
 const styles = StyleSheet.create({

@@ -11,7 +11,7 @@ import { Alert } from 'react-native';
 import { SafeAreaView } from 'react-native';
 
 const CarOrTruck = ({ navigation }) => {
-  const { getVehicles, vehicles, getNearByVendor,setCurrentBooking} = useContext(BookingContext);
+  const { getVehicles, vehicles, getNearByVendor, setCurrentBooking, currentBooking } = useContext(BookingContext);
   const selectState = useState();
   const [loading, setLoading] = useState(false)
   useEffect(() => getVehicles(), [])
@@ -19,22 +19,16 @@ const CarOrTruck = ({ navigation }) => {
   const onNext = async () => {
     if (!selectState[0]) Alert.alert("Select Vehicle", 'Please select a vehicle to continue.')
     else {
-      setCurrentBooking(cv=>({...cv,vehicle_id : selectState[0]?.vehicle_id, vehicle : `${selectState[0].make} ${selectState[0].year} ${selectState[0].model}` }))
+      setCurrentBooking(cv => ({ ...cv, vehicle_id: selectState[0]?.vehicle_id, vehicle: `${selectState[0].make} ${selectState[0].year} ${selectState[0].model}` }))
       if (bookingType.current == ON_DEMAND) {
-        setLoading(true)
-        let json = await getNearByVendor()
-        setLoading(false)
-        if (json?.data) {
-          navigation.navigate('Packages', {packageParams :{ vendorId: json.data.id }})
-          setCurrentBooking(cv=>({...cv, washer_id : json.data.id}))
-        }
+        navigation.navigate('Packages', { packageParams: { vendor_id: currentBooking?.washer_id } })
       } else navigation.navigate('Select a Vendor')
     }
-    
+
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor : Colors.blue_color }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/bg_img.png')}>
         <LoadingView loading={loading}>
           <View style={{ alignItems: 'center', width: '100%' }}>
@@ -75,7 +69,7 @@ export default CarOrTruck;
 const RenderItem = ({ item, onClick, checked }) => (
   <TouchableOpacity onPress={onClick} style={{ padding: 10, flex: 1, margin: 20, backgroundColor: '#fff', borderRadius: 10, paddingVertical: 10 }}>
     <View style={{ flexDirection: 'row' }}>
-      <Image style={{ height: 60, width: 60, padding: 5, borderRadius: 5 }} source={{ uri: "http://suds-2-u.com/sudsadmin/public/vehicle/" + item.image }} />
+      <Image style={{ height: 60, width: 60, padding: 5, borderRadius: 5 }} source={{ uri: "http://suds-2-u.com/public/vehicle/" + item.image }} />
       <Text style={{ marginHorizontal: 5, fontSize: 18 }}>{`${item.make} ${item.year} ${item.model}`}</Text>
       <CheckBox
         style={{ padding: 5, alignSelf: 'center', marginLeft: 'auto' }}
@@ -146,49 +140,3 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
-
-const json = {
-  response: true,
-  message: 'success',
-  data: [
-    {
-      vehicle_id: 4,
-      user_id: '80',
-      vehicle_type: null,
-      category_id: '1',
-      make: 'Toyota',
-      year: '1997',
-      model: 'XCR4',
-      engine: 'v8',
-      image: 'image.jpg',
-      created_at: '2021-06-20T10:16:45.000000Z',
-      updated_at: '2021-06-20T10:16:45.000000Z',
-    },
-    {
-      vehicle_id: 5,
-      user_id: '80',
-      vehicle_type: null,
-      category_id: '1',
-      make: 'Toyota',
-      year: '1997',
-      model: 'XCR4',
-      engine: 'v8',
-      image: 'image.jpg',
-      created_at: '2021-06-20T10:16:47.000000Z',
-      updated_at: '2021-06-20T10:16:47.000000Z',
-    },
-    {
-      vehicle_id: 6,
-      user_id: '80',
-      vehicle_type: null,
-      category_id: '1',
-      make: 'Tesla',
-      year: '2011',
-      model: 'Model s',
-      engine: 'Electric engine',
-      image: 'tesla car.jpg',
-      created_at: '2021-06-20T10:21:22.000000Z',
-      updated_at: '2021-06-20T10:21:22.000000Z',
-    },
-  ],
-};

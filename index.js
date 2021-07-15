@@ -3,8 +3,20 @@
  */
 
 import {AppRegistry} from 'react-native';
-import App from './App';
+import App, { appIsOpen } from './App';
 import {name as appName} from './app.json';
+
+export const NOTIFICATION_TYPES = {
+  NEW_ON_DEMAND_REQUEST : 0,
+  NEW_SCHEDULED_REQUEST : 1,
+  JOB_ACCEPTED : 2,
+  JOB_REJECT : 3,
+  WASHER_ON_THE_WAY : 4,
+  WASHER_ARRIVED : 5,
+  WASH_IN_PROGRESS : 6,
+  WASH_FINISHED : 7
+}
+
 // import messaging from '@react-native-firebase/messaging';
 
 
@@ -29,7 +41,14 @@ PushNotification.configure({
 
   // (required) Called when a remote is received or opened, or local notification is opened
   onNotification: function (notification) {
-    console.log("NOTIFICATION: - - - - - - - - - - ON PRESS", notification);
+    console.log("NOTIFICATION: - - - - - - - - - - ON PRESS", appIsOpen, notification);
+    // setTimeout(() => { 
+    //     console.log('OPENING LINK')
+    //     if(notification.data.type==NOTIFICATION_TYPES.NEW_ON_DEMAND_REQUEST || notification.data.type ==NOTIFICATION_TYPES.NEW_SCHEDULED_REQUEST){
+    //       Linking.openURL(`suds2u://booking/${notification.data.booking_id}`)
+    //     }
+      
+    //  }, appIsOpen.current==true ? 100 : 3000)
 
     // process the notification
 

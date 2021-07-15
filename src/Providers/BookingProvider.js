@@ -1,9 +1,19 @@
 import React, { useContext, useEffect, useReducer, useState } from 'react';
-import { callApi, ERROR, LOADING } from '.';
+import { callApi, callApi2, ERROR, LOADING } from '.';
 import { AuthContext } from './AuthProvider';
 import NetInfo from '@react-native-community/netinfo';
+import Colors from '../../Constants/Colors';
+import moment from 'moment';
 
 export const BookingContext = React.createContext();
+
+export const WASH_PENDING = 0
+export const WASHER_ACCEPTED = 1
+export const WASHR_ON_THE_WAY = 2
+export const WASHER_ARRIVED = 3
+export const WASH_IN_PROGRESS = 4
+export const WASH_COMPLETED = 5
+export const WASH_REJECTED = 6
 
 export const ACTIONS = {
   OnFail: 'onFail',
@@ -73,12 +83,14 @@ const BookingProvider = ({ children }) => {
   const [currentBooking, setCurrentBooking] = useState({})
   const [customer_id, setCustomerId] = useState()
 
+  useEffect(() => console.log(JSON.stringify(currentBooking, null, 2)),)
+
   useEffect(() => { onStateChange(state) }, [state]);
 
   const onStateChange = async state => {
     console.log(state);
     if (state.type.includes('on')) return;
-    let json = await fakeCallApi('bookinghistory', userData.api_token, { user_id: userData.id, pagecount: state.pagecount });
+    let json = await callApi(userData?.role_as == 3 ? 'customerbookinghistory' : 'bookinghistory', userData.api_token, { user_id: userData.id, pagecount: state.pagecount });
     if (json) dispatch({ type: `on${state.type}Success`, payload: { bookingHistory: json.data } });
     else dispatch({ type: ACTIONS.OnFail });
   };
@@ -91,7 +103,7 @@ const BookingProvider = ({ children }) => {
 
   const finishedjob = async data => callApi('finishedjob', userData.api_token, { ...data, user_id: userData.id })
 
-  const onMyWay = async washer_id => callApi('onMyWay', userData.api_token, { user_id: userData.id, washer_id })
+  const onMyWay = async (user_id, booking_id) => callApi('onMyWay', userData.api_token, { washer_id: userData.id, user_id, booking_id })
 
   const startJob = async booking_id => callApi('startjob', userData.api_token, { booking_id })
 
@@ -109,11 +121,25 @@ const BookingProvider = ({ children }) => {
 
   const getAddOns = async () => await callApi('addOns', userData.api_token, {}, null, 'GET')
 
-  const getNearByVendor = async () => callApi('automaticallyShowVendor', userData.api_token, { lat: userData.latitude, long: userData.longitude })
+  const getNearByVendor = async (lat, long) => callApi('automaticallyShowVendor', userData.api_token, { lat, long })
 
   const applyCoupon = async coupan_code => await callApi('applycoupan', userData.api_token, { coupan_code })
 
-  const getPaymentIntent = async amount => await callApi('paymentorder', userData.api_token, { booking_id : 3, user_id :userData.id, amount  })
+  const getPaymentIntent = async amount => await callApi('paymentorder', userData.api_token, { booking_id: 3, user_id: userData.id, amount })
+
+  const getWasherLocation = async washer_id => await callApi('getWasherLocation', userData.api_token, { user_id: userData.id, washer_id })
+
+  const getFinishedJobImage = async () => await callApi('getFinishedJobImage', userData.api_token, { user_id: currentBooking.washer_id })
+
+  const saveBooking = async () => {
+    let finalObject = {...currentBooking}
+    if(currentBooking.type==0){
+      let date = new Date();
+      finalObject = {...finalObject, booking_date : moment(date).format('YYYY-MM-DD'),booking_time: date.toLocaleTimeString() }
+    }
+    console.log('FINAL BOOKING OBJECT', JSON.stringify(finalObject, null, 2))
+    return await callApi2('savebooking', userData.api_token, {...finalObject, user_id : userData.id})
+  }
 
   const getVehicles = async () => {
     setVehicles(LOADING)
@@ -146,7 +172,10 @@ const BookingProvider = ({ children }) => {
     applyCoupon,
     customer_id,
     setCustomerId,
-    getPaymentIntent
+    getPaymentIntent,
+    saveBooking,
+    getWasherLocation,
+    getFinishedJobImage
   }}>{children}</BookingContext.Provider>;
 };
 
@@ -162,10 +191,22 @@ const fakeCallApi = (subfix, AppKey, { pagecount }, onFalse, method = 'POST') =>
   });
 };
 
-export const calculateTotalPrice = (booking)=>{
+export const calculateTotalPrice = (booking) => {
   let addOnsPrice = (booking?.selectedAddOns?.length == 0 ? 0 : booking?.selectedAddOns?.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)) || 0
   let packagePrice = (parseFloat(booking?.packageDetails?.price)) || 0
   return addOnsPrice + packagePrice
+}
+
+export const getWashStatus = (status) => {
+  switch (status) {
+    case WASH_PENDING: return { name: "Pending", color: 'orange', naviagteTo: 'BOOKING DETAILS' }
+    case WASHER_ACCEPTED: return { name: "Accepted", color: 'orange', naviagteTo: 'BOOKING DETAILS' }
+    case WASHR_ON_THE_WAY: return { name: "Washer on the way", color: 'orange', naviagteTo: 'On The Way' }
+    case WASHER_ARRIVED: return { name: "Washer Arrived", color: 'orange', naviagteTo: 'On The Way' }
+    case WASH_IN_PROGRESS: return { name: "In progress", color: 'orange', naviagteTo: 'Work In Progress' }
+    case WASH_COMPLETED: return { name: "Success", color: Colors.green, naviagteTo: 'BOOKING DETAILS' }
+    case WASH_REJECTED: return { name: "Failed", color: 'red', naviagteTo: 'BOOKING DETAILS' }
+  }
 }
 
 let Data = [
@@ -291,6 +332,29 @@ let Data = [
   },
 ];
 
+let booking = {
+  "booking_date": "0000-00-00",
+  "booking_id": "21",
+  "booking_time": "1985916764",
+  "created_at": "2021-07-05",
+  "extra_add_ons": "9,10",
+  "extraaddonsdetails": [[Object], [Object]],
+  "package": "10",
+  "package_price": "24",
+  "rating": "0",
+  "review": "",
+  "tip": "0",
+  "total": "250",
+  "totaltime": "12:00",
+  "updated_at": "2021-07-05",
+  "user_id": "80",
+  "userdetails": [[Object]],
+  "vehicle_id": "14",
+  "vehicledetails": [[Object]],
+  "wash_location": "texas",
+  "washer_id": "73"
+}
+
 
 const customCallApi = async (subfix, AppKey, params, method = 'POST', nameLable) => {
   console.log("CUSTOME CALL API")
@@ -299,7 +363,7 @@ const customCallApi = async (subfix, AppKey, params, method = 'POST', nameLable)
     let formData = new FormData()
     Object.entries(params).forEach(([key, value]) => formData.append(key, value))
     console.log(formData)
-    let url = `${'http://suds-2-u.com/sudsadmin/api/'}${subfix}?`
+    let url = `${'http://suds-2-u.com/api/'}${subfix}?`
     let res = await fetch(url, {
       method: method,
       headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },

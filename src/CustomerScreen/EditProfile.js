@@ -9,8 +9,7 @@ import CustomPicker from '../Components/CustomPicker';
 import LoadingView from '../Components/LoadingView';
 import { AuthContext } from '../Providers/AuthProvider';
 import { launchImageLibrary } from 'react-native-image-picker';
-
-const partialImageUrl = "http://suds-2-u.com/sudsadmin/public/profile/"
+import { partialProfileUrl } from '../Providers';
 
 const EditProfile = ({ navigation, route }) => {
   const {
@@ -31,7 +30,7 @@ const EditProfile = ({ navigation, route }) => {
       .then(json => {
         if (json) {
           const { data } = json;
-          if(data.image) setSelectedImage({uri :partialImageUrl+data.image})
+          if(data.image) setSelectedImage({uri :partialProfileUrl+data.image})
           reset({
             ...data,
             country: { name: data.country_name, id: data.country },

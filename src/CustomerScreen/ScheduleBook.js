@@ -1,6 +1,6 @@
 // React Native Calendar Picker using react-native-calendar-picker
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 // import TimePicker from 'react-native-simple-time-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -8,8 +8,12 @@ import CalendarPicker from 'react-native-calendar-picker';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import { afterScheduleScreen } from '../Navigation/NavigationService';
+import { BookingContext } from '../Providers/BookingProvider';
+import moment from 'moment';
 
 const ScheduleBook = ({ navigation, route }) => {
+
+  const { currentBooking, setCurrentBooking } = useContext(BookingContext)
 
   const [state, setState] = useState({
     isChecked: '',
@@ -42,13 +46,8 @@ const ScheduleBook = ({ navigation, route }) => {
   })
   const onChange = (date, type) => {
     //function to handle the date change
-    console.log('date..', date)
-    if (type === 'END_DATE') {
-      // setSelectedEndDate(date);
-    } else {
-      // setSelectedEndDate(null);
-      // setSelectedStartDate(date);
-    }
+    console.log('date..', moment(date).format('YYYY-MM-DD'), new Date(date).toLocaleTimeString())
+    setDate(new Date(date))
   };
 
   const onDChange = (event, selectedDate) => {
@@ -57,20 +56,26 @@ const ScheduleBook = ({ navigation, route }) => {
     setDate(currentDate);
   };
 
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [date, setDate] = useState(new Date(Date.now()));
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     return () => afterScheduleScreen.current = null
   }, [])
 
+  const onContinue = () => {
+    setCurrentBooking(cv=>({...cv, booking_date : moment(date).format('YYYY-MM-DD'),booking_time : date.toLocaleTimeString() }))
+    if (afterScheduleScreen.current != null) navigation.navigate(afterScheduleScreen.current)
+    else navigation.navigate('Packages', route.params)
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }} >
       <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
-            Donge Ram 350 Truck
-        </Text>
+            {currentBooking.vehicle}
+          </Text>
         </View>
         <View>
           <CalendarPicker
@@ -110,8 +115,8 @@ const ScheduleBook = ({ navigation, route }) => {
               Selected Date :
           </Text>
             <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', }}>
-              April 23 2021
-          </Text>
+              {date?.toDateString()}
+            </Text>
           </View>
           <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 15, fontWeight: 'bold' }}>Select Time</Text>
 
@@ -126,10 +131,7 @@ const ScheduleBook = ({ navigation, route }) => {
 
         <TouchableOpacity
           elevation={5}
-          onPress={() => {
-            if (afterScheduleScreen.current != null) navigation.navigate(afterScheduleScreen.current)
-            else navigation.navigate('Packages', route.params)
-          }}
+          onPress={onContinue}
           style={styles.auth_btn}
           underlayColor='gray'
           activeOpacity={0.8}>

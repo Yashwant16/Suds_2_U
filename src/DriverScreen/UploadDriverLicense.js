@@ -7,11 +7,15 @@ import ControllerInput from '../Components/ControllerInput';
 import CustomInput from '../Components/CustomInput';
 import LoadingView from '../Components/LoadingView';
 import { AuthContext } from '../Providers/AuthProvider';
+import { launchImageLibrary } from 'react-native-image-picker';
+
+const partialImageUrl = "http://suds-2-u.com/sudsadmin/public/document/"
 
 const UploadDriverLicense = ({ navigation, route }) => {
   const { updateDrivingLicense, getDrivingLicenseDetails, documentVerified } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true)
+  const [selectedImage, setSelectedImage] = useState()
 
   const {
     control,
@@ -20,44 +24,44 @@ const UploadDriverLicense = ({ navigation, route }) => {
     reset
   } = useForm();
 
-  const fakeSubmit = () => {
-    setLoading(true);
-    setTimeout(() => {
-      route.params?.authStack ? navigation.navigate('BACKGROUND CHECK') : navigation.goBack();
-      setLoading(false);
-    }, 2000);
-  };
-
   const onSubmit = async data => {
     console.log(data)
     setLoading(true);
-    let success = await updateDrivingLicense(data);
+    let success = await updateDrivingLicense({ ...data, image: selectedImage });
     if (success) await documentVerified()
     if (success) route.params?.authStack ? navigation.navigate('BACKGROUND CHECK') : navigation.goBack();
     setLoading(false);
   };
 
   useEffect(() => {
-    if (route.params?.authStack) { setFetching(false) ;return } // Dont try to get user license data if it is on the auth stack
+    if (route.params?.authStack) { setFetching(false); return } // Dont try to get user license data if it is on the auth stack
     setFetching(true)
     getDrivingLicenseDetails().then(json => {
       setFetching(false)
+      if (json?.data?.license_image) setSelectedImage({ uri: partialImageUrl + json.data.license_image })
       if (json) reset(json.data)
     }).catch(e => console.log("E", e))
   }, [])
+
+  const imageSelectCallBack = (res) => {
+    if (res.didCancel) return
+    console.log(res?.assets);
+    setSelectedImage(res?.assets[0])
+  }
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
         <LoadingView loading={loading} fetchingColor={Colors.blue_color} fetching={fetching}>
 
-          <View style={{ height: 250, width: '100%', backgroundColor: '#eee' }}>
+          <TouchableOpacity onPressIn={() => launchImageLibrary({}, imageSelectCallBack)} style={{ height: 250, width: '100%', backgroundColor: '#eee' }}>
             <Image
-              style={{ tintColor: '#ccc', height: 210, width: '100%', resizeMode: 'center' }}
-              source={{ uri: 'https://image.flaticon.com/icons/png/512/1655/1655290.png' }}
+              style={{ height: 210, width: '100%', resizeMode: 'center' }}
+              source={selectedImage ? selectedImage : { uri: 'https://image.flaticon.com/icons/png/512/1655/1655290.png' }}
+            // source={{ uri: 'https://image.flaticon.com/icons/png/512/1655/1655290.png' }}
             />
             <Text style={{ color: '#ccc', textAlign: 'center', fontSize: 20 }}>TAKE A PHOTO</Text>
-          </View>
+          </TouchableOpacity>
           <View style={{ flex: 1, backgroundColor: '#FFF', alignItems: 'center', paddingTop: 16 }}>
             <ControllerInput
               label="LICENSE NUMBER"

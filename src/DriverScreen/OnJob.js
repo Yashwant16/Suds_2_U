@@ -6,28 +6,32 @@ import Colors from '../../Constants/Colors';
 import MapViewDirections from 'react-native-maps-directions';
 import { AuthContext } from '../Providers/AuthProvider';
 import LoadingView from '../Components/LoadingView';
-import { BookingContext } from '../Providers/BookingProvider';
+import { BookingContext, getWashStatus } from '../Providers/BookingProvider';
+import { Avatar } from 'react-native-elements';
+import { partialProfileUrl } from '../Providers';
 
 const origin = { latitude: 37.3318456, longitude: -122.0296002 };
 const destination = { latitude: 37.771707, longitude: -122.4053769 };
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 const OnJob = ({ navigation, route }) => {
-  const [arrived, setArrived] = useState(false);
+  const [arrived, setArrived] = useState(route.params?.onTheWay || false);
   const [loading, setLoading] = useState(true);
   const { onMyWay, startJob } = useContext(BookingContext)
   const booking = useMemo(() => route.params?.booking, [route])
+
 
   const {
     userData: { latitude, longitude },
   } = useContext(AuthContext);
 
   const onPress = async () => {
+    // console.log(JSON.stringify(booking, null, 2))
     setLoading(true)
     if (arrived) {
       let success = await startJob(booking?.booking_id)
       if (success) navigation.navigate('WORK IN PROGRESS', { booking });
     } else {
-      let success = await onMyWay(booking?.userdetails[0]?.id)
+      let success = await onMyWay(booking?.userdetails[0]?.id, booking.booking_id)
       if (success) setArrived(true)
     }
     setLoading(false)
@@ -39,22 +43,23 @@ const OnJob = ({ navigation, route }) => {
       <MapView
         style={{ width: '100%', flex: 1 }}
         region={{
-          latitude: origin.latitude,
-          longitude: origin.longitude,
+          latitude: latitude,
+          longitude: longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}>
         <MapViewDirections
           onReady={() => setLoading(false)}
+          onError={() => setLoading(false)}
           strokeWidth={5}
           strokeColor={Colors.blue_color}
-          origin={origin}
-          destination={destination}
+          origin={{ latitude, longitude }}
+          destination={getWashCoordinates(booking)}
           apikey={GOOGLE_MAPS_APIKEY}
         />
-        <MapView.Marker coordinate={origin} title={'Your location'} />
+        <MapView.Marker coordinate={{ latitude, longitude }} title={'Your location'} />
         <MapView.Marker
-          coordinate={destination}
+          coordinate={getWashCoordinates(booking)}
           title={'Customer location'}
         />
       </MapView>
@@ -79,16 +84,20 @@ const OnJob = ({ navigation, route }) => {
       <View style={{ backgroundColor: '#efefef', padding: 10 }}>
         <Text style={{ fontSize: 18, paddingBottom: 5 }}>CUSTOMER INFORMATION</Text>
         <View style={styles.customerDetails}>
-          <Image
-            style={{ height: 48, width: 48, marginRight: 10, padding: 10, borderRadius: 35 }}
-            source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }}
+          <Avatar
+            size="medium"
+            rounded
+            title={booking?.userdetails[0]?.name ? booking?.userdetails[0].name.split(' ').slice(0, 2).map(n => n[0].toUpperCase()).join('') : null}
+            source={booking?.userdetails[0]?.image ? { uri: partialProfileUrl + booking?.userdetails[0].image } : null}
+            containerStyle={{ marginRight: 10, backgroundColor: Colors.blue_color }}
+            activeOpacity={0.7}
           />
           <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{}}>
               <Text style={{ marginHorizontal: 5, fontSize: 16 }}>{booking?.userdetails[0].name}</Text>
               <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
                 <Image style={{ width: 16, height: 16, tintColor: '#777' }} source={require('../../Assets/coupon.png')} />
-                <Text style={{ marginHorizontal: 3, color: '#999' }}>5:30 pm</Text>
+                <Text style={{ marginHorizontal: 3, color: '#999' }}>{booking.booking_time}</Text>
               </View>
             </View>
             <View style={{}}>
@@ -107,6 +116,9 @@ const OnJob = ({ navigation, route }) => {
     </View>
   );
 };
+
+
+const getWashCoordinates = booking => ({ latitude: parseFloat(booking.wash_lat_lng.latitude), longitude: parseFloat(booking.wash_lat_lng.longitude) })
 
 
 

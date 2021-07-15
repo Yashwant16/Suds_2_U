@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements';
 import { getCurrentPosition, subscribeLocationLocation } from '../Services/LocationServices';
-import { bookingType, changeStack, navigate, ON_DEMAND } from '../Navigation/NavigationService';
+import { bookingType, changeStack, navigate, ON_DEMAND, SCHEDULED } from '../Navigation/NavigationService';
 import { useNavigation } from '@react-navigation/core';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
@@ -12,6 +12,7 @@ import Geocoder from 'react-native-geocoding';
 import { BookingContext } from '../Providers/BookingProvider';
 import { Alert } from 'react-native';
 import { Platform } from 'react-native';
+import LoadingView from '../Components/LoadingView';
 Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
 
 const GETTING_LOCATION = 'Getting Location...'
@@ -21,13 +22,14 @@ const ERROR_GETTING_LOCATION = "Error getting location"
 const OnDemand = ({ route }) => {
   const navigation = useNavigation()
   const [state, setState] = useState({ latitude: 9.010977, longitude: 38.727332, locationStatus: GETTING_LOCATION })
-  const { setCurrentBooking, currentBooking } = useContext(BookingContext)
+  const { setCurrentBooking, currentBooking, getNearByVendor } = useContext(BookingContext)
+  const [loading, setLoading] = useState()
 
-  useEffect(() => getOneTimeLocation(), [])
+  // useEffect(() => getOneTimeLocation(), [])
   useEffect(() => {
     setCurrentBooking({})
     if (route.params?.headerTitle) navigation.setOptions({ title: route.params.headerTitle })
-    return ()=>setCurrentBooking({})
+    return () => setCurrentBooking({})
   }, [])
 
   const getFormattedAddress = (lat, lng) => {
@@ -38,13 +40,13 @@ const OnDemand = ({ route }) => {
   }
 
   const getOneTimeLocation = async () => {
-    if (currentBooking?.wash_lat_lng) setTimeout(()=>{
+    if (currentBooking?.wash_lat_lng) setTimeout(() => {
       mapRef.current.animateCamera({ zoom: 15, pitch: 2, heading: 2, altitude: 2, center: { ...currentBooking.wash_lat_lng } }, { duration: 1 })
     }, 5)
     let info = await getCurrentPosition()
     if (info) {
       mapRef.current.animateCamera({ zoom: 15, pitch: 2, heading: 2, altitude: 2, center: { ...info.coords } }, { duration: 1000 })
-      subscribeLocationLocation()
+      // subscribeLocationLocation()
     }
     else console.log(info)
   };
@@ -64,24 +66,31 @@ const OnDemand = ({ route }) => {
   }
 
   const onConfirmLocation = async () => {
-    if (state.locationStatus == GETTING_LOCATION) return Alert.alert('Please wait', state.locationStatus, [{text : 'Ok', onPress:(state.locationStatus==GETTING_LOCATION) ? ()=>null : onConfirmLocation}])
+    if (state.locationStatus == GETTING_LOCATION) return Alert.alert('Please wait', state.locationStatus, [{ text: 'Ok', onPress: (state.locationStatus == GETTING_LOCATION) ? () => null : onConfirmLocation }])
     if (state.locationStatus == ERROR_GETTING_LOCATION) return Alert.alert('Error', 'Error etting your location. Please check your internet connection.')
     bookingType.current = route.params?.bookingType ? route.params.bookingType : ON_DEMAND
     let wash_lat_lng = (await mapRef.current.getCamera())?.center
-    setCurrentBooking(cv => ({ ...cv, wash_location: state.locationStatus, wash_lat_lng }))
+    setCurrentBooking(cv => ({ ...cv, wash_location: state.locationStatus, lat: wash_lat_lng.latitude, long: wash_lat_lng.longitude, type: bookingType.current == SCHEDULED ? 1 : 0 }))
     if (route.params?.changeLocation) return navigation.goBack()
+    if (bookingType.current == ON_DEMAND) {
+      setLoading(true)
+      let json = await getNearByVendor(state.latitude, state.longitude)
+      setLoading(false)
+      if (json?.data) setCurrentBooking(cv => ({ ...cv, washer_id: json.data.id }))
+      else return
+    }
     navigate("Select Vehicle Type")
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 , backgroundColor:Colors.blue_color}}>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
+      <LoadingView loading={loading} />
       <MapView
-        style={{ flex:1}}
+        style={{ flex: 1 }}
         onRegionChangeComplete={({ latitude, longitude }) => getFormattedAddress(latitude, longitude)}
         showsCompass={false}
         ref={map => mapRef.current = map}
-        initialRegion={{latitude: state.latitude, longitude: state.longitude , latitudeDelta : .009, longitudeDelta : .009 }}>
+        initialRegion={{ latitude: state.latitude, longitude: state.longitude, latitudeDelta: .009, longitudeDelta: .009 }}>
       </MapView>
 
       <View style={styles.jobDestination}>
@@ -93,7 +102,7 @@ const OnDemand = ({ route }) => {
         <TouchableOpacity
           onPress={() => { getOneTimeLocation() }}
           activeOpacity={0.7}
-          style={{ elevation: 2, shadowColor:'#555', shadowRadius : 5, shadowOpacity :.2,borderRadius: 25, padding: 10, margin: 10, backgroundColor: 'white', position : 'absolute', right : 0, bottom : 65 }}>
+          style={{ elevation: 2, shadowColor: '#555', shadowRadius: 5, shadowOpacity: .2, borderRadius: 25, padding: 10, margin: 10, backgroundColor: 'white', position: 'absolute', right: 0, bottom: 65 }}>
           <Icon name="gps-fixed" />
         </TouchableOpacity>
         <TouchableOpacity

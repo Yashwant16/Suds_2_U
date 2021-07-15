@@ -92,7 +92,7 @@ const EarningProvider = ({children}) => {
   const onStateChange = async state => {
     console.log(state);
     if (state.type.includes('on')) return;
-    let json = await fakeCallApi('earninglist', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
+    let json = await callApi('earninglist', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
     if (json) dispatch({type: `on${state.type}Success`, payload: {data: json.data}});
     else dispatch({type: ACTIONS.OnFail});
   };

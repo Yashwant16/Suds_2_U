@@ -1,15 +1,18 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Image, StyleSheet, Text, TextInput, View, TouchableOpacity, ScrollView } from 'react-native';
 import Colors from '../../Constants/Colors';
 import LoadingView from '../Components/LoadingView';
 import { changeStack, dontShow, setTrue } from '../Navigation/NavigationService';
 import { BookingContext } from '../Providers/BookingProvider';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { Alert } from 'react-native';
 
 const JobFinished = ({ route, navigation }) => {
   const { finishedjob } = useContext(BookingContext)
   const [loading, setLoading] = useState(false);
   const booking = useMemo(() => route.params?.booking, [route])
+  const [images, setImages] = useState([])
 
   const {
     control,
@@ -18,16 +21,26 @@ const JobFinished = ({ route, navigation }) => {
   } = useForm();
 
   const onSubmit = async data => {
+    if(images.length<4) return Alert.alert('Images', 'Please make sure to add 4 images related to that wash.')
+    images.forEach((image, i)=>data['image'+(i===0?'' : i)]=image)
     console.log({ ...data, booking_id: booking.booking_id })
     setLoading(true)
-    let json = await finishedjob({ ...data, booking_id: booking.booking_id })
+    let json = await finishedjob({ ...data, booking_id: booking.booking_id,  })
     setLoading(false)
-    if (json) { 
+    if (json) {
       setTrue()
       changeStack('DriverHomeStack')
-     }
-
+    }
   }
+
+  useEffect(() => console.log(images.length), [images])
+
+  const onImagePickerCallback = (res, fromCamera) => {
+    if (res.didCancel) return
+    // if(images.length<3) fromCamera ? launchCamera({}, (res)=>onImagePickerCallback(res, true)) : launchImageLibrary({}, (res)=>onImagePickerCallback(res, false))
+    setImages(cv => [...cv, ...res.assets])
+  }
+
   return (
     <LoadingView loading={loading} containerStyle={{ height: '100%', backgroundColor: 'white' }}>
       <ScrollView style={{ height: '100%' }}>
@@ -37,13 +50,17 @@ const JobFinished = ({ route, navigation }) => {
             <Image style={{ width: 85, height: 85, tintColor: 'white' }} source={require('../../Assets/icon/camera.png')} />
           </View>
           <Text style={{ fontSize: 28, paddingBottom: 20, color: '#666' }}>Upload car images</Text>
-          <Text style={{ textAlign: 'center', fontSize: 17, width: '65%', lineHeight: 32, color: '#666' }}>
-            Please upload 4 images of the car wash related to service.
+          {images.length < 4 ?
+            <Text style={{ textAlign: 'center', fontSize: 17, width: '65%', lineHeight: 32, color: '#666' }}>
+              Please upload <Text style={{ color: 'green', fontWeight: 'bold', fontSize: 22 }}>{images.length == 0 ? '4' : 4 - images.length + ' more'}</Text> images of the car wash related to service.
           </Text>
+            :
+            <Text style={{ textAlign: 'center', fontSize: 17, width: '65%', lineHeight: 32, color: '#666' }}>{images.length} Photos Selected!</Text>
+          }
           <View style={{ flexDirection: 'row', width: '100%', padding: 16 }}>
-            <CustomButton title="Camera" color={Colors.blue_color} />
+            <CustomButton disabled={images.length >= 4} onPress={() => launchCamera({}, (res)=>onImagePickerCallback(res, true))} title="Camera" color={Colors.blue_color} />
             <View style={{ width: 16 }} />
-            <CustomButton title="Gallery" color={Colors.dark_orange} />
+            <CustomButton disabled={images.length >= 4} onPress={() => launchImageLibrary({}, (res)=>onImagePickerCallback(res, false))} title="Gallery" color={Colors.dark_orange} />
           </View>
           <View style={{ width: '100%', paddingHorizontal: 16 }}>
 
@@ -78,8 +95,8 @@ const JobFinished = ({ route, navigation }) => {
 
 export default JobFinished;
 
-const CustomButton = ({ title, color }) => (
-  <TouchableOpacity style={{ padding: 16, backgroundColor: color, flex: 1, borderRadius: 10, alignItems: 'center' }}>
+const CustomButton = ({ title, color, onPress, disabled }) => (
+  <TouchableOpacity disabled={disabled} onPress={onPress} style={{ padding: 16, backgroundColor: color, flex: 1, borderRadius: 10, alignItems: 'center', opacity: disabled ? 0.5 : 1 }}>
     <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>{title}</Text>
   </TouchableOpacity>
 );
@@ -139,5 +156,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     paddingHorizontal: 16,
     fontSize: 16,
+    color : 'black'
   },
 });

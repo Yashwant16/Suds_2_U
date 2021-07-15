@@ -1,99 +1,136 @@
-import React from 'react';
-import { Text, View, Image, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import CustomHeader from '../Components/CustomHeader';
-import MapView from 'react-native-maps';
-import CtaButton from '../Components/CtaButton';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { Text, View, Image, StyleSheet, TouchableOpacity, TextInput, Linking } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
-import { Header, Icon, Avatar } from 'react-native-elements';
 import { SafeAreaView } from 'react-native';
-export default class OnJob extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { arrived: false };
-  }
+import MapViewDirections from 'react-native-maps-directions';
+import LoadingView from '../Components/LoadingView';
+import { BookingContext } from '../Providers/BookingProvider'
+import { partialProfileUrl } from '../Providers';
+const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={{ flex: 1, position: 'relative' }}>
-        <MapView
-          style={{ width: '100%', flex: 1 }}
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-        </MapView>
 
-        <View style={styles.jobDestination}>
-          <Text style={{fontWeight : 'bold', color : 'orange', fontSize : 18}} >JOB DESTINATION</Text>
-          <Text>Formatted Address</Text>
-        </View>
+export default OnTheWay = ({ navigation, route }) => {
+  const [loading, setLoading] = useState(true)
+  const { getWasherLocation } = useContext(BookingContext)
+  const { booking } = useMemo(() => route?.params, [route])
+  const [origin, setOrigin] = useState()
+  const [washerLocation, setWasherLocation] = useState()
 
-        <View style={{ backgroundColor: '#efefef', padding: 10, paddingBottom: 0 }}>
-          <View style={{ flexDirection: 'row', marginBottom: 10, alignSelf: 'center' }}>
-            <Image style={{ width: 25, height: 25, tintColor: '#24AE88', }} source={require('../../Assets/checkdark.png')} />
-            <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', textAlign: 'center', marginLeft: 5 }}>Booking Confirm</Text>
-          </View>
-          <View style={{
-            borderWidth: 1, borderColor: '#ccc',
-            width: '95%', backgroundColor: '#fff', alignSelf: 'center',
-            marginBottom: 22, shadowOpacity: 0.8, shadowColor: '#aaa', justifyContent: 'center', borderRadius: 15
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10,alignItems :'center' }}>
-              <Text>NY16FT 8206 (White Swift) </Text>
-              <Text style={{ color: 'yellow', backgroundColor: '#000', padding: 4, fontWeight: 'bold', borderRadius: 5 }}> 0.5 min </Text>
-            </View>
-            <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
-            <View style={{ flexDirection: 'row', padding: 10 }}>
-              <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={require('../../Assets/images.jpeg')} />
-              <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 18, alignSelf: 'center' }}>Donnie McC.</Text>
 
-              <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 14, alignSelf: 'center' }}>4.5</Text>
+  useEffect(() => {
+    let interval = setInterval(function x() {
+      getWasherLocation(booking.washer_id).then(json => {
+        if (json?.data) {
+          if (!origin) setOrigin({ latitude: parseFloat(json?.data[0].latitude), longitude: parseFloat(json?.data[0].longitude) })
+          setWasherLocation(json?.data[0])
+        }
+      })
+      return x;
+    }(), 60000);
+    return () => clearInterval(interval)
+  }, [])
 
-            </View>
+  return (
+    <View style={{ flex: 1, position: 'relative' }}>
+      <LoadingView loading={loading} />
+      <MapView
+        style={{ width: '100%', flex: 1 }}
+        initialRegion={{
+          ...(origin ? origin :{latitude : parseFloat(booking.wash_lat_lng.latitude),longitude : parseFloat(booking.wash_lat_lng.longitude) }),
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }} >
 
-            <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'center', }}>
-              <TouchableOpacity style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
-                <Image style={{ width: 20, height: 20, tintColor: '#0EFF74', }} source={require('../../Assets/call.png')} />
-                <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CALL WASHER </Text>
-              </TouchableOpacity>
-              <View style={{ width: 1, height: 45, backgroundColor: '#aaa' }} />
-              <TouchableOpacity style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
-                <Image style={{ width: 20, height: 20, tintColor: 'red', }} source={require('../../Assets/error.png')} />
-                <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL RIDE </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
-            <View style={{ flexDirection: 'row', padding: 5, marginLeft: 10, alignItems: 'center' }}>
-              <View style={{ backgroundColor: '#445F98', width: 45, height: 50, borderRadius: 5, justifyContent: 'center', alignItems: 'center', marginLeft: 0, margin: 7 }}>
-                <Image style={{ width: 40, height: 40, tintColor: '#FFF', }} source={require('../../Assets/smartphone.png')} />
-              </View>
+        {origin && <MapViewDirections
+          onReady={() => setLoading(false)}
+          onError={() => setLoading(false)}
+          strokeWidth={5}
+          strokeColor={Colors.blue_color}
+          origin={booking.wash_lat_lng}
+          destination={origin}
+          apikey={GOOGLE_MAPS_APIKEY}
+        />}
 
-              <TextInput
-                style={[styles.auth_textInput,]}
-                onChangeText={(email) => this.setState({ email })}
-                value={this.state.email}
-                placeholder="Type your message"
-                placeholderTextColor={Colors.text_color}
-                autoCapitalize='none' />
-              <TouchableOpacity
-                onPress={() => { navigation.navigate('Work In Progress'); }}>
+        {washerLocation != undefined &&
+          <Marker
+            title="Washer"
+            coordinate={{ latitude: parseFloat(washerLocation.latitude), longitude: parseFloat(washerLocation.longitude) }}>
+            <Image style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'white' }} source={booking.userdetails.image ? { uri: partialProfileUrl + booking.userdetails.image } : require('../../Assets/icon/user.png')} />
+          </Marker>}
 
-                <Text style={{ color: '#445F98', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>SEND</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        {origin != undefined &&
+          <Marker
+            title="You"
+            coordinate={getWashCoordinates(booking)} />}
+      </MapView>
 
-        </View>
-        <SafeAreaView />
+      <View style={styles.jobDestination}>
+        <Text style={{ fontWeight: 'bold', color: 'orange', fontSize: 18 }} >JOB DESTINATION</Text>
+        <Text>{booking.wash_location}</Text>
       </View>
-    );
-  }
+
+      <View style={{ backgroundColor: '#efefef', padding: 10, paddingBottom: 0 }}>
+        <View style={{ flexDirection: 'row', marginBottom: 10, alignSelf: 'center' }}>
+          <Image style={{ width: 25, height: 25, tintColor: '#24AE88', }} source={require('../../Assets/checkdark.png')} />
+          <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', textAlign: 'center', marginLeft: 5 }}>Booking Confirm</Text>
+        </View>
+        <View style={{
+          borderWidth: 1, borderColor: '#ccc',
+          width: '95%', backgroundColor: '#fff', alignSelf: 'center',
+          marginBottom: 22, shadowOpacity: 0.8, shadowColor: '#aaa', justifyContent: 'center', borderRadius: 15
+        }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, alignItems: 'center' }}>
+            <Text>{booking?.wash_location}</Text>
+            <Text style={{ color: 'yellow', backgroundColor: '#000', padding: 4, fontWeight: 'bold', borderRadius: 5 }}> 0.5 min </Text>
+          </View>
+          <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
+          <View style={{ flexDirection: 'row', padding: 10 }}>
+            <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={booking.userdetails.image ? { uri: partialProfileUrl + booking.userdetails.image } : require('../../Assets/icon/user.png')} />
+            <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 18, alignSelf: 'center' }}>{booking.userdetails.name}</Text>
+
+            {/* <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 14, alignSelf: 'center' }}>4.5</Text> */}
+
+          </View>
+
+          <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
+          <View style={{ flexDirection: 'row', justifyContent: 'center', }}>
+            <TouchableOpacity onPress={() => Linking.openURL(`tel:${booking.userdetails.mobile}`)} style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
+              <Image style={{ width: 20, height: 20, tintColor: '#0EFF74', }} source={require('../../Assets/call.png')} />
+              <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CALL WASHER</Text>
+            </TouchableOpacity>
+            <View style={{ width: 1, height: 45, backgroundColor: '#aaa' }} />
+            <TouchableOpacity style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
+              <Image style={{ width: 20, height: 20, tintColor: 'red', }} source={require('../../Assets/error.png')} />
+              <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL RIDE </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
+          <View style={{ flexDirection: 'row', padding: 5, marginLeft: 10, alignItems: 'center' }}>
+            <View style={{ backgroundColor: '#445F98', width: 45, height: 50, borderRadius: 5, justifyContent: 'center', alignItems: 'center', marginLeft: 0, margin: 7 }}>
+              <Image style={{ width: 40, height: 40, tintColor: '#FFF', }} source={require('../../Assets/smartphone.png')} />
+            </View>
+
+            <TextInput
+              style={[styles.auth_textInput,]}
+              placeholder="Type your message"
+              placeholderTextColor={Colors.text_color}
+              autoCapitalize='none' />
+            <TouchableOpacity
+              onPress={() => { navigation.navigate('Work In Progress'); }}>
+
+              <Text style={{ color: '#445F98', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>SEND</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+      </View>
+      <SafeAreaView />
+    </View>
+  );
 }
+
+const getWashCoordinates = booking => ({ latitude: parseFloat(booking.wash_lat_lng.latitude), longitude: parseFloat(booking.wash_lat_lng.longitude) })
 
 const styles = StyleSheet.create({
   customerDetails: {

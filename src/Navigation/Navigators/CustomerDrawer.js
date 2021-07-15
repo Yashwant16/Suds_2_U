@@ -10,11 +10,13 @@ import Colors from '../../../Constants/Colors';
 import OnDemand from '../../CustomerScreen/OnDemand';
 import { AuthContext } from '../../Providers/AuthProvider';
 import DriverChangePassword from '../../DriverScreen/DriverChangePaasword';
-import BookingHistory from '../../DriverScreen/BookingHistory';
 import WorkInProgress from '../../CustomerScreen/WorkInProgress'
 import BookingConfirmed from '../../CustomerScreen/BookingConfirm';
 import OnTheWay from '../../CustomerScreen/OnTheWay';
 import SelectVendor from '../../CustomerScreen/SelectVender';
+import BookingHistory from '../../CustomerScreen/BookingHistory';
+import TermsConditions from '../../CommonScreen/TermsConditions';
+import { partialProfileUrl } from '../../Providers';
 const Drawer = createDrawerNavigator();
 
 
@@ -71,11 +73,11 @@ const CustomerDrawer = () => {
         component={HelpScreen}
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/help.png')} /> }}
       />
-      {/* <Drawer.Screen
-        name="Select Vendor"
-        component={SelectVendor}
+      <Drawer.Screen
+        name="Terms and conditions"
+        component={TermsConditions}
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/help.png')} /> }}
-      /> */}
+      />
     </Drawer.Navigator>
   );
 };
@@ -112,7 +114,7 @@ const DrawerProfile = () => {
   return (
     <View style={{ width: '100%', marginTop: 0, padding: 16, alignItems: 'center' }}>
       <View style={{ marginTop: 10, width: 90, height: 90, borderColor: '#fff', borderRadius: 10, borderWidth: 3, alignItems: 'center', alignSelf: 'center' }}>
-        <Image style={{ width: 88, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'cover', borderRadius: 10 }} source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }} />
+        <Image style={{ width: 85, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'cover', borderRadius: 10 }} source={{ uri: userData?.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }} />
       </View>
       <View>
         <Text style={{ color: Colors.blue_color, fontSize: 18, paddingBottom: 6, marginTop: 10, fontWeight: 'bold' }}>{userData.name}</Text>

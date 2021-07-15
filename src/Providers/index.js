@@ -8,25 +8,24 @@ import NetInfo from '@react-native-community/netinfo';
 import EarningProvider from './EarningsProvider';
 import PackageProvider from './PackageProvider';
 
-const BASE_URL = 'http://suds-2-u.com/sudsadmin/api/';
+export const BASE_URL = 'http://suds-2-u.com/api/';
 export const ERROR = 5
 export const LOADING = 6
 
+export const partialProfileUrl = "http://suds-2-u.com/public/profile/"
+
+
 const Providers = ({ children }) => {
-  console.log('brbr[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[')
-  useEffect(()=>{
-    fetch('http://192.168.1.8:3000/', {
-      method: 'GET' 
-    }).then(async res=>console.log(await res.text())).catch(err=>console.log(err));
-  }, [])
   return (
     <AppProvider>
       <AuthProvider>
         <RatingProvider>
           <EarningProvider>
-            <PackageProvider>
-              <BookingProvider>{children}</BookingProvider>
-            </PackageProvider>
+            <BookingProvider>
+              <PackageProvider>
+                {children}
+              </PackageProvider>
+            </BookingProvider>
           </EarningProvider>
         </RatingProvider>
       </AuthProvider>
@@ -40,24 +39,23 @@ export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') 
   try {
     await checkConnection();
     let formData = new FormData()
-    Object.entries(params).forEach(([key, value]) => key == "image" ? formData.append("image", {uri: value.uri, name: value.fileName, type: 'image/jpeg'}) : formData.append(key, value))
+    Object.entries(params).forEach(([key, value]) =>key.includes('image') ? formData.append(key, { uri: value.uri, name: value.fileName, type: 'image/jpeg' }) : formData.append(key, value))
     console.log(params)
-    console.log(JSON.stringify(formData))
     let url = `${BASE_URL}${subfix}?`
     let res = await fetch(url, {
       method: method,
       headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
-      body: method=="GET" ? null : formData
+      body: method == "GET" ? null : formData
     });
     let jsonResponse = await res.json();
-    console.log(jsonResponse);
+    console.log(subfix,jsonResponse);
     if (!jsonResponse.response) {
       if (onFalse) onFalse(jsonResponse);
       else Alert.alert('Alert', jsonResponse.message);
     } else if (isEmptyResponse(jsonResponse)) return { ...jsonResponse, empty: true }
     else return jsonResponse;
   } catch (error) {
-    console.log(error);
+    console.log('FAIL', error);
   }
 };
 
@@ -72,5 +70,25 @@ const checkConnection = async () => {
   if (!state.isConnected) {
     Alert.alert('Connection', 'You are not connected to the internet');
     throw 'Not connected';
+  }
+};
+
+export const callApi2 = async (subfix, AppKey, params, onFalse, method = 'POST') => {
+  console.log("SAVE BOOKING PARAMS", params)
+  try {
+    await checkConnection();
+    let url = `${BASE_URL}${subfix}?` + new URLSearchParams(params);
+    let res = await fetch(url, {
+      method: method,
+      headers: { 'App-Key': AppKey, 'Content-Type': 'application/json' },
+    });
+    let text = await res.text()
+    console.log('TEXT', text)
+    let jsonResponse = JSON.parse(text)
+    console.log("SAVE BOOKING JSON REPONSE", jsonResponse);
+    if (jsonResponse.response) return jsonResponse.response
+    else Alert.alert('Alert', jsonResponse.message);
+  } catch (error) {
+    console.log("Savebooking error > ", error);
   }
 };

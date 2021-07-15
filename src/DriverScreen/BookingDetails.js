@@ -19,6 +19,7 @@ const BookingDetails = ({route}) => {
     let json = await getSingleBookingDetails(route.params?.id);
     setFetching(false);
     json?.empty? setEmptyResponse(true) :  setBooking(json?.data);
+    console.log(JSON.stringify(json?.data))
   };
 
   useEffect(() => getBooking(route.params?.id), []);
@@ -29,9 +30,8 @@ const BookingDetails = ({route}) => {
           <LoadingView empty={emptyResponse} fetching={fetching}>
             <Text style={[styles.text, {fontWeight: 'bold'}]}>Wash Location</Text>
             <Text style={[styles.text]}>{booking?.wash_location}</Text>
-            <Text style={[styles.text]}>CA-94507</Text>
             <Divider style={{marginTop: 10, marginBottom: 10}} />
-            <Detail bold title={booking?.vehicledetails[0]?.model} detail={'$'+WashPrice(booking).toFixed(2)} />
+            <Detail bold title={booking?.vehicledetails[0]?.model || booking?.vehicle_type } detail={'$'+WashPrice(booking).toFixed(2)} />
             {booking?.extraaddonsdetails?.map(ext => (
               <Detail key={ext.id} title={ext.add_ons_name} detail={'$' + parseFloat(ext.add_ons_price).toFixed(2)} />
             ))}
@@ -42,12 +42,14 @@ const BookingDetails = ({route}) => {
               {booking?.booking_date}, {booking?.booking_time}
             </Text>
             <Divider style={{marginTop: 10, marginBottom: 10}} />
-            <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 0}]}>TIP</Text>
-            <View style={{flexDirection: 'row'}}>
+            {booking?.tip ? <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 0}]}>TIP</Text> : null}
+            {booking?.tip ? 
+            (<View style={{flexDirection: 'row'}}>
               {tips.map((v, i) => (
                 <TipItem amount={v} key={i} onPress={() => setSelectedTip(v)} selected={v == selectedTip} />
               ))}
-            </View>
+            </View>)
+            :null}
             <Text style={[styles.text, {fontWeight: 'bold', textAlign: 'center', paddingVertical: 10}]}>Your rating on this job</Text>
             <View style={{padding: 24, backgroundColor: 'white', borderRadius: 10, alignItems: 'center'}}>
               <Rating rating={booking?.rating} size={30} />

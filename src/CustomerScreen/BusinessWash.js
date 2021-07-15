@@ -1,23 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import Colors from '../../Constants/Colors';
-import CheckBox from 'react-native-check-box'
 export default class MyNotificationsScreen extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isChecked: '', area: '', length: '', width: '',
-      Data: [
-        {
-          category_id: 1,
-          category_name: 'BOATS UNDER 20 FEET'
-        }, {
-          category_id: 2,
-          category_name: 'BOATS OVER 20 FEET'
-        },
-
-      ],
+      isChecked: '', area: '', length: '', width: ''
     }
   }
 

@@ -8,13 +8,13 @@ import { BookingContext } from '../Providers/BookingProvider';
 import LoadingView from '../Components/LoadingView';
 
 const WorkInProgress = ({ navigation, route }) => {
-    const [deadline, setDeadline] = useState(Date.now() + 3600000);
+    const [deadline, setDeadline] = useState(route.params?.booking?.totaltime*1000);
     const [timeRemaining, setTimeRemaining] = useState(deadline - Date.now())
     const [loading, setLoading] = useState(false);
     const booking = useMemo(() => route.params?.booking, [route])
 
     useEffect(() => {
-        const interval = setInterval(() => setTimeRemaining(deadline - Date.now()), 1000);
+        const interval = setInterval(() => setTimeRemaining(deadline- Date.now()), 1000);
         return () => clearInterval(interval);
     }, [deadline]);
     return (
@@ -52,10 +52,11 @@ export default WorkInProgress;
 
 const parseMilllisecond = ms => {
     const zeroPad = (num, places) => String(num).padStart(places, '0');
-    let minute = Math.floor(ms / 60000);
-    let second = Math.floor((ms % 60000) / 1000);
-    return `${zeroPad(minute, 2)}:${zeroPad(second, 2)}`;
-};
+    let hour = Math.floor(ms / 3600000);
+    let minute = Math.floor((ms % 3600000) / 60000);
+    return `${zeroPad(hour, 2)}:${zeroPad(minute, 2)}`;
+  };
+  
 
 const styles = StyleSheet.create({
     container: {

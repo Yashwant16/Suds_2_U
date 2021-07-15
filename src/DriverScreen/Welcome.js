@@ -7,63 +7,64 @@ import messaging from '@react-native-firebase/messaging';
 import LoadingView from '../Components/LoadingView';
 import { BookingContext } from '../Providers/BookingProvider';
 import { dontShow } from '../Navigation/NavigationService';
+import { subscribeLocationLocation } from '../Services/LocationServices';
 
 export const nav = React.createRef(null);
-export const routeRef = React.createRef(null);
 
-const WelcomeScreen = ({ navigation, route }) => {
+const WelcomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisibility] = useState(false);
   const [newJobBooking, setNewJobBooking] = useState();
   const [loading, setLoading] = useState(false);
   const { getSingleBookingDetails, acceptJob, rejectJob } = useContext(BookingContext);
   const {
     userData: { latitude, longitude },
+    updateUserLocation
   } = useContext(AuthContext);
 
   const accept = async () => {
     setModalVisibility(false);
- /*    setLoading(true);
+    setLoading(true);
     let success = await acceptJob(newJobBooking?.booking_id);
     setLoading(false);
-    if (success) */ navigation.navigate('ON JOB', { booking: newJobBooking });
+    if (success) navigation.navigate('ON JOB', { booking: newJobBooking });
   };
  
   useEffect(() => {
     nav.current = navigation;
-    routeRef.current = route;
-
-    // const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //   if (remoteMessage.data.type == 'new job request') {
-    //     setLoading(true);
-    //     let json = await getSingleBookingDetails('1');
-    //     setLoading(false);
-    //     if (json) {
-    //       setNewJobBooking(json.data);
-    //       setModalVisibility(true);
-    //     }
-    //   }
-    // });
-
-
-    const timeout1 = setTimeout(async () => {
-      if (!dontShow) {
+    updateUserLocation()
+    // subscribeLocationLocation()
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      if (remoteMessage.data.type == 0) {
         setLoading(true);
-        let json = await getSingleBookingDetails('17')
+        let json = await getSingleBookingDetails(remoteMessage.data.booking_id);
         setLoading(false);
         if (json) {
-          setNewJobBooking(json.data)
+          setNewJobBooking(json.data);
           setModalVisibility(true);
         }
       }
-    }, 3000);
-    // return unsubscribe;
-    return () => clearTimeout(timeout1)
+    });
+
+
+    // const timeout1 = setTimeout(async () => {
+    //   if (!dontShow) {
+    //     setLoading(true);
+    //     let json = await getSingleBookingDetails('17')
+    //     setLoading(false);
+    //     if (json) {
+    //       setNewJobBooking(json.data)
+    //       setModalVisibility(true);
+    //     }
+    //   }
+    // }, 3000);
+    return unsubscribe;
+    // return () => clearTimeout(timeout1)
   }, []);
 
   const hide = async () => {
-    // setLoading(true);
-    // await rejectJob(newJobBooking.booking_id);
-    // setLoading(false);
+    setLoading(true);
+    await rejectJob(newJobBooking.booking_id);
+    setLoading(false);
     setModalVisibility(false);
   };
 
@@ -102,7 +103,7 @@ const WelcomeScreen = ({ navigation, route }) => {
         </View>
       </View>
       <LoadingView loading={loading} />
-      <NewJobModal booking={newJobBooking} accept={accept} modalVisible={modalVisible} hide={hide} />
+      <NewJobModal booking={newJobBooking} accept={accept}  modalVisible={modalVisible} hide={hide} setModalVisible={setModalVisibility} />
     </View>
   );
 };

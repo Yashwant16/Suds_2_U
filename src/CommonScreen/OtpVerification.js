@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {StyleSheet, Text, View, SafeAreaView, ImageBackground, Image, TouchableOpacity, Alert, ToastAndroid} from 'react-native';
+import {StyleSheet, Text, View, SafeAreaView, ImageBackground, Image, TouchableOpacity, Alert, ToastAndroid, KeyboardAvoidingView} from 'react-native';
 import Colors from '../../Constants/Colors';
 import OTPTextView from 'react-native-otp-textinput';
 import {ScrollView} from 'react-native';

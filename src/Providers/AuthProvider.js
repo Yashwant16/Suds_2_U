@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import { callApi } from '.';
 import { changeStack, CUSTOMER, navigate, type, WASHER } from '../Navigation/NavigationService';
 import messaging from '@react-native-firebase/messaging';
+import { getCurrentPosition } from '../Services/LocationServices';
 
 export const AuthContext = React.createContext();
 
@@ -11,17 +12,28 @@ const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState({});
   const [loginData, setLoginData] = useState({})
 
-  const getToken = async ()=>{
-    return 'random token'
-    // return await messaging().getToken()
+  const getToken = async () => {
+    // return 'random token'
+    return await messaging().getToken()
   }
 
-  // useEffect(() => messaging().getToken().then((token) => console.log("-------------------------------", token)), [])
+  useEffect(() => messaging().getToken().then((token) => console.log(token)), [])
+
+  const updateUserLocation = async () => {
+    try {
+      const { latitude, longitude } = (await getCurrentPosition()).coords
+      let json = await callApi('liveTracking', userData.api_token, { lat: latitude, long: longitude, user_id: userData.id });
+      saveUserData('AUTH_DONE', { ...userData, latitude, longitude })
+      setUserData(cv => ({ ...cv, latitude, longitude }))
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const signUp = async signUpData => {
     console.log("Washer sign up")
     setLoginData(signUpData)
-    let json = await callApi('washregistration', 'ABCDEFGHIJK', { ...signUpData, device_token:  await getToken()});
+    let json = await callApi('washregistration', 'ABCDEFGHIJK', { ...signUpData, device_token: await getToken() });
     if (!json) return;
     setUserData({ ...json.data, password: signUpData.password });
     return { otp: json.otp, id: json.data.id };
@@ -117,6 +129,8 @@ const AuthProvider = ({ children }) => {
 
   const getCardDetails = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
 
+  const getCustomerCurrentRunningBooking =async() => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
+
   const otpVerified = async () => {
     let json = await callApi('otpVerify', userData.api_token, { id: userData.id })
     if (json) setUserData(json.data)
@@ -181,7 +195,8 @@ const AuthProvider = ({ children }) => {
         customerSignUp,
         addCard,
         getCardDetails,
-        updateCard
+        updateCard,
+        updateUserLocation
       }}>
       {children}
     </AuthContext.Provider>

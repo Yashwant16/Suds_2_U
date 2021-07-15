@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, FlatList, ImageBackground } from 'react-native';
 
 import { Header, Icon, Avatar, Rating } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box'
 import CtaButton from '../Components/CtaButton';
+import { BookingContext } from '../Providers/BookingProvider';
+import { AppContext } from '../Providers/AppProvider';
 // import { CheckBox } from 'react-native-elements'
 const fakeWashImages = [
   'https://images.theconversation.com/files/76578/original/image-20150331-1231-1ttwii6.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1200&h=675.0&fit=crop',
@@ -33,6 +35,16 @@ const fakeWashImages = [
   'https://www.ncswash.com/wp-content/uploads/2020/05/Waves-Atmore-AL-11-775x320-1.jpg'
 ]
 const VendorProfile = ({navigation, route}) => {
+  const {getFinishedJobImage} = useContext(BookingContext)
+  const {setLoading} = useContext(AppContext)
+  const getPreviousWashImages = async()=>{
+    setLoading(true)
+    let json = await getFinishedJobImage()
+    setLoading(false)
+    if(json){
+      
+    }
+  }
   const [state, setState] = useState([
 
     {
