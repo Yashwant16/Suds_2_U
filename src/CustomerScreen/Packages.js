@@ -85,7 +85,7 @@ const RenderItem = ({ item, onCheck, checked }) => {
             <View style={{ marginRight: 'auto', width: 30 }} />
             <View style={{ padding: 5, alignItems: 'center' }}>
                 <Text style={{ fontSize: 22, fontWeight: 'bold', textAlign: 'center' }}>${parseFloat(item.package_price || item.price).toFixed(2)}</Text>
-                <View style={{ flexDirection: 'row', marginTop: 5, backgroundColor: Colors.blue_color, width: 160, justifyContent: 'center', alignItems: 'center', height: 35, borderRadius: 30 }}>
+                <View style={{ flexDirection: 'row', marginTop: 5, backgroundColor: Colors.blue_color, justifyContent: 'center', alignItems: 'center', height: 35, borderRadius: 30, paddingHorizontal : 10 }}>
                     <Text style={{ marginHorizontal: 5, fontSize: 16, color: '#fff', fontWeight: 'bold' }}>{item.package_name || item.type}</Text>
 
                     <Image style={{ height: 20, width: 20, padding: 5, borderRadius: 10, tintColor: '#fff' }} source={require('../../Assets/help.png')} />

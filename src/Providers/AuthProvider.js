@@ -129,7 +129,15 @@ const AuthProvider = ({ children }) => {
 
   const getCardDetails = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
 
-  const getCustomerCurrentRunningBooking =async() => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
+  const getCustomerCurrentRunningBooking = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
+
+  const changeImage = async (image) => {
+    let json = await callApi('userImage', userData.api_token, { user_id: userData.id, image })
+    if (json) {
+      setUserData(cv => ({ ...cv, image: image.uri }))
+      return "success"
+    }
+  }
 
   const otpVerified = async () => {
     let json = await callApi('otpVerify', userData.api_token, { id: userData.id })
@@ -196,7 +204,8 @@ const AuthProvider = ({ children }) => {
         addCard,
         getCardDetails,
         updateCard,
-        updateUserLocation
+        updateUserLocation,
+        changeImage
       }}>
       {children}
     </AuthContext.Provider>

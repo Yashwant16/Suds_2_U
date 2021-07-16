@@ -95,7 +95,7 @@ const InputComponent = ({ label, textInputStyle, keyboardType, fieldName, rules,
             onBlur={onBlur}
             onChangeText={value => onChange(value)}
             value={value}
-            style={[{ borderWidth: 2, borderColor: '#555', borderRadius: 25, color: 'black', paddingHorizontal: 16 }, textInputStyle]}
+            style={[{ borderWidth: 2, borderColor: '#555', borderRadius: 25, color: 'black', paddingHorizontal: 16, height:35 }, textInputStyle]}
             keyboardType={keyboardType}
           />
         )}

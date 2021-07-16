@@ -7,10 +7,13 @@ import { AuthContext } from '../Providers/AuthProvider';
 import { getCurrentAddress } from '../Services/LocationServices';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { partialProfileUrl } from '../Providers';
+import { AppContext } from '../Providers/AppProvider';
+import LoadingView from '../Components/LoadingView';
 export const nav = React.createRef(null);
 export default HomeScreen = ({ navigation }) => {
 
-  const { userData, updateUserLocation } = useContext(AuthContext)
+  const { userData, updateUserLocation,changeImage } = useContext(AuthContext)
+  const {setLoading} = useContext(AppContext)
   const [currentAddress, setCurrentAddress] = useState('Getting address...')
 
   useEffect(() => {
@@ -19,8 +22,17 @@ export default HomeScreen = ({ navigation }) => {
     getCurrentAddress().then(address => setCurrentAddress(address))
   }, [])
 
+  const imageCallBack = async (res)=>{
+    console.log(res)
+    if(res.didCancel) return
+    setLoading(true)
+    await changeImage(res.assets[0])
+    setLoading(false)
+  }
+
   return (
     <View style={{ flex: 1, }}>
+      <LoadingView/>
       <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
         <Text style={{ color: '#fff', margin: 6, marginTop: 10, fontSize: 16, fontWeight: '600' }}>Rewards</Text>
 
@@ -31,9 +43,9 @@ export default HomeScreen = ({ navigation }) => {
       </View>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: userData.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 21 }}>
-          <TouchableOpacity onPress={() => launchImageLibrary({}, res => console.log(JSON.stringify(res, null, 2)))} style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
+          {/* <TouchableOpacity onPress={() => launchImageLibrary({}, imageCallBack)} style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
             <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={{ flex: 1, justifyContent: 'flex-end', }}>
           <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom: -1 }} source={require('../../Assets/shape.png')} >

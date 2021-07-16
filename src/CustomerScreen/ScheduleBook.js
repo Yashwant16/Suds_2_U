@@ -1,7 +1,7 @@
 // React Native Calendar Picker using react-native-calendar-picker
 
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 // import TimePicker from 'react-native-simple-time-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarPicker from 'react-native-calendar-picker';
@@ -70,7 +70,8 @@ const ScheduleBook = ({ navigation, route }) => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }} >
+    <SafeAreaView style={{backgroundColor : Colors.dark_orange, flex : 1}}>
+    {/* <View style={{ flex: 1, backgroundColor: '#fff' }} > */}
       <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
@@ -149,7 +150,9 @@ const ScheduleBook = ({ navigation, route }) => {
         display="default"
         onChange={onDChange}
       />}
-    </View>
+     
+    {/* </View> */}
+    </SafeAreaView>
   )
 
 }
@@ -176,9 +179,9 @@ const styles = StyleSheet.create({
   auth_btn: {
 
     paddingTop: 10,
-    paddingBottom: 10,
+    paddingBottom: 30,
     backgroundColor: '#e28c39',
-
+    alignItems : 'center',
     width: '100%',
     height: 60,
     justifyContent: 'center',
