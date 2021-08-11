@@ -1,11 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
 import Colors from '../../Constants/Colors';
-import { bookingType, ON_DEMAND,afterScheduleScreen } from '../Navigation/NavigationService';
+import { bookingType, ON_DEMAND, afterScheduleScreen } from '../Navigation/NavigationService';
+import { BookingContext } from '../Providers/BookingProvider';
 const ConfirmBusniesswash = ({ navigation }) => {
+    const { currentBooking,setCurrentBooking } = useContext(BookingContext)
+    const area = useMemo(() => (parseFloat(currentBooking.length) * parseFloat(currentBooking.width)), [currentBooking])
     useEffect(() => {
-        return () => afterScheduleScreen.current = null
+        return () => {
+            setCurrentBooking(cv => ({ ...cv, vehicle: undefined, packageDetails: undefined }))
+            afterScheduleScreen.current = null
+        }
     }, [])
+
+    const onNext = () => {
+        setCurrentBooking(cv => ({ ...cv, vehicle: "Business wash", packageDetails: { name: area.toFixed(1) + ' Sq. Feet', price: area * 0.15 } }))
+        navigation.navigate(bookingType.current == ON_DEMAND ? 'Booking Review' : 'Select a Vendor');
+        afterScheduleScreen.current = "Booking Review"
+    }
+
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
@@ -14,11 +27,11 @@ const ConfirmBusniesswash = ({ navigation }) => {
 
                 <Text style={{ fontSize: 21, fontWeight: 'bold' }}>Business wash</Text>
                 <Text style={{ fontSize: 21, padding: 10, textAlign: "center" }}>Area surface to be cleaned and washed</Text>
-                <Text style={{ fontSize: 21 }}>Area : 800 SQ feet</Text>
-                <Text style={{ fontSize: 21 }}>Price : $0.15 per foot</Text>
+                <Text style={{ fontSize: 21 }}>Area : {area.toFixed(1)} SQ feet</Text>
+                <Text style={{ fontSize: 21 }}>Price : $0.15 per square foot</Text>
                 <View style={styles.card}>
                     <Text style={{ fontSize: 26, fontWeight: 'bold' }}>Total</Text>
-                    <Text style={{ fontSize: 40, fontWeight: 'bold', color: Colors.blue_color }}>$120.00</Text>
+                    <Text style={{ fontSize: 40, fontWeight: 'bold', color: Colors.blue_color }}>${(area * 0.15).toFixed(2)}</Text>
                 </View>
 
             </View>

@@ -1,75 +1,78 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import Colors from '../../Constants/Colors';
-export default class MyNotificationsScreen extends React.Component {
+import { BookingContext } from '../Providers/BookingProvider';
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isChecked: '', area: '', length: '', width: ''
-    }
+export default BusinessWash = ({ navigation }) => {
+
+  const { setCurrentBooking, currentBooking } = useContext(BookingContext)
+
+  const [width, setWidth] = useState(currentBooking.width || '')
+  const [length, setLength] = useState(currentBooking.length || '')
+
+  useEffect(() => {
+    return () => setCurrentBooking(cv => ({ ...cv, length: undefined, width: undefined }))
+  }, [])
+
+  const onContinue = () => {
+    if (width.length == 0) Alert.alert("Width", "Please enter width to contiue.")
+    if (length.length == 0) Alert.alert("Length", "Please enter length to contiue.")
+    setCurrentBooking(cv => ({ ...cv, length, width }))
+    navigation.navigate(' Business wash ');
   }
 
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
+      <SafeAreaView />
+      <View style={{ alignItems: 'center', width: '100%', padding: 18, flex: 1 }}>
+        <Text style={{ fontSize: 18, textAlign: 'center' }}>For surface cleaning at your home or business our services are $ 0.15 cents per square foot</Text>
+        <Text style={{ fontSize: 18, marginTop: 30 }}>AREA = LENGTH X WIDTH</Text>
+        <View style={{ marginTop: 30, padding: 10, flex: 1, width: '100%' }}>
+          <Text style={{ textAlign: 'center', fontSize: 16 }}>Area surface in square feet</Text>
+          <TextInput
+            style={styles.auth_textInput}
+            onChangeText={setLength}
+            value={length}
+            keyboardType={'numeric'}
+            placeholder="Length"
+            autoCapitalize='none' />
 
-
-
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        <SafeAreaView />
-        <View style={{ alignItems: 'center', width: '100%', padding: 18, flex: 1 }}>
-
-
-          <Text style={{ fontSize: 18, textAlign: 'center' }}>For surface cleaning at your home or business our services are $ 0.15 cents per square foot</Text>
-          <Text style={{ fontSize: 18, marginTop: 30 }}>AREA = LENGTH X WIDTH</Text>
-          <View style={{ marginTop: 30, padding: 10, flex: 1, width: '100%' }}>
-            <Text style={{ textAlign: 'center', fontSize: 16 }}>Area surface in square feet</Text>
-            <TextInput
-              style={styles.auth_textInput}
-              onChangeText={(length) => this.setState({ length })}
-              value={this.state.length}
-              keyboardType={'numeric'}
-              placeholder="Length"
-              autoCapitalize='none' />
-
-            <TextInput
-              style={styles.auth_textInput}
-              onChangeText={(width) => this.setState({ width })}
-              value={this.state.width}
-              keyboardType={'numeric'}
-              placeholder="Width"
-              autoCapitalize='none' />
-          </View>
+          <TextInput
+            style={styles.auth_textInput}
+            onChangeText={setWidth}
+            value={width}
+            keyboardType={'numeric'}
+            placeholder="Width"
+            autoCapitalize='none' />
         </View>
-        <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 10 }}>
-
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TouchableOpacity
-              elevation={5}
-              onPress={() => { navigation.navigate(' Business wash '); }}
-              style={styles.auth_btn}
-              underlayColor='gray'
-              activeOpacity={0.8} >
-              <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Continue</Text>
-
-            </TouchableOpacity>
-            <TouchableOpacity
-              elevation={5}
-              onPress={() => { }}
-              style={styles.auth_btn}
-              underlayColor='gray'
-              activeOpacity={0.8} >
-              <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
-
-            </TouchableOpacity>
-          </View>
-        </View>
-        {/* </ImageBackground> */}
       </View>
-    );
-  }
+      <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 10 }}>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <TouchableOpacity
+            elevation={5}
+            onPress={onContinue}
+            style={styles.auth_btn}
+            underlayColor='gray'
+            activeOpacity={0.8} >
+            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Continue</Text>
+
+          </TouchableOpacity>
+          <TouchableOpacity
+            elevation={5}
+            onPress={() => { }}
+            style={styles.auth_btn}
+            underlayColor='gray'
+            activeOpacity={0.8} >
+            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
+
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

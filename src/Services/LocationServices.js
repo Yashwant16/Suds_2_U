@@ -3,7 +3,6 @@ import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 import Geocoder from 'react-native-geocoding';
 import Geolocation from 'react-native-geolocation-service';
 Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
-let watchID
 
 const [YES, NO, WAIT] = [1, 2, 3]
 
@@ -46,7 +45,7 @@ export const askLocationService = async () => {
 export const getCurrentPosition = () => {
   return new Promise(async (resolve, reject) => {
     let permission = await askLocationService()
-    if (permission == YES) Geolocation.getCurrentPosition(info => resolve(info) , error => console.log(error), { enableHighAccuracy: true, timeout: 30000, maximumAge: 1000 })
+    if (permission == YES) Geolocation.getCurrentPosition(info => resolve(info), error => console.log(error), { enableHighAccuracy: true, timeout: 30000, maximumAge: 1000 })
     else reject()
   })
 };
@@ -61,26 +60,28 @@ export const getFormattedAddress = async (lat, lng) => {
   }
 }
 
-export const getCurrentAddress = async ()=>{
+export const getCurrentAddress = async () => {
   try {
-    let {latitude, longitude} = (await getCurrentPosition()).coords
+    let { latitude, longitude } = (await getCurrentPosition()).coords
     return await getFormattedAddress(latitude, longitude)
   } catch (error) {
     console.log(error)
   }
 }
 
-export const subscribeLocationLocation = () => {
-  if(watchID) Geolocation.clearWatch(watchID)
-  watchID = Geolocation.watchPosition(
-    (position) => {
-      console.log("subscribe", position)
+export const subscribeLocation = (updateLocation) => {
+  let watchID = Geolocation.watchPosition(
+    ({ coords }) => {
+      updateLocation({ lat: coords.latitude, long: coords.longitude })
+      console.log("subscribe", coords)
     },
     (error) => {
       console.log("subscribe error", error)
       // setLocationStatus(error.message);
     },
-    { enableHighAccuracy: true, distanceFilter : 5}//[TODO]: remove the distance filter
+    { enableHighAccuracy: true, distanceFilter: 5 }//[TODO]: remove the distance filter
   );
   console.log('watch id', watchID)
+
+  return () => Geolocation.clearWatch(watchID)
 };

@@ -47,15 +47,20 @@ export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') 
       headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
       body: method == "GET" ? null : formData
     });
-    let jsonResponse = await res.json();
+    let text = await res.text()
+    console.log(subfix,res.status, text.substring(0, 1000))
+    
+    let jsonResponse = JSON.parse(text)
     console.log(subfix,jsonResponse);
-    if (!jsonResponse.response) {
+    if (jsonResponse.response==false) {
       if (onFalse) onFalse(jsonResponse);
       else Alert.alert('Alert', jsonResponse.message);
     } else if (isEmptyResponse(jsonResponse)) return { ...jsonResponse, empty: true }
-    else return jsonResponse;
+    else if(res.status==200 || res.status==201) return jsonResponse;
+    else return Alert.alert('Error', 'Something went wrong. Please try again.')
   } catch (error) {
     console.log('FAIL', error);
+    Alert.alert("Error", "Something went wrong. Please try again.")
   }
 };
 

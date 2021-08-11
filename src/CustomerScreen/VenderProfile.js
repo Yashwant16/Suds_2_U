@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, FlatList, ImageBackground } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, FlatList, ImageBackground, useWindowDimensions } from 'react-native';
 
 import { Header, Icon, Avatar, Rating } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
@@ -7,6 +7,9 @@ import CheckBox from 'react-native-check-box'
 import CtaButton from '../Components/CtaButton';
 import { BookingContext } from '../Providers/BookingProvider';
 import { AppContext } from '../Providers/AppProvider';
+import { ERROR, LOADING } from '../Providers';
+import { ActivityIndicator } from 'react-native';
+import ListEmpty from '../Components/ListEmpty'
 // import { CheckBox } from 'react-native-elements'
 const fakeWashImages = [
   'https://images.theconversation.com/files/76578/original/image-20150331-1231-1ttwii6.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1200&h=675.0&fit=crop',
@@ -34,263 +37,65 @@ const fakeWashImages = [
   'https://media.smallbiztrends.com/2018/05/shutterstock_682966966.jpg',
   'https://www.ncswash.com/wp-content/uploads/2020/05/Waves-Atmore-AL-11-775x320-1.jpg'
 ]
-const VendorProfile = ({navigation, route}) => {
-  const {getFinishedJobImage} = useContext(BookingContext)
-  const {setLoading} = useContext(AppContext)
-  const getPreviousWashImages = async()=>{
-    setLoading(true)
-    let json = await getFinishedJobImage()
-    setLoading(false)
-    if(json){
-      
+const VendorProfile = ({ navigation, route }) => {
+  const { getFinishedJobImage, currentBooking } = useContext(BookingContext)
+  const [images, setImages] = useState(LOADING)
+  const windowDimensions = useWindowDimensions()
+
+  useEffect(() => getFinishedJobImage(setImages), [])
+
+  const List = () => {
+    switch (images) {
+      case LOADING: return <ActivityIndicator color={Colors.blue_color} size="large" style={{ padding: 10, width : '100%' }} />
+      case ERROR: return <ListEmpty retry={() => getFinishedJobImage(setImages)} emptyMsg="Something went wrong." />
+      default: return (
+        <FlatList
+          numColumns={3}
+          keyExtractor={(item, index) => index}
+          style={{ width: '100%' }}
+          showsVerticalScrollIndicator={false}
+          data={images}
+          ListEmptyComponent={()=><ListEmpty emptyMsg="No provious images yet." />}
+          ItemSeparatorComponent={() => <View style={{ margin: -5 }} />}
+          renderItem={renderItem} />
+      )
     }
   }
-  const [state, setState] = useState([
 
-    {
-      name: 'Car or Truck ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Tractor Trailors',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Boats ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Motorcycles ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-
-    {
-      name: 'Rv s, Bus, M.H. ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Heavy Equipment ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Business Wash ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Heavy Equipment ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Business Wash ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Heavy Equipment ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Business Wash ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Car or Truck ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Tractor Trailors',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Boats ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Motorcycles ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-
-    {
-      name: 'Rv s, Bus, M.H. ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Heavy Equipment ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Business Wash ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Heavy Equipment ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Business Wash ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Heavy Equipment ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-    {
-      name: 'Business Wash ',
-      date: '22 Jan',
-      dueAmount: '500 Rs',
-      content: 'Quickly embrace installed base architectures with lot of fun and activity users.',
-      image: 'https://images.app.goo.gl/Y2UimVUej9emH5zV6',
-      like: '25',
-      comment: '50',
-    },
-  ])
 
   const renderItem = ({ item, index }) => (
     <View style={{ marginVertical: 10, marginHorizontal: 5 }}>
       <View style={{ flex: 1, }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Image style={{ width: 100, height: 100, borderRadius: 5 }} source={{ uri: fakeWashImages[index] }} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', width : '100%' }}>
+          <Image style={{ width : ((windowDimensions.width-40)/3)-20, height: 100, borderRadius: 5 }} source={{ uri: item }} />
+        </View>
+      </View>
+    </View>
+  )
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
+      <SafeAreaView />
+      <View style={styles.card}>
+        <View style={{ backgroundColor: '#f5f5f5', borderRadius: 5, flex: 1, paddingHorizontal: 2.5, borderWidth: 1, borderColor: '#e5e5e5', width : '100%', alignItems : 'center' }}>
+          <List/>
         </View>
 
+        <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-evenly', alignSelf: 'flex-start', alignItems: 'center' }}>
+          <Text style={{ marginRight: 15, fontSize: 18, color: '#555', fontWeight: 'bold' }}>{currentBooking.washer_details.name}</Text>
+          <Rating readonly startingValue={parseFloat(currentBooking.washer_details.rating)} imageSize={20} />
+        </View>
+      </View>
+
+      <View style={{ marginBottom: 15, alignItems: 'center' }}>
+        <CtaButton onPress={() => { navigation.navigate('Schedule Book', route.params); }} title="Select time and date" primary />
+        <CtaButton onPress={() => { navigation.navigate('Washer Reviews') }} title="Read Reviews" primary />
       </View>
 
     </View>
-  )
-  
-    return (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        <SafeAreaView />
-        <View style={styles.card}>
-          <View style={{ backgroundColor: '#f5f5f5', borderRadius: 5, flex: 1, paddingHorizontal: 2.5, borderWidth: 1, borderColor: '#e5e5e5' }}>
-            <FlatList
-              numColumns={3}
-              keyExtractor={(item, index) => index}
-              style={{ width: '100%' }}
-              showsVerticalScrollIndicator={false}
-              data={state}
-              ItemSeparatorComponent={() => <View style={{ margin: -5 }} />}
-              renderItem={renderItem} />
-          </View>
+  );
 
-          <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-evenly', alignSelf: 'flex-start', alignItems: 'center' }}>
-            <Text style={{ marginRight: 15, fontSize: 18, color: '#555', fontWeight: 'bold' }}>Vendor's name</Text>
-            <Rating readonly startingValue={Math.random() * 5} imageSize={20} />
-          </View>
-        </View>
-
-        <View style={{ marginBottom: 15, alignItems: 'center' }}>
-          <CtaButton onPress={() => { navigation.navigate('Schedule Book', route.params); }} title="Select time and date" primary />
-          <CtaButton onPress={() => { }} title="Read Reviews" primary />
-        </View>
-
-      </View>
-    );
-  
 }
 
 export default VendorProfile

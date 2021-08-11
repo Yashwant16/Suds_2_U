@@ -5,9 +5,9 @@ import NewJobModal from '../Components/NewJobModal';
 import { AuthContext } from '../Providers/AuthProvider';
 import messaging from '@react-native-firebase/messaging';
 import LoadingView from '../Components/LoadingView';
-import { BookingContext } from '../Providers/BookingProvider';
+import { BookingContext, WASHR_ON_THE_WAY } from '../Providers/BookingProvider';
 import { dontShow } from '../Navigation/NavigationService';
-import { subscribeLocationLocation } from '../Services/LocationServices';
+import { subscribeLocation } from '../Services/LocationServices';
 
 export const nav = React.createRef(null);
 
@@ -15,11 +15,21 @@ const WelcomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisibility] = useState(false);
   const [newJobBooking, setNewJobBooking] = useState();
   const [loading, setLoading] = useState(false);
-  const { getSingleBookingDetails, acceptJob, rejectJob } = useContext(BookingContext);
+  const { getSingleBookingDetails, acceptJob, rejectJob, runningBooking, updateLocation } = useContext(BookingContext);
   const {
     userData: { latitude, longitude },
     updateUserLocation
   } = useContext(AuthContext);
+
+  useEffect(() => {
+    let unsubscribe
+    if (runningBooking?.status === WASHR_ON_THE_WAY) {
+      unsubscribe = subscribeLocation(updateLocation)
+    } else unsubscribe ? unsubscribe() : null
+
+    return () => unsubscribe ? unsubscribe() : null
+
+  }, [runningBooking])
 
   const accept = async () => {
     setModalVisibility(false);
@@ -28,11 +38,10 @@ const WelcomeScreen = ({ navigation }) => {
     setLoading(false);
     if (success) navigation.navigate('ON JOB', { booking: newJobBooking });
   };
- 
+
   useEffect(() => {
     nav.current = navigation;
     updateUserLocation()
-    // subscribeLocationLocation()
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       if (remoteMessage.data.type == 0) {
         setLoading(true);
@@ -103,7 +112,7 @@ const WelcomeScreen = ({ navigation }) => {
         </View>
       </View>
       <LoadingView loading={loading} />
-      <NewJobModal booking={newJobBooking} accept={accept}  modalVisible={modalVisible} hide={hide} setModalVisible={setModalVisibility} />
+      <NewJobModal booking={newJobBooking} accept={accept} modalVisible={modalVisible} hide={hide} setModalVisible={setModalVisibility} />
     </View>
   );
 };

@@ -63,7 +63,7 @@ const OTPverification = ({navigation, route}) => {
                   />
                   <Text style={{marginTop: 5, color: '#999', fontSize: 16, marginBottom: 8}}>
                     Dont's have the OTP?{' '}
-                    <Text onPress={resendOtpCode} style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESENT OTP</Text>
+                    <Text onPress={resendOtpCode} style={{fontWeight: 'bold', marginTop: 5, color: 'red', fontSize: 16, marginBottom: 8}}>RESEND OTP</Text>
                   </Text>
 
                   <CtaButton primary title="Confirm OTP" onPress={onSubmit} />

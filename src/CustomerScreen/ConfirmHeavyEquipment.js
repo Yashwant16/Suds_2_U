@@ -5,11 +5,15 @@ import { afterScheduleScreen, bookingType, ON_DEMAND } from '../Navigation/Navig
 import { BookingContext } from '../Providers/BookingProvider';
 const ConfirmHeavyEquipment = ({ navigation, route }) => {
   useEffect(() => {
-    return () => afterScheduleScreen.current = null
+    return () => {
+      setCurrentBooking(cv => ({ ...cv,hours : undefined, vehicle: undefined, packageDetails: undefined }))
+      afterScheduleScreen.current = null
+    }
   }, [])
 
   const hours = useMemo(() => route?.params?.hours, [route])
   const { setCurrentBooking } = useContext(BookingContext)
+
   const onNext = () => {
     setCurrentBooking(cv => ({ ...cv,hours, vehicle: "Heavy Equipment", packageDetails: { name: hours + ' Feet', price: hours * 119 } }))
     navigation.navigate(bookingType.current == ON_DEMAND ? 'Booking Review' : 'Select a Vendor');
@@ -36,7 +40,7 @@ const ConfirmHeavyEquipment = ({ navigation, route }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
             elevation={5}
-            onPress={() => { navigation.navigate(bookingType.current == ON_DEMAND ? 'Booking Review' : 'Select a Vendor'); afterScheduleScreen.current = "Booking Review" }}
+            onPress={onNext}
             style={styles.auth_btn}
             underlayColor='gray'
             activeOpacity={0.8} >

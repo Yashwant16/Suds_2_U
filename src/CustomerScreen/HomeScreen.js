@@ -9,12 +9,41 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { partialProfileUrl } from '../Providers';
 import { AppContext } from '../Providers/AppProvider';
 import LoadingView from '../Components/LoadingView';
+import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS } from '../Providers/BookingProvider';
 export const nav = React.createRef(null);
 export default HomeScreen = ({ navigation }) => {
 
   const { userData, updateUserLocation,changeImage } = useContext(AuthContext)
   const {setLoading} = useContext(AppContext)
+  const {runningBooking,getSingleBookingDetails} = useContext(BookingContext)
   const [currentAddress, setCurrentAddress] = useState('Getting address...')
+
+  useEffect(()=>{
+    console.log(runningBooking?.status, "RUNNING BOOKING STATUS")
+    switch (runningBooking?.status) {
+      case WASHR_ON_THE_WAY:
+         getBookingWithId(runningBooking.booking_id).then(booking=>{
+          if (booking) navigation.navigate('On The Way', { booking, onTheWay: true })
+        })
+        break;
+        case WASH_IN_PROGRESS:
+          getBookingWithId(runningBooking.booking_id).then(booking=>{
+            if (booking) navigation.navigate('Work In Progress', { booking });
+          })
+          break;
+      default:
+        break;
+    }
+  },[])
+
+  const getBookingWithId = async (id) => {
+    setLoading(true);
+    let json = await getSingleBookingDetails(id);
+    setLoading(false);
+    if (json?.data) return json.data
+    else Alert.alert('Error', 'Something went wrong')
+  }
+
 
   useEffect(() => {
     nav.current = navigation
@@ -43,9 +72,9 @@ export default HomeScreen = ({ navigation }) => {
       </View>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: userData.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 21 }}>
-          {/* <TouchableOpacity onPress={() => launchImageLibrary({}, imageCallBack)} style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity onPress={() => launchImageLibrary({}, imageCallBack)} style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
             <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
         <View style={{ flex: 1, justifyContent: 'flex-end', }}>
           <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom: -1 }} source={require('../../Assets/shape.png')} >

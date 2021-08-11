@@ -4,6 +4,8 @@ import { AuthContext } from './AuthProvider';
 import NetInfo from '@react-native-community/netinfo';
 import Colors from '../../Constants/Colors';
 import moment from 'moment';
+import { AppState } from 'react-native';
+import { WASHER } from '../Navigation/NavigationService';
 
 export const BookingContext = React.createContext();
 
@@ -82,6 +84,16 @@ const BookingProvider = ({ children }) => {
   const [vehicles, setVehicles] = useState(LOADING)
   const [currentBooking, setCurrentBooking] = useState({})
   const [customer_id, setCustomerId] = useState()
+  const [runningBooking, setRunningBooking] = useState()
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
+  const _handleAppStateChange = (nextAppState) => nextAppState == "active" ? syncCurrentRunningBooking() : null
 
   useEffect(() => console.log(JSON.stringify(currentBooking, null, 2)),)
 
@@ -97,15 +109,35 @@ const BookingProvider = ({ children }) => {
 
   const getSingleBookingDetails = async booking_id => await callApi('singlebookingdetails', userData.api_token, { booking_id: booking_id });
 
-  const acceptJob = async booking_id => await callApi('accept_job', userData.api_token, { user_id: userData.id, booking_id });
+  const acceptJob = async booking_id => {
+    let json = await callApi('accept_job', userData.api_token, { user_id: userData.id, booking_id })
+    if (!json) return
+    syncCurrentRunningBooking()
+    return json
+  }
 
   const rejectJob = async booking_id => await callApi('reject_job', userData.api_token, { user_id: userData.id, booking_id });
 
-  const finishedjob = async data => callApi('finishedjob', userData.api_token, { ...data, user_id: userData.id })
+  const finishedjob = async data => {
+    let json = await callApi('finishedjob', userData.api_token, { ...data, user_id: userData.id })
+    if (!json) return
+    syncCurrentRunningBooking()
+    return json
+  }
 
-  const onMyWay = async (user_id, booking_id) => callApi('onMyWay', userData.api_token, { washer_id: userData.id, user_id, booking_id })
+  const onMyWay = async (user_id, booking_id) => {
+    let json = await callApi('onMyWay', userData.api_token, { washer_id: userData.id, user_id, booking_id })
+    if (!json) return
+    syncCurrentRunningBooking()
+    return json
+  }
 
-  const startJob = async booking_id => callApi('startjob', userData.api_token, { booking_id })
+  const startJob = async booking_id => {
+    let json = await callApi('startjob', userData.api_token, { booking_id })
+    if (!json) return
+    syncCurrentRunningBooking()
+    return json
+  }
 
   const addMoreMinutes = async (booking_id, extra_time) => callApi('addMoreTime', userData.api_token, { booking_id, extra_time })
 
@@ -129,16 +161,35 @@ const BookingProvider = ({ children }) => {
 
   const getWasherLocation = async washer_id => await callApi('getWasherLocation', userData.api_token, { user_id: userData.id, washer_id })
 
-  const getFinishedJobImage = async () => await callApi('getFinishedJobImage', userData.api_token, { user_id: currentBooking.washer_id })
+  const updateLocation = async location => await callApi('liveTracking', userData.api_token, { user_id: userData.id, ...location })
+
+  const getFinishedJobImage = async (setState) => {
+    setState(LOADING)
+    let json = await callApi('getFinishedJobImage', userData.api_token, { user_id: currentBooking.washer_id })
+    if (json) {
+      let images = []
+      json.data.map(booking => Object.keys(booking).forEach(k => {
+        if (k.includes("image")) images.push(json.url + '/' + booking[k])
+      }))
+      setState(images)
+    } else setState(ERROR)
+  }
+
+  const getWasherReviews = async (state, setState) => {
+    if (!state?.reviews || state.reviews.length == 0) setState(LOADING)
+    let json = await fakeCallApi('viwvendorreview', userData.api_token, { vendor_id: currentBooking.washer_id, pagecount: !state.pagecount ? 0 : state.pagecount + 1 })
+    if (json) setState({ hasLoadedAllItems: json.data.length < 10, pagecount: (state.pagecount ? state.pagecount : 0) + 1, reviews: state.reviews ? [...state.reviews, ...json.data] : json.data })
+    else setState(state.reviews?.length > 0 ? state : ERROR)
+  }
 
   const saveBooking = async () => {
-    let finalObject = {...currentBooking}
-    if(currentBooking.type==0){
+    let finalObject = { ...currentBooking }
+    if (currentBooking.type == 0) {
       let date = new Date();
-      finalObject = {...finalObject, booking_date : moment(date).format('YYYY-MM-DD'),booking_time: date.toLocaleTimeString() }
+      finalObject = { ...finalObject, booking_date: moment(date).format('YYYY-MM-DD'), booking_time: date.toLocaleTimeString() }
     }
     console.log('FINAL BOOKING OBJECT', JSON.stringify(finalObject, null, 2))
-    return await callApi2('savebooking', userData.api_token, {...finalObject, user_id : userData.id})
+    return await callApi2('savebooking', userData.api_token, { ...finalObject, user_id: userData.id })
   }
 
   const getVehicles = async () => {
@@ -146,6 +197,13 @@ const BookingProvider = ({ children }) => {
     let json = await callApi('viewVehicle', userData.api_token, { user_id: userData.id })
     if (json) setVehicles(json.data)
     else setVehicles(ERROR)
+  }
+
+  const syncCurrentRunningBooking = async (user=userData) => {
+    if(!user?.api_token) return
+    let json = await callApi(user.role_as == WASHER ? 'runningjob' : 'customerrunningbooking', user.api_token, { user_id: user.id })
+    if (!json) return setRunningBooking(undefined)
+    else setRunningBooking(json.data)
   }
 
   return <BookingContext.Provider value={{
@@ -175,21 +233,16 @@ const BookingProvider = ({ children }) => {
     getPaymentIntent,
     saveBooking,
     getWasherLocation,
-    getFinishedJobImage
+    getFinishedJobImage,
+    getWasherReviews,
+    runningBooking,
+    syncCurrentRunningBooking,
+    updateLocation
   }}>{children}</BookingContext.Provider>;
 };
 
 
 export default BookingProvider;
-
-const fakeCallApi = (subfix, AppKey, { pagecount }, onFalse, method = 'POST') => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve({ data: Data.slice(pagecount * 10, (pagecount + 1) * 10) });
-      // resolve({data:[]})
-    }, 500);
-  });
-};
 
 export const calculateTotalPrice = (booking) => {
   let addOnsPrice = (booking?.selectedAddOns?.length == 0 ? 0 : booking?.selectedAddOns?.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)) || 0
@@ -209,151 +262,144 @@ export const getWashStatus = (status) => {
   }
 }
 
+
+const fakeCallApi = (subfix, AppKey, { pagecount }, onFalse, method = 'POST') => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // resolve({ data: Data.slice(pagecount * 10, (pagecount + 1) * 10) });
+      resolve({ data: [] })
+    }, 500);
+  });
+};
+
 let Data = [
   {
-    booking_id: '1',
-    user_id: '6',
-    userdetails: [
-      {
-        id: '6',
-        name: 'adminbb',
-        email: 'admisnss@gmail.com',
-        email_verified_at: null,
-        role_as: '3',
-        password: '$2y$10$wXxaQMqNPKhVUYCmQefGMuOqUPYwY9NGqht/u0I1jMT/t5u/pc5Zm',
-        image:
-          'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-        mobile: '963214584',
-        status: '0',
-        remember_token: 'CDGs62sIauvXTZa4ndQP1EFzkL1NR3pv0FteaWjyyJ1XvnMyY8pBDECWhNBb',
-        latitude: null,
-        longitude: null,
-        created_at: '2021-03-30 22:55:15',
-        api_token: null,
-        updated_at: '2021-04-02 21:51:54',
-      },
-    ],
-    washer_id: '4',
-    vehicle_id: '1',
-    vehicledetails: [
-      {
-        vehicle_id: '1',
-        user_id: '6',
-        vehicle_type: null,
-        category_id: '2',
-        make: 'today',
-        year: '2021',
-        model: 'Dodge Ram 3500 Truck',
-        engine: '40',
-        image: 'car.jpg',
-        created_at: '2021-04-05 16:57:11',
-        updated_at: '2021-04-05 16:57:11',
-      },
-    ],
-    booking_date: '2021-05-05',
-    booking_time: '10:00 AM',
-    package: '10',
-    extra_add_ons: '7,8',
-    extraaddonsdetails: [
-      {
-        id: '7',
-        package_id: '15',
-        add_ons_name: 'extra oil',
-        add_ons_price: '20',
-        created_at: '2021-04-06',
-        updated_at: '2021-04-08',
-      },
-    ],
-    wash_location: 'mahu naka',
-    total: '290',
-    status: '1',
-    created_at: '2021-04-06',
-    updated_at: '2021-04-07',
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 1,
   },
   {
-    booking_id: '2',
-    user_id: '6',
-    userdetails: [
-      {
-        id: '6',
-        name: 'adminbb',
-        email: 'admisnss@gmail.com',
-        email_verified_at: null,
-        role_as: '3',
-        password: '$2y$10$wXxaQMqNPKhVUYCmQefGMuOqUPYwY9NGqht/u0I1jMT/t5u/pc5Zm',
-        image:
-          'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
-        mobile: '963214584',
-        status: '0',
-        remember_token: 'CDGs62sIauvXTZa4ndQP1EFzkL1NR3pv0FteaWjyyJ1XvnMyY8pBDECWhNBb',
-        latitude: null,
-        longitude: null,
-        created_at: '2021-03-30 22:55:15',
-        api_token: null,
-        updated_at: '2021-04-02 21:51:54',
-      },
-    ],
-    washer_id: '4',
-    vehicle_id: '1',
-    vehicledetails: [
-      {
-        vehicle_id: '1',
-        user_id: '6',
-        vehicle_type: null,
-        category_id: '2',
-        make: 'today',
-        year: '2021',
-        model: 'new model',
-        engine: '40',
-        image: 'car.jpg',
-        created_at: '2021-04-05 16:57:11',
-        updated_at: '2021-04-05 16:57:11',
-      },
-    ],
-    booking_date: '2021-05-05',
-    booking_time: '10:00 AM',
-    package: '10',
-    extra_add_ons: '7,8',
-    extraaddonsdetails: [
-      {
-        id: '7',
-        package_id: '15',
-        add_ons_name: 'extra oil',
-        add_ons_price: '20',
-        created_at: '2021-04-06',
-        updated_at: '2021-04-08',
-      },
-    ],
-    wash_location: 'mahu naka',
-    total: '290',
-    status: '1',
-    created_at: '2021-04-06',
-    updated_at: '2021-04-07',
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 2,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 3,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 4,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 5,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 6,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 7,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 11,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 12,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 13,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 14,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 15,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 16,
+  },
+  {
+    userName: 'Donnie Smith',
+    review: ` Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
+    rating: 4,
+    userImage:
+      'https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
+    t: '29 july 2019',
+    id: 17,
   },
 ];
-
-let booking = {
-  "booking_date": "0000-00-00",
-  "booking_id": "21",
-  "booking_time": "1985916764",
-  "created_at": "2021-07-05",
-  "extra_add_ons": "9,10",
-  "extraaddonsdetails": [[Object], [Object]],
-  "package": "10",
-  "package_price": "24",
-  "rating": "0",
-  "review": "",
-  "tip": "0",
-  "total": "250",
-  "totaltime": "12:00",
-  "updated_at": "2021-07-05",
-  "user_id": "80",
-  "userdetails": [[Object]],
-  "vehicle_id": "14",
-  "vehicledetails": [[Object]],
-  "wash_location": "texas",
-  "washer_id": "73"
-}
 
 
 const customCallApi = async (subfix, AppKey, params, method = 'POST', nameLable) => {

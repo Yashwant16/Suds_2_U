@@ -84,7 +84,11 @@ const AuthProvider = ({ children }) => {
   const completeProfile = async (data, isFromAuthStack) => {
     let json = await callApi(type.current == WASHER ? 'save_complete_profile' : 'updateUserPofile', userData.api_token, { ...data, user_id: userData.id });
     if (!json) return;
-    await saveUserData(isFromAuthStack ? 'UPDATE DOCUMENT' : 'AUTH_DONE');
+    let userDetailJson = await getUserDetails()
+    if (!userDetailJson) return
+    console.log(JSON.stringify(userDetailJson, null, 2))
+    await saveUserData(isFromAuthStack ? 'UPDATE DOCUMENT' : 'AUTH_DONE', userDetailJson.data);
+    setUserData(cv => ({ ...cv, ...userDetailJson.data }))
     return 'success';
   };
 
@@ -105,7 +109,7 @@ const AuthProvider = ({ children }) => {
 
   const getDrivingLicenseDetails = async () => await callApi('drivinglicensedetails', userData.api_token, { user_id: userData.id });
 
-  const resendOtp = async () => await callApi('resentOtp', 'ABCDEFGHIJK', { email: userData.email });
+  const resendOtp = async () => await callApi('resentOtp', 'ABCDEFGHIJK', { email: loginData.email });
 
   const getUserDetails = async () => await callApi('userdetails', userData.api_token, { user_id: userData.id });
 
@@ -129,12 +133,14 @@ const AuthProvider = ({ children }) => {
 
   const getCardDetails = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
 
-  const getCustomerCurrentRunningBooking = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
-
   const changeImage = async (image) => {
     let json = await callApi('userImage', userData.api_token, { user_id: userData.id, image })
     if (json) {
       setUserData(cv => ({ ...cv, image: image.uri }))
+      let userDetailJson = await getUserDetails()
+      if (!userDetailJson) return
+      await saveUserData('AUTH_DONE', userDetailJson.data);
+      setUserData(cv => ({ ...cv, ...userDetailJson.data }))
       return "success"
     }
   }
@@ -151,9 +157,10 @@ const AuthProvider = ({ children }) => {
     return json
   };
 
-  const getAuthStatus = async () => {
+  const getAuthStatus = async (syncCurrentRunningBooking) => {
     let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
     console.log("Saved user data : ", savedUserData);
+    await syncCurrentRunningBooking(savedUserData)
     if (savedUserData) {
       setUserData(savedUserData);
       if (savedUserData.stage == 'AUTH_DONE') changeStack(savedUserData.role_as == WASHER ? 'DriverHomeStack' : 'CustomerHomeStack');
@@ -164,7 +171,10 @@ const AuthProvider = ({ children }) => {
     } else changeStack('AuthStack');
   };
 
-  const saveUserData = async (stage, data = userData) => await AsyncStorage.setItem('userData', JSON.stringify({ ...data, stage }));
+  const saveUserData = async (stage, data = userData) => {
+    let savedUserData = JSON.parse(await AsyncStorage.getItem('userData'));
+    await AsyncStorage.setItem('userData', JSON.stringify({ ...savedUserData, ...data, stage }))
+  }
   const logout = async () => {
     await AsyncStorage.removeItem('userData');
     changeStack('AuthStack');

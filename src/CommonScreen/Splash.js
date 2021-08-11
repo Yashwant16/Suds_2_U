@@ -1,10 +1,12 @@
 import React, {useContext, useEffect} from 'react';
 import {Platform, StyleSheet, StatusBar, Text, View, Alert, ImageBackground, Image, ActivityIndicator} from 'react-native';
 import {AuthContext} from '../Providers/AuthProvider';
+import { BookingContext } from '../Providers/BookingProvider';
 
 const Splash = ({navigation}) => {
   const {getAuthStatus} = useContext(AuthContext);
-  useEffect(() =>  getAuthStatus(), []);
+  const {syncCurrentRunningBooking} = useContext(BookingContext)
+  useEffect(() =>  getAuthStatus(syncCurrentRunningBooking), []);
   return (
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />

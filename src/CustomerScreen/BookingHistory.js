@@ -53,34 +53,27 @@ const Item = ({ item, navigation }) => {
   console.log(JSON.stringify(item, null, 2))
   const washStatusObject = useMemo(() => getWashStatus(item.status), [item])
   const { getSingleBookingDetails } = useContext(BookingContext);
-  const {setLoading} = useContext(AppContext)
+  const { setLoading } = useContext(AppContext)
   const param = useMemo(() => {
     switch (item.status) {
-      case WASH_PENDING:return { id: item.booking_id }
+      case WASH_PENDING: return { id: item.booking_id }
       case WASHR_ON_THE_WAY:
       case WASHER_ACCEPTED:
         return { booking: { ...item, wash_lat_lng: { latitude: 8.968911, longitude: 38.721940 } } }
-      case WASH_IN_PROGRESS:  return { booking: { ...item, wash_lat_lng: { latitude: 8.968911, longitude: 38.721940 } } }
+      case WASH_IN_PROGRESS: return { booking: { ...item, wash_lat_lng: { latitude: 8.968911, longitude: 38.721940 } } }
       default: return { id: item.booking_id }
     }
   }, [item])
 
-  // case WASH_PENDING: return { name: "Pending", color: 'orange', naviagteTo: 'BOOKING DETAILS' }
-  // case WASHER_ACCEPTED: return { name: "Accepted", color: 'orange', naviagteTo: 'BOOKING DETAILS' }
-  // case WASHR_ON_THE_WAY: return { name: "Washer on the way", color: 'orange', naviagteTo: 'On The Way' }
-  // case WASHER_ARRIVED: return { name: "Washer Arrived", color: 'orange', naviagteTo: 'On The Way' }
-  // case WASH_IN_PROGRESS: return { name: "In progress", color: 'orange', naviagteTo: 'Work In Progress' }
-  // case WASH_COMPLETED: return { name: "Success", color: Colors.green, naviagteTo: 'BOOKING DETAILS' }
-  // case WASH_REJECTED: return { name: "Failed", color: 'red', naviagteTo: 'BOOKING DETAILS' }
-
   const onPress = async () => {
+    let booking;
     switch (item.status) {
       case WASH_PENDING:
-        if (booking) navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
+        navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
         break;
       case WASH_REJECTED: return Alert.alert('Rejected', 'Washer rejected this job request')
       case WASHER_ACCEPTED:
-        if (booking) navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
+        navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
         break;
       case WASHR_ON_THE_WAY:
         booking = await getBookingWithId(item.booking_id)
@@ -128,10 +121,6 @@ const Item = ({ item, navigation }) => {
     </TouchableOpacity>
   );
 };
-
-
-
-const getWashCoordinates = booking => ({ latitude: parseFloat(booking.wash_lat_lng.latitude), longitude: parseFloat(booking.wash_lat_lng.longitude) })
 
 
 const ListFooter = () => (

@@ -37,7 +37,7 @@ export default OnTheWay = ({ navigation, route }) => {
       <MapView
         style={{ width: '100%', flex: 1 }}
         initialRegion={{
-          ...(origin ? origin :{latitude : parseFloat(booking.wash_lat_lng.latitude),longitude : parseFloat(booking.wash_lat_lng.longitude) }),
+          ...(origin ? origin :getWashCoordinates(booking)),
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }} >
@@ -47,7 +47,7 @@ export default OnTheWay = ({ navigation, route }) => {
           onError={() => setLoading(false)}
           strokeWidth={5}
           strokeColor={Colors.blue_color}
-          origin={booking.wash_lat_lng}
+          origin={getWashCoordinates(booking)}
           destination={origin}
           apikey={GOOGLE_MAPS_APIKEY}
         />}
@@ -87,10 +87,7 @@ export default OnTheWay = ({ navigation, route }) => {
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
           <View style={{ flexDirection: 'row', padding: 10 }}>
             <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={booking.userdetails.image ? { uri: partialProfileUrl + booking.userdetails.image } : require('../../Assets/icon/user.png')} />
-            <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 18, alignSelf: 'center' }}>{booking.userdetails.name}</Text>
-
-            {/* <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 14, alignSelf: 'center' }}>4.5</Text> */}
-
+            <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 18, alignSelf: 'center' }}>{booking.userdetails[0]?.name}</Text>
           </View>
 
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
@@ -102,7 +99,7 @@ export default OnTheWay = ({ navigation, route }) => {
             <View style={{ width: 1, height: 45, backgroundColor: '#aaa' }} />
             <TouchableOpacity style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
               <Image style={{ width: 20, height: 20, tintColor: 'red', }} source={require('../../Assets/error.png')} />
-              <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL RIDE </Text>
+              <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL BOOKING </Text>
             </TouchableOpacity>
           </View>
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />

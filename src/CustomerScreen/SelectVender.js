@@ -23,9 +23,9 @@ const SelectVendor = ({ route }) => {
     if (json?.data) setVendors(json.data)
   }
 
-  const onVendrSelec = (item)=>{
+  const onVendrSelect = (item)=>{
     navigate('Vender Profile', {...route.params,  packageParams: { vendor_id: item.id }})
-    setCurrentBooking(cv=>({...cv, washer_id : item.id}))
+    setCurrentBooking(cv=>({...cv, washer_id : item.id, washer_details : {...item}}))
   }
 
   return (
@@ -35,7 +35,7 @@ const SelectVendor = ({ route }) => {
         ListFooterComponent={()=><View style={{height : Platform.OS=="ios" ? 30 : 0}} />}
           keyExtractor={(item, i) => i}
           data={vendors}
-          renderItem={({ item, index }) => <RenderItem item={item} index={index} route={route} onSelect={()=>onVendrSelec(item)} />}
+          renderItem={({ item, index }) => <RenderItem item={item} index={index} route={route} onSelect={()=>onVendrSelect(item)} />}
           ItemSeparatorComponent={() => <View style={{ margin: -7.5 }} />} />
       </LoadingView>
     </View>

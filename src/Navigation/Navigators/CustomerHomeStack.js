@@ -38,6 +38,7 @@ import ConfirmHeavyEquipment from '../../CustomerScreen/ConfirmHeavyEquipment';
 import ConfirmBusniesswash from '../../CustomerScreen/ConfirmBusinesswash';
 import BookingDetails from '../../DriverScreen/BookingDetails';
 import PayPal from '../../CustomerScreen/PayPal';
+import WasherReviews from '../../CustomerScreen/WasherReviews';
 
 const Stack = createStackNavigator();
 
@@ -85,6 +86,7 @@ const CustomerHomeStack = () => {
       <Stack.Screen name=" Business wash " component={ConfirmBusniesswash} />
       <Stack.Screen name="BOOKING DETAILS" component={BookingDetails} />
       <Stack.Screen name="PAYPAL" component={PayPal} />
+      <Stack.Screen name="Washer Reviews" component={WasherReviews} />
     </Stack.Navigator>
   );
 };

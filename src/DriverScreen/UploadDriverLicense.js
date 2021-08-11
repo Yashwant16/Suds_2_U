@@ -9,7 +9,7 @@ import LoadingView from '../Components/LoadingView';
 import { AuthContext } from '../Providers/AuthProvider';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-const partialImageUrl = "http://suds-2-u.com/sudsadmin/public/document/"
+const partialImageUrl = "http://suds-2-u.com/public/document/"
 
 const UploadDriverLicense = ({ navigation, route }) => {
   const { updateDrivingLicense, getDrivingLicenseDetails, documentVerified } = useContext(AuthContext);
