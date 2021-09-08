@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, FlatList
 import Colors from '../../Constants/Colors';
 import { useNavigation } from '@react-navigation/core';
 import { ImageBackground } from 'react-native';
-import { bookingType, navigate, ON_DEMAND } from '../Navigation/NavigationService';
+import { bookingType, changeStack, navigate, ON_DEMAND } from '../Navigation/NavigationService';
 import CheckBox from 'react-native-check-box'
 import { PackageContext, PackagesMethod } from '../Providers/PackageProvider';
 import LoadingView from '../Components/LoadingView';
@@ -72,6 +72,14 @@ const Packages = ({ route }) => {
                             activeOpacity={0.8}>
                             <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Next</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity
+                            elevation={5}
+                            onPress={()=>changeStack('CustomerHomeStack')}
+                            style={styles.auth_btn}
+                            underlayColor='gray'
+                            activeOpacity={0.8}>
+                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </ImageBackground>
@@ -112,7 +120,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
         backgroundColor: Colors.buttom_color,
-        width: '100%',
+        flex : 1,
         height: 65,
         justifyContent: 'center',
     },

@@ -79,7 +79,7 @@ const UploadDriverLicense = ({ navigation, route }) => {
               fieldName="license_classification"
             />
             <ControllerInput
-              label="ISSUED ON"
+              label="ISSUED ON" 
               control={control}
               errors={errors}
               rules={{ required: true }}
@@ -87,7 +87,7 @@ const UploadDriverLicense = ({ navigation, route }) => {
               keyboardType="numeric"
             />
             <ControllerInput
-              label="EXPIRY DATE"
+              label="EXPIRATION DATE"
               control={control}
               errors={errors}
               rules={{ required: true }}

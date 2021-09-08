@@ -1,102 +1,74 @@
-import React from 'react';
+import { useNetInfo } from '@react-native-community/netinfo';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { StyleSheet, SafeAreaView, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
 
-import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
+import ListEmpty from '../Components/ListEmpty';
+import { ERROR, LOADING } from '../Providers';
+import { AuthContext } from '../Providers/AuthProvider';
 
-export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
+export default Promotions = () => {
 
-    drawerLabel: 'Promotions',
-    drawerIcon: ({ tintColor }) => (
-      <View>
+  const [promotions, setPromotions] = useState(LOADING)
+  const netInfo = useNetInfo()
 
-        <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/coupon.png')} />
+  const { getPromotions } = useContext(AuthContext)
+
+  useEffect(() => getPromotions(setPromotions), [])
+
+  const Item = ({ item }) => (
+    <View style={{
+      backgroundColor: '#fff', alignItems: 'center', marginHorizontal: 15, height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10, elevation: 5,
+      borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
+    }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{item.name}</Text>
+        <Text style={{ color: Colors.blue_color }}>Apply</Text>
       </View>
-    ),
-  };
+    </View>
+  )
 
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={{ flex: 1, backgroundColor: '#FFF' }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-                <SafeAreaView/> 
-        <View style={{ padding: 21, alignItems: 'center' }}>
-          <View style={{
-            backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 130, padding: 18,elevation:5,
-            borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
-          }}>
-            <View style={{ flexDirection: 'row', padding: 8 }}>
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
-              <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />
+  const List = () => {
+    switch (promotions) {
+      case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={'blue'} size="large" />
+      case ERROR: return <ListEmpty opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="No promotions at this time." />
 
-            </View>
-            <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>Congrats! Your are one wash away from your free car wash</Text>
-          </View>
-          <Text style={{ color: '#aaa', fontSize: 20, marginBottom: 15, marginTop: 20, marginRight: 25 }}>Promo code for you cannot be used together</Text>
+      default: return (
+        <FlatList
+          keyExtractor={item => item.id}
+          data={promotions}
+          style={{ width: '100%' }}
+          renderItem={({ item }) => <Item item={item} />}
+        />
 
-          <View style={{
-            backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10,elevation:5,
-            borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
-              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>15% 1 Wash</Text>
-              <Text style={{ color: Colors.blue_color }}>Apply</Text>
-            </View>
-          </View>
-
-          <View style={{
-            backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10,elevation:5,
-            borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
-              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>10% 4 of July Special</Text>
-              <Text style={{ color: Colors.blue_color }}>Apply</Text>
-            </View>
-          </View>
-
-          <View style={{
-            backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10,elevation:5,
-            borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
-              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>20% 25 of Christmas Special</Text>
-              <Text style={{ color: Colors.blue_color }}>Apply</Text>
-            </View>
-          </View>
-
-          <View style={{
-            backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10,elevation:5,
-            borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
-              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>10% 1 of December Special</Text>
-              <Text style={{ color: Colors.blue_color }}>Apply</Text>
-            </View>
-          </View>
-        </View>
-        <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 10 }}>
-          <TouchableOpacity
-            elevation={5}
-            // onPress={() => { navigation.navigate('Booking Review'); }}
-            style={styles.auth_btn}
-            underlayColor='gray'
-            activeOpacity={0.8}
-          // disabled={this.state.disableBtn}
-          >
-            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
-
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+      )
+    }
   }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+      <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
+      <SafeAreaView />
+      {/* <View style={{ padding: 21, alignItems: 'center', width: '100%' }}>
+        <View style={{
+          backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 130, padding: 18, elevation: 5,
+          borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
+        }}>
+          <View style={{ flexDirection: 'row', padding: 8 }}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((v, i) => <Image key={i} style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />)}
+
+          </View>
+          <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>Congrats! Your are one wash away from your free car wash</Text>
+        </View>
+        <Text style={{ color: '#aaa', fontSize: 20, marginBottom: 15, marginTop: 20, marginVertical: 15, textAlign: 'center', width: '100%' }}>Promo codes cannot be used together</Text> */}
+
+        <List />
+
+      {/* </View> */}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

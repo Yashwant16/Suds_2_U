@@ -8,7 +8,7 @@ import { BookingContext } from '../Providers/BookingProvider';
 import LoadingView from '../Components/LoadingView';
 
 const WorkInProgress = ({ navigation, route }) => {
-    const [deadline, setDeadline] = useState(route.params?.booking?.totaltime*1000);
+    const [deadline, setDeadline] = useState(Date.now()+3800000);
     const [timeRemaining, setTimeRemaining] = useState(deadline - Date.now())
     const [loading, setLoading] = useState(false);
     const booking = useMemo(() => route.params?.booking, [route])

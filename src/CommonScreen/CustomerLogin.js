@@ -35,7 +35,7 @@ const LoginScreen = ({navigation}) => {
         <ImageBackground style={{width: '100%', flex: 1, height: '100%'}} fadeDuration={0} source={require('../../Assets/imageBG.png')}>
           <SafeAreaView />
           <LoadingView loading={loading}>
-          <ScrollView>
+          <ScrollView keyboardShouldPersistTaps='handled'>
             <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}}  fadeDuration={0} source={require('../../Assets/logo_icon.png')}></Image>
             <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}}  fadeDuration={0} source={require('../../Assets/logo2.png')}></Image>
             <View style={{alignItems: 'center', flex: 1}}>

@@ -10,6 +10,7 @@ import { AppContext } from '../Providers/AppProvider';
 import { ERROR, LOADING } from '../Providers';
 import { ActivityIndicator } from 'react-native';
 import ListEmpty from '../Components/ListEmpty'
+import { changeStack } from '../Navigation/NavigationService';
 // import { CheckBox } from 'react-native-elements'
 const fakeWashImages = [
   'https://images.theconversation.com/files/76578/original/image-20150331-1231-1ttwii6.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1200&h=675.0&fit=crop',
@@ -46,7 +47,7 @@ const VendorProfile = ({ navigation, route }) => {
 
   const List = () => {
     switch (images) {
-      case LOADING: return <ActivityIndicator color={Colors.blue_color} size="large" style={{ padding: 10, width : '100%' }} />
+      case LOADING: return <ActivityIndicator color={Colors.blue_color} size="large" style={{ padding: 10, width: '100%' }} />
       case ERROR: return <ListEmpty retry={() => getFinishedJobImage(setImages)} emptyMsg="Something went wrong." />
       default: return (
         <FlatList
@@ -55,7 +56,7 @@ const VendorProfile = ({ navigation, route }) => {
           style={{ width: '100%' }}
           showsVerticalScrollIndicator={false}
           data={images}
-          ListEmptyComponent={()=><ListEmpty emptyMsg="No provious images yet." />}
+          ListEmptyComponent={() => <ListEmpty emptyMsg="No provious images yet." />}
           ItemSeparatorComponent={() => <View style={{ margin: -5 }} />}
           renderItem={renderItem} />
       )
@@ -64,22 +65,22 @@ const VendorProfile = ({ navigation, route }) => {
 
 
   const renderItem = ({ item, index }) => (
-    <View style={{ marginVertical: 10, marginHorizontal: 5 }}>
+    <View style={{ marginVertical: 8, marginHorizontal: 4, borderRadius: 4, borderWidth: 1, borderColor: '#e0e0e0' }}>
       <View style={{ flex: 1, }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center', width : '100%' }}>
-          <Image style={{ width : ((windowDimensions.width-40)/3)-20, height: 100, borderRadius: 5 }} source={{ uri: item }} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          <Image style={{ width: ((windowDimensions.width - 40) / 3) - 20, height: 100, borderRadius: 5 }} source={{ uri: item }} />
         </View>
       </View>
     </View>
   )
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: '#fff', paddingBottom : 60 }}>
       <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
       <SafeAreaView />
       <View style={styles.card}>
-        <View style={{ backgroundColor: '#f5f5f5', borderRadius: 5, flex: 1, paddingHorizontal: 2.5, borderWidth: 1, borderColor: '#e5e5e5', width : '100%', alignItems : 'center' }}>
-          <List/>
+        <View style={{ backgroundColor: '#f5f5f5', borderRadius: 5, flex: 1, paddingHorizontal: 2.5, borderWidth: 1, borderColor: '#e5e5e5', width: '100%', alignItems: 'center' }}>
+          <List />
         </View>
 
         <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-evenly', alignSelf: 'flex-start', alignItems: 'center' }}>
@@ -92,7 +93,17 @@ const VendorProfile = ({ navigation, route }) => {
         <CtaButton onPress={() => { navigation.navigate('Schedule Book', route.params); }} title="Select time and date" primary />
         <CtaButton onPress={() => { navigation.navigate('Washer Reviews') }} title="Read Reviews" primary />
       </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: 0 }}>
 
+        <TouchableOpacity
+          elevation={5}
+          onPress={() => changeStack('CustomerHomeStack')}
+          style={styles.cancel_btn}
+          underlayColor="gray"
+          activeOpacity={0.8}>
+          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -143,6 +154,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flex: 1
+  },
+  cancel_btn: {
+    marginTop: 16,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: Colors.buttom_color,
+    flex: 1,
+    width: '100%',
+    height: 60,
+    justifyContent: 'center',
   },
 
 })

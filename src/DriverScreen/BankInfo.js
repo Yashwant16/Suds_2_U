@@ -91,29 +91,6 @@ const BankInfo = () => {
             errors={errors}
             label="Routing Number"
           />
-          <View style={{flexDirection: 'row'}}>
-            <ControllerInput
-              containerStyle={{width: '48%'}}
-              control={control}
-              errors={errors}
-              rules={{required: true}}
-              fieldName="bank_code"
-              placeholder="Bank Code"
-              keyboardType="numeric"
-              curved
-            />
-            <View style={{width: 10, height: 10}} />
-            <ControllerInput
-              containerStyle={{width: '48%'}}
-              control={control}
-              errors={errors}
-              rules={{required: true}}
-              fieldName="branch_code"
-              placeholder="Branch Code"
-              keyboardType="numeric"
-              curved
-            />
-          </View>
           <CtaButton onPress={handleSubmit(onSubmit)} primary title="Save" style={{width: '100%', marginTop: 8}} />
         </ScrollView>
       </LoadingView>

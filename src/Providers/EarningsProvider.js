@@ -45,6 +45,9 @@ const reducer = (state, {type, payload, earningType}) => {
         ...state,
         loading: false,
         data: payload.data,
+        totalamount : payload.totalamount,
+        totaltime : payload.totaltime,
+        totalbooking : payload.totalbooking,
         type: ACTIONS.OnStartSuccess,
         hasLoadedAllItems: payload.data.length < 10,
       };
@@ -65,6 +68,9 @@ const reducer = (state, {type, payload, earningType}) => {
         ...state,
         loading: false,
         data: [...state.data, ...payload.data],
+        totalamount : payload.totalamount,
+        totaltime : payload.totaltime,
+        totalbooking : payload.totalbooking,
         type: ACTIONS.OnLoadMoreSuccess,
         hasLoadedAllItems: payload.data.length < 10,
       };
@@ -75,6 +81,9 @@ const reducer = (state, {type, payload, earningType}) => {
         ...state,
         refreshing: false,
         data: payload.data,
+        totalamount : payload.totalamount,
+        totaltime : payload.totaltime,
+        totalbooking : payload.totalbooking,
         type: ACTIONS.OnRefreshSuccess,
         hasLoadedAllItems: payload.data.length < 10,
       };
@@ -93,7 +102,7 @@ const EarningProvider = ({children}) => {
     console.log(state);
     if (state.type.includes('on')) return;
     let json = await callApi('earninglist', userData.api_token, {user_id: userData.id, pagecount: state.pagecount});
-    if (json) dispatch({type: `on${state.type}Success`, payload: {data: json.data}});
+    if (json) dispatch({type: `on${state.type}Success`, payload: {data: json.data, ...json}});
     else dispatch({type: ACTIONS.OnFail});
   };
 

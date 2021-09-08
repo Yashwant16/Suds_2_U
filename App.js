@@ -1,15 +1,16 @@
 import 'react-native-gesture-handler';
 import React, { useContext, useEffect } from 'react';
 import { Platform, StatusBar, UIManager } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import Navigation from './src/Navigation/Navigators/RootStack';
-import { navigationRef } from './src/Navigation/NavigationService';
+import { navigate, navigationRef, clickedNotification } from './src/Navigation/NavigationService';
 import Providers from './src/Providers';
 import messaging from '@react-native-firebase/messaging';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import LoadingView from './src/Components/LoadingView';
 import { AppContext } from './src/Providers/AppProvider';
+import { appIsOpen } from './src/Services/NotificatoinService';
 
 Icon.loadFont();
 
@@ -31,11 +32,16 @@ const linking = {
   config
 }
 
-export const appIsOpen = React.createRef()
+
 
 
 const App = () => {
-  useEffect(()=>appIsOpen.current=true, [])
+  useEffect(()=>{appIsOpen.current=true; messaging().subscribeToTopic('Mikias3')}, [])
+
+  
+
+  // const navigation = useNavigation()
+  // navigation.navigate('dd', {screen : '', params})
   return (
     <StripeProvider
       publishableKey="pk_test_51J60G0Kr8szE4qfQ1i3QuKJnxPqWYCZ7wLlnOVWdvGcGN9EvA8WFX2Q6phXQsiQxsEHHoMFBF1YkDfwdub29lAUR000zSHyZnL"

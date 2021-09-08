@@ -13,7 +13,7 @@ class DriverHelp extends React.Component {
             <Text style={{color: Colors.blue_color, fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>CONNECTS WITH US</Text>
 
             <Text style={{color: Colors.text_white, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginTop: 10}}>supports@sudeo-2-u.com</Text>
-            <Text style={{color: Colors.text_white, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginTop: 10}}>1800-234-5678</Text>
+            <Text style={{color: Colors.text_white, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginTop: 10}}>512-586-8786</Text>
           </View>
           <View style={{justifyContent: 'flex-end', marginBottom: 20}}>
             <Text style={{color: Colors.text_white, fontSize: 15, fontWeight: '500', textAlign: 'center', marginTop: 10}}>@ 2021 SUDS-2-U. All rights reserved</Text>

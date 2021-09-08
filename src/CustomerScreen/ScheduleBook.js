@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarPicker from 'react-native-calendar-picker';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
-import { afterScheduleScreen } from '../Navigation/NavigationService';
+import { afterScheduleScreen, changeStack } from '../Navigation/NavigationService';
 import { BookingContext } from '../Providers/BookingProvider';
 import moment from 'moment';
 
@@ -70,7 +70,7 @@ const ScheduleBook = ({ navigation, route }) => {
   }
 
   return (
-    <SafeAreaView style={{backgroundColor : Colors.dark_orange, flex : 1}}>
+    <SafeAreaView style={{backgroundColor : 'white', flex : 1}}>
     {/* <View style={{ flex: 1, backgroundColor: '#fff' }} > */}
       <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
@@ -128,7 +128,7 @@ const ScheduleBook = ({ navigation, route }) => {
           <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 10, fontWeight: 'bold', color: Colors.blue_color }}>Total Hours: 2</Text>
         </View>
       </ScrollView>
-      <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginTop: 10, }}>
+      <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginTop: 10,flexDirection : 'row' }}>
 
         <TouchableOpacity
           elevation={5}
@@ -136,7 +136,16 @@ const ScheduleBook = ({ navigation, route }) => {
           style={styles.auth_btn}
           underlayColor='gray'
           activeOpacity={0.8}>
-          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>CONTINUE</Text>
+          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>Continue</Text>
+
+        </TouchableOpacity>
+        <TouchableOpacity
+          elevation={5}
+          onPress={()=>changeStack('CustomerHomeStack')}
+          style={[styles.auth_btn, {backgroundColor : Colors.blue_color}]}
+          underlayColor='gray'
+          activeOpacity={0.8}>
+          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>Cancel</Text>
 
         </TouchableOpacity>
 
@@ -182,7 +191,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     backgroundColor: '#e28c39',
     alignItems : 'center',
-    width: '100%',
+    flex : 1,
     height: 60,
     justifyContent: 'center',
   },

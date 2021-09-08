@@ -66,6 +66,7 @@ export const getCurrentAddress = async () => {
     return await getFormattedAddress(latitude, longitude)
   } catch (error) {
     console.log(error)
+    return 'Error getting address'
   }
 }
 

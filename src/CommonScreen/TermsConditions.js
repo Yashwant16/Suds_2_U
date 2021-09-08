@@ -6,14 +6,20 @@ import { ScrollView } from 'react-native';
 import { AuthContext } from '../Providers/AuthProvider';
 import LoadingView from '../Components/LoadingView';
 import { Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 const TermsConditions = () => {
-  const { termsAndConditions } = useContext(AuthContext);
+  const { termsAndConditions, userData } = useContext(AuthContext);
+  const navigation = useNavigation()
   const [loading, setLoading] = useState(false)
   const onSubmit = async () => {
     setLoading(true)
     await termsAndConditions();
     setLoading(false)
   };
+
+
+
+  console.log(userData.stage)
   return (
     <View
       style={{
@@ -25,9 +31,9 @@ const TermsConditions = () => {
           <LoadingView loading={loading} />
           {/* <CustomerTerms /> */}
           <WasherTerms />
-          <View style={{ height: 70 }} />
+          <View style={{ height: userData?.stage!='AUTH_DONE'? 70 : 35 }} />
         </ScrollView>
-        <View style={{ justifyContent: 'flex-end', flex: 1 }}>
+       {userData?.stage!='AUTH_DONE' && <View style={{ justifyContent: 'flex-end', flex: 1 }}>
           <TouchableOpacity
             elevation={5}
             onPress={onSubmit}
@@ -36,7 +42,7 @@ const TermsConditions = () => {
             activeOpacity={0.8}>
             <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>AGREE & CONTINUE</Text>
           </TouchableOpacity>
-        </View>
+        </View>}
       </View>
     </View>
   );

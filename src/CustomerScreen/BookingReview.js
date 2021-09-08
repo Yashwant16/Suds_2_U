@@ -11,7 +11,7 @@ import { Alert } from 'react-native';
 import { useStripe } from '@stripe/stripe-react-native';
 import LoadingView from '../Components/LoadingView';
 import { requestOneTimePayment, requestBillingAgreement } from 'react-native-paypal';
-import { navigate } from '../Navigation/NavigationService';
+import { changeStack, navigate } from '../Navigation/NavigationService';
 
 // import { CheckBox } from 'react-native-elements'
 
@@ -74,7 +74,10 @@ const BookingReview = () => {
         setLoading(false)
         console.log(JSON.stringify(currentBooking, null, 2))
         console.log('Booking review > . > . >', json)
-        if (json) navigation.navigate('Booking Confirm'); 
+        if (json) {
+            changeStack('CustomerHomeStack')
+            // setTimeout(()=>navigate('On The Way', { booking_id: '66' }),1000)
+        }
     }
 
     useEffect(() => setCurrentBooking(cv => ({ ...cv, total: calculateTotalPrice(currentBooking) })), []);
@@ -111,13 +114,17 @@ const BookingReview = () => {
         } finally { setLoading(false) }
     }
 
+    const onCancel=()=>{
+        setTimeout(()=>navigate('BOOKING DETAILS', { id: '66' }),1000)
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#e28c39', }}>
             <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
                 <LoadingView loading={loading}>
-                    <ScrollView style={{ marginBottom: 31 }}>
+                    <ScrollView >
 
-                        <View style={{ alignItems: 'center', width: '100%', padding: 21 }}>
+                        <View style={{ alignItems: 'center', width: '100%', padding: 21, paddingBottom: 81 }}>
                             <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
                                 <Text style={{ color: '#fff', fontSize: 16 }}>Wash Location</Text>
                                 <Text onPress={() => navigation.navigate('OnDemandChangeLocation', { changeLocation: true })} style={{ alignItems: 'flex-end', color: '#e28c39', fontWeight: '500', fontSize: 16 }}>Change</Text>
@@ -181,7 +188,7 @@ const BookingReview = () => {
                         </View>
                     </ScrollView>
                 </LoadingView>
-                <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 10 }}>
+                <View style={{ flexDirection :'row', alignItems: 'center', marginTop: 'auto' }}>
 
                     <TouchableOpacity
                         elevation={5}
@@ -191,6 +198,15 @@ const BookingReview = () => {
                         underlayColor='gray'
                         activeOpacity={0.8}>
                         <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', opacity: paidWith == PAYMENT_METHOD.NONE_CHOOSEN ? 0.7 : 1 }}>REVIEW & CONFIRM</Text>
+
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        elevation={5}
+                        onPress={onCancel}
+                        style={[styles.auth_btn, {backgroundColor : Colors.blue_color}]}
+                        underlayColor='gray'
+                        activeOpacity={0.8}>
+                        <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', opacity: paidWith == PAYMENT_METHOD.NONE_CHOOSEN ? 0.7 : 1 }}>CANCEL</Text>
 
                     </TouchableOpacity>
 
@@ -231,8 +247,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
         backgroundColor: '#e28c39',
-
-        width: '100%',
+        flex: 1,
         height: 60,
         justifyContent: 'center',
     },

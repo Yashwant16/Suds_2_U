@@ -48,7 +48,7 @@ const SignUp = ({navigation}) => {
       }}>
          <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
           <ImageBackground style={{width: '100%', height: '100%', flex: 1}} fadeDuration={0} source={require('../../Assets/imageBG.png')}>
             <LoadingView loading={loading}>
               <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>

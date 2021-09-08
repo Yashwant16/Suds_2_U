@@ -10,6 +10,8 @@ import LoadingView from '../Components/LoadingView';
 import { AuthContext } from '../Providers/AuthProvider';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { partialProfileUrl } from '../Providers';
+import { CheckBox } from 'react-native-elements';
+import { Text } from 'react-native';
 
 const EditProfile = ({ navigation, route }) => {
   const {
@@ -23,6 +25,7 @@ const EditProfile = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [selectedImage, setSelectedImage] = useState()
+  const [methodOfContact, setMethodOfContact] = useState()
 
   useEffect(() => {
     setFetching(true);
@@ -30,7 +33,7 @@ const EditProfile = ({ navigation, route }) => {
       .then(json => {
         if (json) {
           const { data } = json;
-          if(data.image) setSelectedImage({uri :partialProfileUrl+data.image})
+          if (data.image) setSelectedImage({ uri: partialProfileUrl + data.image })
           reset({
             ...data,
             country: { name: data.country_name, id: data.country },
@@ -38,13 +41,14 @@ const EditProfile = ({ navigation, route }) => {
             city: { name: data.city_name, id: data.city },
             phone_number: data.mobile,
           });
+          setMethodOfContact(data.preferred_method_of_contact)
         }
       })
       .finally(() => setFetching(false));
   }, []);
 
   const getStateList = async () => {
-     return await getStates(231);
+    return await getStates(231);
   };
 
   const getCityList = async () => {
@@ -55,7 +59,7 @@ const EditProfile = ({ navigation, route }) => {
 
   const onSubmit = async data => {
     setLoading(true);
-    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, image : selectedImage }, route.params?.authStack);
+    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, image: selectedImage, preferred_method_of_contact : methodOfContact }, route.params?.authStack);
     setLoading(false);
     if (success) navigation.goBack();
   };
@@ -85,14 +89,47 @@ const EditProfile = ({ navigation, route }) => {
               keyboardType="phone-pad"
               curved
             />
-            <ControllerInput
+            <View style={{backgroundColor: 'white', borderRadius: 26, overflow: 'hidden', marginTop : 8}}>
+            <Text style={{ fontWeight: 'bold', fontSize: 14, color : 'black', padding : 8, backgroundColor : '#eee', paddingHorizontal : 24 }} >Preferred Method of contact</Text>
+              <View style={{ flexDirection: 'row',  }} >
+                <CheckBox
+                  center
+                  title='Phone'
+                  checkedIcon='dot-circle-o'
+                  uncheckedIcon='circle-o'
+                  onPress={() => setMethodOfContact('Phone')}
+                  checked={methodOfContact == 'Phone'}
+                  containerStyle={styles.checkbocContaner}
+
+                />
+                <CheckBox
+                  center
+                  title='Email'
+                  checkedIcon='dot-circle-o'
+                  uncheckedIcon='circle-o'
+                  onPress={() => setMethodOfContact('Email')}
+                  checked={methodOfContact == 'Email'}
+                  containerStyle={styles.checkbocContaner}
+                />
+                <CheckBox
+                  center
+                  title='SMS Text'
+                  checkedIcon='dot-circle-o'
+                  uncheckedIcon='circle-o'
+                  onPress={() => setMethodOfContact('SMS Text')}
+                  checked={methodOfContact == 'SMS Text'}
+                  containerStyle={styles.checkbocContaner}
+                />
+              </View>
+            </View>
+            {/* <ControllerInput
               control={control}
               errors={errors}
               rules={{ required: true }}
               fieldName="preferred_method_of_contact"
               placeholder="Preferred Method Of Contact"
               curved
-            />
+            /> */}
             <ControllerInput
               control={control}
               errors={errors}
@@ -138,4 +175,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.blue_color,
   },
+  checkbocContaner: {
+    flex: 1,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    margin: 0,
+    padding : 0,
+    paddingVertical : 15
+  }
 });

@@ -6,6 +6,8 @@ import Colors from '../../Constants/Colors';
 import moment from 'moment';
 import { AppState } from 'react-native';
 import { WASHER } from '../Navigation/NavigationService';
+import * as RNLocalize from "react-native-localize";
+import { getCurrentPosition } from '../Services/LocationServices';
 
 export const BookingContext = React.createContext();
 
@@ -30,7 +32,7 @@ export const ACTIONS = {
 
 const initialState = {
   bookingHistory: [],
-  loading: false,
+  loading: true,
   refreshing: false,
   type: ACTIONS.OnInit,
   hasLoadedAllItems: false,
@@ -107,7 +109,7 @@ const BookingProvider = ({ children }) => {
     else dispatch({ type: ACTIONS.OnFail });
   };
 
-  const getSingleBookingDetails = async booking_id => await callApi('singlebookingdetails', userData.api_token, { booking_id: booking_id });
+  const getSingleBookingDetails = async booking_id => await callApi('singlebookingdetails', userData.api_token, { booking_id: booking_id, time_zone: RNLocalize.getTimeZone() });
 
   const acceptJob = async booking_id => {
     let json = await callApi('accept_job', userData.api_token, { user_id: userData.id, booking_id })
@@ -133,7 +135,7 @@ const BookingProvider = ({ children }) => {
   }
 
   const startJob = async booking_id => {
-    let json = await callApi('startjob', userData.api_token, { booking_id })
+    let json = await callApi('startjob', userData.api_token, { booking_id, time_zone: RNLocalize.getTimeZone() })
     if (!json) return
     syncCurrentRunningBooking()
     return json
@@ -151,7 +153,7 @@ const BookingProvider = ({ children }) => {
 
   const getVendor = async () => callApi('vendorlist', userData.api_token, { latitude: userData.latitude, longitude: userData.longitude })
 
-  const getAddOns = async () => await callApi('addOns', userData.api_token, {}, null, 'GET')
+  const getAddOns = async () => await callApi('addOns', userData.api_token, { category_id: currentBooking.vehicle_type }, null, 'POST')
 
   const getNearByVendor = async (lat, long) => callApi('automaticallyShowVendor', userData.api_token, { lat, long })
 
@@ -160,6 +162,13 @@ const BookingProvider = ({ children }) => {
   const getPaymentIntent = async amount => await callApi('paymentorder', userData.api_token, { booking_id: 3, user_id: userData.id, amount })
 
   const getWasherLocation = async washer_id => await callApi('getWasherLocation', userData.api_token, { user_id: userData.id, washer_id })
+
+  const getRewards = async (setState) => {
+    setState(LOADING)
+    let json = await await callApi('rewards', userData.api_token, { user_id: userData.id })
+    if (json) return setState(json.data?.length)
+    return setState(ERROR)
+  }
 
   const updateLocation = async location => await callApi('liveTracking', userData.api_token, { user_id: userData.id, ...location })
 
@@ -199,11 +208,26 @@ const BookingProvider = ({ children }) => {
     else setVehicles(ERROR)
   }
 
-  const syncCurrentRunningBooking = async (user=userData) => {
-    if(!user?.api_token) return
+  const syncCurrentRunningBooking = async (user = userData) => {
+    if (!user?.api_token) return
     let json = await callApi(user.role_as == WASHER ? 'runningjob' : 'customerrunningbooking', user.api_token, { user_id: user.id })
     if (!json) return setRunningBooking(undefined)
     else setRunningBooking(json.data)
+  }
+
+  const getNearByWasherLocations = async (setState) => {
+    setState(LOADING)
+    const userLocation = (await getCurrentPosition()).coords
+    let json = await callApi('get_washser', userData.api_token, { lat: userLocation.latitude, long: userLocation.longitude })
+    if (json) setState(json.data)
+    else setState(ERROR)
+  }
+
+  const sendSMS = async (setLoading, onSuccess,to_id,message) =>{
+    setLoading(true)
+    let json = await callApi('sendingSms', userData.api_token, { from_id : userData.id, to_id, message, type : "user"})
+    if (json) onSuccess()
+    setLoading(false)
   }
 
   return <BookingContext.Provider value={{
@@ -237,7 +261,11 @@ const BookingProvider = ({ children }) => {
     getWasherReviews,
     runningBooking,
     syncCurrentRunningBooking,
-    updateLocation
+    updateLocation,
+    setRunningBooking,
+    getRewards,
+    getNearByWasherLocations,
+    sendSMS
   }}>{children}</BookingContext.Provider>;
 };
 
@@ -409,13 +437,14 @@ const customCallApi = async (subfix, AppKey, params, method = 'POST', nameLable)
     let formData = new FormData()
     Object.entries(params).forEach(([key, value]) => formData.append(key, value))
     console.log(formData)
-    let url = `${'http://suds-2-u.com/api/'}${subfix}?`
+    let url = `${'https://suds-2-u.com/api/'}${subfix}?`
     let res = await fetch(url, {
       method: method,
       headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
       body: method == 'GET' ? undefined : formData
     });
-    let results = JSON.parse(await res.text()).results.map(r => { return { id: r.objectId, name: r[nameLable] } })
+    let jsonResponse = JSON.parse(await res.text())
+    let results = (jsonResponse.results ? jsonResponse.results : jsonResponse.data).map(r => { return { id: r.objectId, name: r[nameLable] } })
 
     return getUniques(results)
   } catch (error) {

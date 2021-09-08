@@ -6,35 +6,41 @@ import { bookingType, ON_DEMAND, SCHEDULED } from '../Navigation/NavigationServi
 import { AuthContext } from '../Providers/AuthProvider';
 import { getCurrentAddress } from '../Services/LocationServices';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { partialProfileUrl } from '../Providers';
+import { ERROR, LOADING, partialProfileUrl } from '../Providers';
 import { AppContext } from '../Providers/AppProvider';
 import LoadingView from '../Components/LoadingView';
 import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS } from '../Providers/BookingProvider';
+import { ActivityIndicator } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
 export const nav = React.createRef(null);
 export default HomeScreen = ({ navigation }) => {
 
-  const { userData, updateUserLocation,changeImage } = useContext(AuthContext)
-  const {setLoading} = useContext(AppContext)
-  const {runningBooking,getSingleBookingDetails} = useContext(BookingContext)
+  const { userData, updateUserLocation, changeImage } = useContext(AuthContext)
+  const { setLoading } = useContext(AppContext)
+  const { runningBooking, getSingleBookingDetails, getRewards } = useContext(BookingContext)
   const [currentAddress, setCurrentAddress] = useState('Getting address...')
+  const [rewards, setRewards] = useState(LOADING)
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(runningBooking?.status, "RUNNING BOOKING STATUS")
     switch (runningBooking?.status) {
       case WASHR_ON_THE_WAY:
-         getBookingWithId(runningBooking.booking_id).then(booking=>{
+        getBookingWithId(runningBooking.booking_id).then(booking => {
           if (booking) navigation.navigate('On The Way', { booking, onTheWay: true })
         })
         break;
-        case WASH_IN_PROGRESS:
-          getBookingWithId(runningBooking.booking_id).then(booking=>{
-            if (booking) navigation.navigate('Work In Progress', { booking });
-          })
-          break;
+      case WASH_IN_PROGRESS:
+        getBookingWithId(runningBooking.booking_id).then(booking => {
+          if (booking) navigation.navigate('Work In Progress', { booking });
+        })
+        break;
       default:
         break;
     }
-  },[])
+
+    getRewards(setRewards)
+  }, [])
 
   const getBookingWithId = async (id) => {
     setLoading(true);
@@ -48,27 +54,57 @@ export default HomeScreen = ({ navigation }) => {
   useEffect(() => {
     nav.current = navigation
     updateUserLocation()
-    getCurrentAddress().then(address => setCurrentAddress(address))
+    getCurrentAddress().then(setCurrentAddress)
+
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+
+      console.log('--------', remoteMessage.data)
+
+      PushNotification.localNotification({
+        channelId: 'channel-id',
+        message: remoteMessage.notification.body,
+        title: remoteMessage.notification.title,
+        data: remoteMessage.data
+      })
+    });
+
+    return () => unsubscribe()
   }, [])
 
-  const imageCallBack = async (res)=>{
+  const imageCallBack = async (res) => {
     console.log(res)
-    if(res.didCancel) return
+    if (res.didCancel) return
     setLoading(true)
     await changeImage(res.assets[0])
     setLoading(false)
   }
 
+  const Rewards = () => {
+    switch (rewards) {
+      case LOADING: return <ActivityIndicator color={Colors.blue_color} size="large" />
+      case ERROR: return (
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>Error loading rewrds.</Text>
+          <TouchableOpacity onPress={() => getRewards(setRewards)} style={{ padding: 5, backgroundColor: Colors.blue_color, borderRadius: 5, marginHorizontal: 10 }}>
+            <Text style={{ color: 'white', includeFontPadding: false }} >Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )
+
+      default: return (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ color: '#fff', margin: 6, marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Rewards : </Text>
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((v, i) => <Image key={i} style={{ width: 25, height: 25, marginTop: 5, tintColor: i < rewards ? Colors.blue_color : '#916832' }} source={require('../../Assets/drop.png')} />)}
+        </View>
+      )
+    }
+  }
+
   return (
     <View style={{ flex: 1, }}>
-      <LoadingView/>
-      <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
-        <Text style={{ color: '#fff', margin: 6, marginTop: 10, fontSize: 16, fontWeight: '600' }}>Rewards</Text>
-
-        <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
-        <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
-        <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
-        <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
+      <LoadingView />
+      <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', justifyContent: 'center' }}>
+        <Rewards></Rewards>
       </View>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: userData.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 21 }}>
@@ -79,11 +115,11 @@ export default HomeScreen = ({ navigation }) => {
         <View style={{ flex: 1, justifyContent: 'flex-end', }}>
           <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom: -1 }} source={require('../../Assets/shape.png')} >
 
-            <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Wellcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>{userData.name}</Text></Text>
+            <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Welcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>{userData.name}</Text></Text>
 
-            <View style={{ flexDirection: 'row', marginTop: 5 }}>
+            <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center' }}>
               <Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />
-              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', width: '70%' }}>{currentAddress}</Text>
+              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{currentAddress}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
               <TouchableOpacity

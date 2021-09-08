@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, SafeAreaView, RefreshControl, ActivityIndicator } from 'react-native';
 import Colors from '../../Constants/Colors';
 import ListEmpty from '../Components/ListEmpty';
-import { partialProfileUrl } from '../Providers';
+import { ERROR, LOADING, partialProfileUrl } from '../Providers';
 import { AppContext } from '../Providers/AppProvider';
 import { ACTIONS, BookingContext, WASHER_ACCEPTED, WASHER_ARRIVED, WASHR_ON_THE_WAY, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../Providers/BookingProvider';
 
@@ -13,23 +13,38 @@ const BookingHistory = ({ navigation }) => {
   const {
     state: { bookingHistory, loading, hasLoadedAllItems, refreshing, type },
     dispatch,
+    getRewards
   } = useContext(BookingContext);
 
-  useEffect(() => dispatch({ type: ACTIONS.Start }), []);
+  useEffect(() => {dispatch({ type: ACTIONS.Start }); getRewards(setRewards)}, []);
+  const [rewards, setRewards] = useState(LOADING)
+
+  const Rewards = () => {
+    switch (rewards) {
+      case LOADING: return <Text style={{fontWeight : 'bold', fontSize : 16, color : 'white', textAlign : 'center'}}>Loading...</Text>
+      case ERROR: return (
+        <View style={{flexDirection : 'row', alignItems : 'center', paddingHorizontal : 20}}>
+          <Text style={{fontWeight : 'bold', fontSize : 16, color : 'white'}}>Error loading rewrds.</Text>
+          <TouchableOpacity onPress={()=>getRewards(setRewards)} style={{ padding: 5, backgroundColor: Colors.blue_color, borderRadius: 5, marginHorizontal : 10 }}>
+            <Text style={{ color: 'white', includeFontPadding : false }} >Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )
+
+      default: return (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={{ color: '#fff', margin: 6, marginTop: 10, fontSize: 16, fontWeight: '600' }}>Rewards</Text>
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((v, i) => <Image key={i} style={{ width: 25, height: 25, marginTop: 5, tintColor: i < rewards ? Colors.blue_color : '#916832' }} source={require('../../Assets/drop.png')} />)}
+        </View>
+      )
+    }
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <SafeAreaView />
-      <View style={styles.header}>
-        <Text style={{ fontWeight: 'bold', color: Colors.text_white, fontSize: 18 }}>Rewards:</Text>
-
-        {[...Array(10)].map((v, i) => (
-          <Image
-            key={i}
-            style={{ width: 22, height: 22, tintColor: i < 4 ? Colors.blue_color : '#777', marginTop: 2, marginLeft: 5 }}
-            source={require('../../Assets/drop.png')}
-          />
-        ))}
+      <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', justifyContent : 'center'}}>
+        <Rewards></Rewards>
       </View>
       <FlatList
         keyExtractor={item => item.booking_id}
@@ -69,15 +84,14 @@ const Item = ({ item, navigation }) => {
     let booking;
     switch (item.status) {
       case WASH_PENDING:
-        navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
+        navigation.navigate('On The Way', { booking_id : item.booking_id })
         break;
       case WASH_REJECTED: return Alert.alert('Rejected', 'Washer rejected this job request')
       case WASHER_ACCEPTED:
         navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
         break;
       case WASHR_ON_THE_WAY:
-        booking = await getBookingWithId(item.booking_id)
-        if (booking) navigation.navigate('On The Way', { booking, onTheWay: true })
+        navigation.navigate('On The Way', { booking_id : item.booking_id })
         break;
       case WASH_IN_PROGRESS:
         booking = await getBookingWithId(item.booking_id)

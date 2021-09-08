@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Alert } from 'react-native';
 import AppProvider from './AppProvider';
 import AuthProvider from './AuthProvider';
@@ -8,9 +8,9 @@ import NetInfo from '@react-native-community/netinfo';
 import EarningProvider from './EarningsProvider';
 import PackageProvider from './PackageProvider';
 
-export const BASE_URL = 'http://suds-2-u.com/api/';
-export const ERROR = 5
-export const LOADING = 6
+export const BASE_URL = 'https://suds-2-u.com/api/';
+export const ERROR = 45
+export const LOADING = 64
 
 export const partialProfileUrl = "http://suds-2-u.com/public/profile/"
 
@@ -37,9 +37,10 @@ export default Providers;
 
 export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') => {
   try {
+    console.log("🚀 ~ file: index.js ~ line 51 ~ callApi ~ method", method)
     await checkConnection();
     let formData = new FormData()
-    Object.entries(params).forEach(([key, value]) =>key.includes('image') ? formData.append(key, { uri: value.uri, name: value.fileName, type: 'image/jpeg' }) : formData.append(key, value))
+    Object.entries(params).forEach(([key, value]) =>key.includes('image') ? formData.append(key, value?{ uri: value.uri, name: value.fileName, type: 'image/jpeg' } : undefined) : formData.append(key, value))
     console.log(params)
     let url = `${BASE_URL}${subfix}?`
     let res = await fetch(url, {
@@ -47,6 +48,7 @@ export const callApi = async (subfix, AppKey, params, onFalse, method = 'POST') 
       headers: { 'App-Key': AppKey, 'Content-Type': 'multipart/form-data' },
       body: method == "GET" ? null : formData
     });
+
     let text = await res.text()
     console.log(subfix,res.status, text.substring(0, 1000))
     

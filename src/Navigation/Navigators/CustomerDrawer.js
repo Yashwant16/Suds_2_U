@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList, } from '@react-navigation/drawer';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import HomeScreen from '../../CustomerScreen/HomeScreen'
@@ -17,6 +17,7 @@ import SelectVendor from '../../CustomerScreen/SelectVender';
 import BookingHistory from '../../CustomerScreen/BookingHistory';
 import TermsConditions from '../../CommonScreen/TermsConditions';
 import { partialProfileUrl } from '../../Providers';
+import { getCurrentAddress } from '../../Services/LocationServices';
 const Drawer = createDrawerNavigator();
 
 
@@ -39,7 +40,7 @@ const CustomerDrawer = () => {
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/home.png')} /> }}
       />
       <Drawer.Screen
-        name="EditProfile"
+        name="Edit Profile"
         component={EditProfile}
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/pencil.png')} /> }}
       />
@@ -111,20 +112,23 @@ const Logout = () => {
 
 const DrawerProfile = () => {
   const { userData } = useContext(AuthContext)
-  return (
+  const [currentLocation,setCurrentLocation] = useState('Loading...')
+
+  useEffect(()=>getCurrentAddress().then(setCurrentLocation), [])
+    return (
     <View style={{ width: '100%', marginTop: 0, padding: 16, alignItems: 'center' }}>
       <View style={{ marginTop: 10, width: 90, height: 90, borderColor: '#fff', borderRadius: 10, borderWidth: 3, alignItems: 'center', alignSelf: 'center' }}>
         <Image style={{ width: 85, height: 85, alignItems: 'center', alignSelf: 'center', resizeMode: 'cover', borderRadius: 10 }} source={{ uri: userData?.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }} />
       </View>
-      <View>
+      <View style={{alignItems  :'center'}}>
         <Text style={{ color: Colors.blue_color, fontSize: 18, paddingBottom: 6, marginTop: 10, fontWeight: 'bold' }}>{userData.name}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
           <Image style={{ width: 15, height: 15, alignItems: 'center', alignSelf: 'center', resizeMode: 'stretch', tintColor: '#F5BA05' }} source={require('../../../Assets/location.png')} />
-          <Text style={{ color: '#fff', textAlign: 'center', fontSize: 16 }}>san fracisco usa</Text>
+          <Text numberOfLines={1} style={{ color: '#fff', textAlign: 'center', fontSize: 16 }}>{currentLocation}</Text>
 
         </View>
         <View style={{ width: 130, height: 35, backgroundColor: '#F5BA05', borderRadius: 20, marginTop: 10, justifyContent: 'center' }}>
-          <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>08 Drops</Text>
+          <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>04 Drops</Text>
         </View>
       </View>
     </View>

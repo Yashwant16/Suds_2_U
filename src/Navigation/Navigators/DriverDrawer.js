@@ -58,7 +58,8 @@ const DriverDrawer = () => {
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/dollar-symbol.png')} /> }}
       />
       <Drawer.Screen
-        name="EDIT DETAILS"
+        name="EDIT PKG DETAILS"
+
         component={EditDtails}
         options={{ drawerIcon: ({ color }) => <Icon color={color} iconSource={require('../../../Assets/document.png')} /> }}
       />

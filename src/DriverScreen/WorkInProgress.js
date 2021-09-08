@@ -9,7 +9,7 @@ import LoadingView from '../Components/LoadingView';
 
 const WorkInProgress = ({ navigation, route }) => {
   const [deadline, setDeadline] = useState(route.params?.booking.totaltime * 1000);
-  const [timeRemaining, setTimeRemaining] = useState(deadline - Date.now())
+  const [timeRemaining, setTimeRemaining] = useState(deadline - new Date().getTime())
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const { addMoreMinutes } = useContext(BookingContext)
@@ -29,7 +29,7 @@ const WorkInProgress = ({ navigation, route }) => {
 
   useEffect(() => {
     console.log(JSON.stringify(booking, null, 2))
-    const interval = setInterval(() => setTimeRemaining(deadline - Date.now()), 1000);
+    const interval = setInterval(() => { setTimeRemaining(deadline - new Date().getTime()) }, 1000);
     return () => clearInterval(interval);
   }, [deadline]);
   return (
@@ -47,8 +47,8 @@ const WorkInProgress = ({ navigation, route }) => {
         {booking.extraaddonsdetails &&
           booking.extraaddonsdetails.map((addOn, i) => {
             return (<View key={i} style={[styles.detailContainer, { flexDirection: 'row' }]}>
-              <Text style={{ fontWeight: 'bold',  }}>{addOn.add_ons_name}</Text>
-              <Text style={{ fontWeight: 'bold',marginLeft : 16, color: Colors.dark_orange }}>${parseFloat(addOn?.add_ons_price).toFixed(2)}</Text>
+              <Text style={{ fontWeight: 'bold', }}>{addOn.add_ons_name}</Text>
+              <Text style={{ fontWeight: 'bold', marginLeft: 16, color: Colors.dark_orange }}>${parseFloat(addOn?.add_ons_price).toFixed(2)}</Text>
               <Image style={{ height: 24, width: 24, tintColor: 'black', marginLeft: 'auto' }} source={require('../../Assets/icon/checked.png')}></Image>
             </View>)
           })

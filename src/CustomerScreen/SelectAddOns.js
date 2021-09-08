@@ -5,6 +5,7 @@ import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box'
 import { BookingContext } from '../Providers/BookingProvider';
 import LoadingView from '../Components/LoadingView';
+import { changeStack } from '../Navigation/NavigationService';
 
 const SelectAddOns = ({ navigation }) => {
 
@@ -55,6 +56,7 @@ const SelectAddOns = ({ navigation }) => {
               <Text style={{ fontSize: 17, color: '#fff', fontWeight: '700', textAlign: 'center' }}>Estimates Wash Duration 30 Mins</Text>
               <Text style={{ fontSize: 17, color: '#fff', fontWeight: '700', textAlign: 'center' }}>Sub-Total:  ${selectedAddOns.length == 0 ? 0 : selectedAddOns.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)}</Text>
             </View>
+            <View style={{flexDirection :'row', }} >
             <TouchableOpacity
               elevation={5}
               onPress={() => {
@@ -66,6 +68,14 @@ const SelectAddOns = ({ navigation }) => {
               activeOpacity={0.8}>
               <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>CONFIRM ADD-ONS</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => changeStack('CustomerHomeStack')}
+              style={styles.auth_btn}
+              activeOpacity={0.8}>
+              <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>CANCEL</Text>
+            </TouchableOpacity>
+            </View>
+         
           </View>
         </LoadingView>
       </ImageBackground>
@@ -112,7 +122,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     backgroundColor: Colors.buttom_color,
 
-    width: '100%',
+    flex:1,
     height: 60,
     justifyContent: 'center',
   },

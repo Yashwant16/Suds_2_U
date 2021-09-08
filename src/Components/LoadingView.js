@@ -21,7 +21,7 @@ const LoadingView = ({children, loading:contextLoading, fetching, loadingColor =
 export default LoadingView;
 
 const Loading = ({color}) => (
-  <Modal animationType="fade" transparent={true}>
+  <Modal animationType="fade" statusBarTranslucent transparent={true}>
     <View
       style={{
         justifyContent: 'center',

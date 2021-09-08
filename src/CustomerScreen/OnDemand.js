@@ -15,17 +15,17 @@ import { Platform } from 'react-native';
 import LoadingView from '../Components/LoadingView';
 Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
 
-const GETTING_LOCATION = 'Getting Location...'
+const GETTING_LOCATION = 'Getting Address...'
 const ERROR_GETTING_LOCATION = "Error getting location"
 
 
 const OnDemand = ({ route }) => {
   const navigation = useNavigation()
-  const [state, setState] = useState({ latitude: 9.010977, longitude: 38.727332, locationStatus: GETTING_LOCATION })
+  const [state, setState] = useState({ latitude: 29.744503, longitude: -95.362809, locationStatus: GETTING_LOCATION })
   const { setCurrentBooking, currentBooking, getNearByVendor } = useContext(BookingContext)
   const [loading, setLoading] = useState()
 
-  // useEffect(() => getOneTimeLocation(), [])
+  useEffect(() => getOneTimeLocation(), [])
   useEffect(() => {
     setCurrentBooking({})
     if (route.params?.headerTitle) navigation.setOptions({ title: route.params.headerTitle })
@@ -74,7 +74,7 @@ const OnDemand = ({ route }) => {
     if (route.params?.changeLocation) return navigation.goBack()
     if (bookingType.current == ON_DEMAND) {
       setLoading(true)
-      let json = await getNearByVendor(state.latitude, state.longitude)
+      let json = await getNearByVendor(8.94841 || state.latitude, 38.733688||state.longitude)
       setLoading(false)
       if (json?.data) setCurrentBooking(cv => ({ ...cv, washer_id: json.data.id }))
       else return
@@ -106,10 +106,11 @@ const OnDemand = ({ route }) => {
           <Icon name="gps-fixed" />
         </TouchableOpacity>
         <TouchableOpacity
+        disabled={(state.locationStatus == ERROR_GETTING_LOCATION || state.locationStatus == GETTING_LOCATION)}
           onPress={onConfirmLocation}
-          style={styles.auth_btn}
+          style={[styles.auth_btn, {backgroundColor : (state.locationStatus == ERROR_GETTING_LOCATION || state.locationStatus == GETTING_LOCATION) ? '#6da9f2' : Colors.blue_color}]}
           activeOpacity={0.8}>
-          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', }}>CONFIRM LOCATION</Text>
+          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', }}>{(state.locationStatus !== ERROR_GETTING_LOCATION && state.locationStatus !== GETTING_LOCATION) ? 'CONFIRM LOCATION' : state.locationStatus }</Text>
         </TouchableOpacity>
       </View>
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>

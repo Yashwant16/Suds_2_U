@@ -35,7 +35,7 @@ export default NewJobModal = ({ modalVisible, hide, accept, booking, setModalVis
 
             <View style={{ padding: 20, justifyContent: 'center', alignItems: 'center', width: '50%' }}>
               <Image style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5e5e5' }} source={(booking?.userdetails[0]?.image || booking?.userdetails?.image) ? { uri: partialProfileUrl + (booking.userdetails[0]?.image || booking.userdetails?.image) } : require('../../Assets/icon/user.png')} />
-              <Text>{(booking?.userdetails[0]?.name || booking?.userdetails?.name)}</Text>
+              <Text>{(booking?.userdetails[0]?.name || booking?.userdetails?.name)?.split(' ')[0]}</Text>
             </View>
 
             <View style={{ width: 1, height: '100%', backgroundColor: '#ddd' }} />
@@ -48,18 +48,18 @@ export default NewJobModal = ({ modalVisible, hide, accept, booking, setModalVis
           </View>
           <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
           <View style={{ flexDirection: 'row', padding: 10 }}>
-            <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Vehicle Type: </Text>
+            <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Package: </Text>
             <Text style={{ color: '#999', fontWeight: 'bold' }}>{booking?.vehicledetails[0]?.model || booking?.vehicle_type}</Text>
           </View>
           <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
           <View style={{ flexDirection: 'row', padding: 10 }}>
             <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Address: </Text>
-            <Text style={{ color: '#999', fontWeight: 'bold' }}>{booking?.wash_location}</Text>
+            <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', width : '70%' }}>{booking?.wash_location}</Text>
           </View>
           {booking?.extra_add_ons && <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />}
           {booking?.extra_add_ons && <View style={{ flexDirection: 'row', padding: 10, justifyContent: 'center' }}>
             <Text style={{ color: Colors.dark_orange, fontWeight: 'bold', marginLeft: 15 }}>Add-on: </Text>
-            <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', marginRight: 15 }}>
+            <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', marginRight: 15,width : '70%'  }}>
               {booking?.extraaddonsdetails?.length > 1
                 ? booking?.extraaddonsdetails?.map(addon => addon.add_ons_name).reduce((p, c) => `${p}, ${c}`)
                 : booking?.extraaddonsdetails[0]?.add_ons_name}

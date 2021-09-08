@@ -9,7 +9,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { Alert } from 'react-native';
 
 const JobFinished = ({ route, navigation }) => {
-  const { finishedjob } = useContext(BookingContext)
+  const { finishedjob,setRunningBooking } = useContext(BookingContext)
   const [loading, setLoading] = useState(false);
   const booking = useMemo(() => route.params?.booking, [route])
   const [images, setImages] = useState([])
@@ -29,6 +29,7 @@ const JobFinished = ({ route, navigation }) => {
     setLoading(false)
     if (json) {
       setTrue()
+      setRunningBooking(undefined)
       changeStack('DriverHomeStack')
     }
   }

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ImageBackground } from 'react-native';
 import Colors from '../../Constants/Colors';
 import CheckBox from 'react-native-check-box';
-import { bookingType, ON_DEMAND } from '../Navigation/NavigationService';
+import { bookingType, changeStack, ON_DEMAND } from '../Navigation/NavigationService';
 import LoadingView from '../Components/LoadingView';
 import { BookingContext } from '../Providers/BookingProvider';
 import { ERROR, LOADING } from '../Providers';
@@ -27,6 +27,38 @@ const CarOrTruck = ({ navigation }) => {
 
   }
 
+
+  const List = ({ vehicles, retry, selectState: [selectedVehicle, setSelectedVehicle] }) => {
+
+    switch (vehicles) {
+      case ERROR:
+        return (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <Text style={{ opacity: 0.5, color: 'white', fontSize: 20, fontWeight: 'bold' }}>Error loading your vehicles</Text>
+            <TouchableOpacity onPress={retry} style={{ backgroundColor: Colors.blue_color, padding: 10, borderRadius: 5, margin: 10 }}>
+              <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold', marginHorizontal: 10 }}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      case LOADING:
+        return <ActivityIndicator size="large" color={Colors.blue_color} style={{ padding: 20 }} />;
+      default:
+        return (
+          <FlatList
+            keyExtractor={(item, index) => index}
+            style={{ width: '100%' }}
+            data={vehicles}
+            ItemSeparatorComponent={() => <View style={{ margin: -15 }} />}
+            ListFooterComponent={() => <View style={{ height: 200 }} />}
+            renderItem={({ item, index }) => (
+              <RenderItem item={item} onClick={() => { setSelectedVehicle(item);}} checked={selectedVehicle?.vehicle_id == item.vehicle_id} />
+            )}
+          />
+        );
+    }
+  };
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
       <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/bg_img.png')}>
@@ -50,14 +82,27 @@ const CarOrTruck = ({ navigation }) => {
           <Text style={{ color: '#fff', fontSize: 17, textAlign: 'center', marginHorizontal: 20, marginVertical: 5 }}>Pricing based on loacation </Text>
           <Text style={{ color: '#fff', fontSize: 17, textAlign: 'center', marginHorizontal: 20, marginVertical: 5 }}>and vehicle make/model</Text>
 
-          <TouchableOpacity
-            elevation={5}
-            onPress={onNext}
-            style={styles.auth_btn}
-            underlayColor="gray"
-            activeOpacity={0.8}>
-            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Next</Text>
-          </TouchableOpacity>
+          <View style={{ alignItems: 'center', marginTop: 'auto' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <TouchableOpacity
+                elevation={5}
+                onPress={onNext}
+                style={styles.auth_btn}
+                underlayColor="gray"
+                activeOpacity={0.8}>
+                <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Next</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                elevation={5}
+                onPress={() => changeStack('CustomerHomeStack')}
+                style={styles.auth_btn}
+                underlayColor="gray"
+                activeOpacity={0.8}>
+                <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -82,36 +127,6 @@ const RenderItem = ({ item, onClick, checked }) => (
   </TouchableOpacity>
 );
 
-const List = ({ vehicles, retry, selectState: [selectedVehicle, setSelectedVehicle] }) => {
-
-  switch (vehicles) {
-    case ERROR:
-      return (
-        <View style={{ padding: 20, alignItems: 'center' }}>
-          <Text style={{ opacity: 0.5, color: 'white', fontSize: 20, fontWeight: 'bold' }}>Error loading your vehicles</Text>
-          <TouchableOpacity onPress={retry} style={{ backgroundColor: Colors.blue_color, padding: 10, borderRadius: 5, margin: 10 }}>
-            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold', marginHorizontal: 10 }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    case LOADING:
-      return <ActivityIndicator size="large" color={Colors.blue_color} style={{ padding: 20 }} />;
-    default:
-      return (
-        <FlatList
-          keyExtractor={(item, index) => index}
-          style={{ width: '100%' }}
-          data={vehicles}
-          ItemSeparatorComponent={() => <View style={{ margin: -15 }} />}
-          ListFooterComponent={() => <View style={{ height: 200 }} />}
-          renderItem={({ item, index }) => (
-            <RenderItem item={item} onClick={() => setSelectedVehicle(item)} checked={selectedVehicle?.vehicle_id == item.vehicle_id} />
-          )}
-        />
-      );
-  }
-};
-
 const styles = StyleSheet.create({
   auth_textInput: {
     alignSelf: 'center',
@@ -126,7 +141,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: Colors.buttom_color,
-
+    flex: 1,
     width: '100%',
     height: 60,
     justifyContent: 'center',

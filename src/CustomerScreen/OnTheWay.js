@@ -1,24 +1,33 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, View, Image, StyleSheet, TouchableOpacity, TextInput, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
 import { SafeAreaView } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import LoadingView from '../Components/LoadingView';
-import { BookingContext } from '../Providers/BookingProvider'
-import { partialProfileUrl } from '../Providers';
+import { BookingContext, WASH_IN_PROGRESS, WASH_PENDING } from '../Providers/BookingProvider'
+import { ERROR, LOADING, partialProfileUrl } from '../Providers';
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native';
+import { getCurrentPosition } from '../Services/LocationServices';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 
 
-export default OnTheWay = ({ navigation, route }) => {
+export default OnTheWay = ({ route }) => {
+  const navigation = useNavigation()
   const [loading, setLoading] = useState(true)
-  const { getWasherLocation } = useContext(BookingContext)
-  const { booking } = useMemo(() => route?.params, [route])
+  const { getWasherLocation, getSingleBookingDetails, getNearByWasherLocations, sendSMS } = useContext(BookingContext)
+  const [booking, setBooking] = useState()
+  const { booking_id } = useMemo(() => route?.params, [route])
   const [origin, setOrigin] = useState()
   const [washerLocation, setWasherLocation] = useState()
+  const [nearbyWashers, setNearbyWashers] = useState(LOADING)
+  const [message, setMessage] = useState('')
 
 
   useEffect(() => {
+    if (!booking) return
     let interval = setInterval(function x() {
       getWasherLocation(booking.washer_id).then(json => {
         if (json?.data) {
@@ -29,7 +38,71 @@ export default OnTheWay = ({ navigation, route }) => {
       return x;
     }(), 60000);
     return () => clearInterval(interval)
-  }, [])
+  }, [booking])
+
+  useEffect(() => { getBookingWithId(booking_id); getNearByWasherLocations(setNearbyWashers) }, [])
+
+  const getBookingWithId = async (id) => {
+    let json = await getSingleBookingDetails(id);
+    if (json?.data) setBooking(json.data)
+    else Alert.alert('Error', 'Something went wrong', [{ text: 'Ok', onPress: navigation.navigate.goBack() }])
+  }
+
+  if (!booking) return <LoadingView loading={true} />
+
+  const NearbyWashers = () => {
+    const [origin, setOrigin] = useState({ latitude: 29.744503, longitude: -95.362809 })
+    const getOneTimeLocation = async () => {
+      let info = await getCurrentPosition()
+      if (info) mapRef.current.animateCamera({ zoom: 15, pitch: 2, heading: 2, altitude: 2, center: { ...info.coords } }, { duration: 1000 })
+      else console.log(info)
+    }; 
+    const mapRef = useRef(null)
+    useEffect(() => {
+      if (nearbyWashers != ERROR && nearbyWashers != LOADING) getOneTimeLocation()
+    }, [nearbyWashers])
+    switch (nearbyWashers) {
+      case LOADING: return (
+        <View style={{ alignItems: 'center' }}>
+          <ActivityIndicator color={Colors.blue_color} size="large" />
+          <Text>Loading nearby washers.</Text>
+        </View>
+      )
+      case ERROR:
+        return (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <Text style={{ opacity: 0.5, color: 'white', fontSize: 20, fontWeight: 'bold' }}>Error loading nearby washers</Text>
+            <TouchableOpacity onPress={() => getNearByWasherLocations(setNearbyWashers)} style={{ backgroundColor: Colors.blue_color, padding: 10, borderRadius: 5, margin: 10 }}>
+              <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold', marginHorizontal: 10 }}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        );
+
+      default:
+        console.log("NEARBY WASHERS", nearbyWashers)
+        return <MapView
+          ref={mapRef}
+          style={{ width: '100%', flex: 1 }}
+          initialRegion={{
+            ...(origin ? origin : getCurrentPosition(booking)),
+            latitude: 37.421050, longitude: -122.087384,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }} >
+
+          {nearbyWashers.map((v, i) => <Marker key={i}
+            coordinate={{ latitude: parseFloat(v.latitude), longitude: parseFloat(v.longitude) }}>
+          </Marker>)}
+        </MapView>
+    }
+  }
+
+  if (booking.booking_status == WASH_PENDING) {
+    navigation.setOptions({ title: 'Nearby washers' })
+
+    return <NearbyWashers />
+
+  }
 
   return (
     <View style={{ flex: 1, position: 'relative' }}>
@@ -37,7 +110,7 @@ export default OnTheWay = ({ navigation, route }) => {
       <MapView
         style={{ width: '100%', flex: 1 }}
         initialRegion={{
-          ...(origin ? origin :getWashCoordinates(booking)),
+          ...(origin ? origin : getWashCoordinates(booking)),
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }} >
@@ -81,7 +154,7 @@ export default OnTheWay = ({ navigation, route }) => {
           marginBottom: 22, shadowOpacity: 0.8, shadowColor: '#aaa', justifyContent: 'center', borderRadius: 15
         }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, alignItems: 'center' }}>
-            <Text>{booking?.wash_location}</Text>
+            <Text numberOfLines={1} style={{ flex: 1 }} >{booking?.wash_location}</Text>
             <Text style={{ color: 'yellow', backgroundColor: '#000', padding: 4, fontWeight: 'bold', borderRadius: 5 }}> 0.5 min </Text>
           </View>
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
@@ -112,9 +185,11 @@ export default OnTheWay = ({ navigation, route }) => {
               style={[styles.auth_textInput,]}
               placeholder="Type your message"
               placeholderTextColor={Colors.text_color}
+              value={message}
+              onChangeText={setMessage}
               autoCapitalize='none' />
             <TouchableOpacity
-              onPress={() => { navigation.navigate('Work In Progress'); }}>
+              onPress={() =>sendSMS(setLoading,()=>setMessage(''),booking.washer_id,message )}>
 
               <Text style={{ color: '#445F98', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>SEND</Text>
             </TouchableOpacity>

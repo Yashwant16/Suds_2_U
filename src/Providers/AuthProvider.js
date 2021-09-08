@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { callApi } from '.';
+import { callApi, ERROR, LOADING } from '.';
 import { changeStack, CUSTOMER, navigate, type, WASHER } from '../Navigation/NavigationService';
 import messaging from '@react-native-firebase/messaging';
 import { getCurrentPosition } from '../Services/LocationServices';
@@ -121,6 +121,12 @@ const AuthProvider = ({ children }) => {
 
   const getCountries = async () => await callApi('get_country', userData.api_token, {}, null, 'GET');
 
+  const getPromotions = async (setState) => {
+    setState(LOADING)
+    let json = await callApi('getPromotions', userData.api_token, {}, null, 'GET');
+    if(json) setState(json.data)
+    else return setState(ERROR)
+}
   const getStates = async country_id => await callApi('get_state', userData.api_token, { country_id });
 
   const getCities = async state_id => await callApi('get_city', userData.api_token, { state_id });
@@ -215,7 +221,8 @@ const AuthProvider = ({ children }) => {
         getCardDetails,
         updateCard,
         updateUserLocation,
-        changeImage
+        changeImage,
+        getPromotions
       }}>
       {children}
     </AuthContext.Provider>

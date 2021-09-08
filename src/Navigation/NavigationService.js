@@ -44,3 +44,5 @@ export const defaultScreenOptions = {
   ...TransitionPresets.SlideFromRightIOS,
   // cardStyle: {backgroundColor: '#000'},
 };
+
+export const onStartAction = React.createRef()
