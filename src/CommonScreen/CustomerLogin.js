@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ImageBackground} from 'react-native';
+import {Text, View, Image, TouchableOpacity, SafeAreaView, ImageBackground} from 'react-native';
 
 import {ScrollView} from 'react-native';
 import CtaButton from '../Components/CtaButton';

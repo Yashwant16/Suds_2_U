@@ -74,7 +74,7 @@ const OnDemand = ({ route }) => {
     if (route.params?.changeLocation) return navigation.goBack()
     if (bookingType.current == ON_DEMAND) {
       setLoading(true)
-      let json = await getNearByVendor(8.94841 || state.latitude, 38.733688||state.longitude)
+      let json = await getNearByVendor(state.latitude, state.longitude)
       setLoading(false)
       if (json?.data) setCurrentBooking(cv => ({ ...cv, washer_id: json.data.id }))
       else return

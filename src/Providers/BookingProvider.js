@@ -230,6 +230,24 @@ const BookingProvider = ({ children }) => {
     setLoading(false)
   }
 
+  const getWahserCalendar = async (setState,washer_id) =>{
+    if(!washer_id) return
+    let json = await callApi('getWasherCalendar', userData.api_token, {washer_id})
+    if (json) setState([json.data.booking_date])
+  }
+
+  const getExtraTimeFee = async (setState) =>{
+    let json = await callApi('extratime',  userData.api_token, {}, null, 'GET')
+    if (json) setState(json.data[0].price)
+    else setState('Error')
+  }
+
+  const getServiceFee = async (setState) =>{
+    let json = await callApi('service',  userData.api_token, {}, null, 'GET')
+    if (json?.data?.price) setState(parseFloat(json.data.price))
+    else setState('Error')
+  }
+
   return <BookingContext.Provider value={{
     state,
     dispatch,
@@ -265,17 +283,21 @@ const BookingProvider = ({ children }) => {
     setRunningBooking,
     getRewards,
     getNearByWasherLocations,
-    sendSMS
+    sendSMS,
+    getWahserCalendar,
+    getExtraTimeFee,
+    getServiceFee
   }}>{children}</BookingContext.Provider>;
 };
 
 
 export default BookingProvider;
 
-export const calculateTotalPrice = (booking) => {
+export const calculateTotalPrice = (booking, fees) => {
   let addOnsPrice = (booking?.selectedAddOns?.length == 0 ? 0 : booking?.selectedAddOns?.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)) || 0
   let packagePrice = (parseFloat(booking?.packageDetails?.price)) || 0
-  return addOnsPrice + packagePrice
+  let totalFees = fees.filter(fee=>typeof fee == 'number').reduce((p,c)=>p+c,0)
+  return addOnsPrice + packagePrice + totalFees
 }
 
 export const getWashStatus = (status) => {

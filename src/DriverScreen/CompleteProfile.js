@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { View, ImageBackground, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, ImageBackground, StyleSheet, TouchableOpacity, Image, Alert, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Colors from '../../Constants/Colors';
 import ControllerInput from '../Components/ControllerInput';
@@ -11,6 +11,7 @@ import { AuthContext } from '../Providers/AuthProvider';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { partialProfileUrl } from '../Providers';
 import { ActivityIndicator } from 'react-native';
+import { CheckBox } from 'react-native-elements';
 
 const CompleteProfile = ({ navigation, route }) => {
   const {
@@ -24,6 +25,7 @@ const CompleteProfile = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [selectedImage, setSelectedImage] = useState()
+  const [methodOfContact, setMethodOfContact] = useState('Phone')
 
   useEffect(() => {
     setFetching(true);
@@ -57,7 +59,7 @@ const CompleteProfile = ({ navigation, route }) => {
 
   const onSubmit = async data => {
     console.log(data)
-    if (!selectedImage) Alert.alert('Picture', 'Please insert a profile picture.')
+    if (!selectedImage) return Alert.alert('Picture', 'Please insert a profile picture.')
     setLoading(true);
     let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, phone_number: data.mobile, image: selectedImage }, route.params?.authStack);
     setLoading(false);
@@ -76,7 +78,7 @@ const CompleteProfile = ({ navigation, route }) => {
         <LoadingView loading={loading} fetching={fetching}>
           <View style={styles.header}>
             <TouchableOpacity onPressIn={() => launchImageLibrary({}, imageSelectCallBack)} style={{ borderColor: 'white', borderWidth: 4, padding: selectedImage ? 0 : 25, borderRadius: 15 }}>
-              <ActivityIndicator color="white" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+              <ActivityIndicator color="white" style={{ position: 'absolute', top: 7, left: 0, right: 0, bottom: 0 }} />
               <Image style={{ width: selectedImage ? 100 : 50, height: selectedImage ? 100 : 50, borderRadius: selectedImage ? 11 : 0, resizeMode: 'cover' }} source={selectedImage ? selectedImage : require('../../Assets/icon/camera.png')} />
             </TouchableOpacity>
           </View>
@@ -90,14 +92,39 @@ const CompleteProfile = ({ navigation, route }) => {
               keyboardType="phone-pad"
               curved
             />
-            <ControllerInput
-              control={control}
-              errors={errors}
-              rules={{ required: true }}
-              fieldName="preferred_method_of_contact"
-              placeholder="Preferred Method Of Contact"
-              curved
-            />
+            <View style={{ backgroundColor: 'white', borderRadius: 26, overflow: 'hidden', marginTop: 8 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 14, color: 'black', padding: 8, backgroundColor: '#eee', paddingHorizontal: 24 }} >Preferred Method of contact</Text>
+              <View style={{ flexDirection: 'row', }} >
+                <CheckBox
+                  center
+                  title='Phone'
+                  checkedIcon='dot-circle-o'
+                  uncheckedIcon='circle-o'
+                  onPress={() => setMethodOfContact('Phone')}
+                  checked={methodOfContact == 'Phone'}
+                  containerStyle={styles.checkbocContaner}
+
+                />
+                <CheckBox
+                  center
+                  title='Email'
+                  checkedIcon='dot-circle-o'
+                  uncheckedIcon='circle-o'
+                  onPress={() => setMethodOfContact('Email')}
+                  checked={methodOfContact == 'Email'}
+                  containerStyle={styles.checkbocContaner}
+                />
+                <CheckBox
+                  center
+                  title='SMS Text'
+                  checkedIcon='dot-circle-o'
+                  uncheckedIcon='circle-o'
+                  onPress={() => setMethodOfContact('SMS Text')}
+                  checked={methodOfContact == 'SMS Text'}
+                  containerStyle={styles.checkbocContaner}
+                />
+              </View>
+            </View>
             <ControllerInput
               control={control}
               errors={errors}
@@ -108,8 +135,6 @@ const CompleteProfile = ({ navigation, route }) => {
             />
             <CustomPicker asynFunction={getStateList} fieldName="state" rules={{ required: true }} control={control} errors={errors} label="State" />
             <CustomPicker asynFunction={getCityList} fieldName="city" rules={{ required: true }} control={control} errors={errors} label="City" />
-
-            <ControllerInput control={control} errors={errors} rules={{ required: true }} fieldName="hourly_rate" placeholder="Hourly Rate" curved />
             <CtaButton
               primary
               title={route.params?.authStack ? 'Continue' : 'Save'}
@@ -143,4 +168,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.blue_color,
   },
+  checkbocContaner: {
+    flex: 1,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    margin: 0,
+    padding: 0,
+    paddingVertical: 15
+  }
 });

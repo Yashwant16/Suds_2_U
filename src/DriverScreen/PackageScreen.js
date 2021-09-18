@@ -24,7 +24,7 @@ const PackgeScreen = () => {
   } = useForm();
 
   const onSubmit = async data => {
-    let formattedTime = formatTime(data.time)
+    let formattedTime = formatTime(data.time/60)
     if (!formattedTime) return
     console.log({ ...data, type: route.params.packageType });
     setLoading(true);
@@ -51,7 +51,7 @@ const PackgeScreen = () => {
         <View style={{ flexDirection: 'row' }}>
           <InputComponent keyboardType="number-pad" fieldName="price" rules={{ required: true }} control={control} errors={errors} label="Edit Price" />
           <View style={{ width: 50 }} />
-          <InputComponent fieldName="time" rules={{ required: true }} control={control} errors={errors} label="Edit Time (Hours)" keyboardType="number-pad" />
+          <InputComponent fieldName="time" rules={{ required: true }} control={control} errors={errors} label="Edit Time (Minutes)" keyboardType="number-pad" />
         </View>
         <View style={{ height: 300, paddingBottom: 30 }}>
           <InputComponent
@@ -95,7 +95,7 @@ const InputComponent = ({ label, textInputStyle, keyboardType, fieldName, rules,
             onBlur={onBlur}
             onChangeText={value => onChange(value)}
             value={value}
-            style={[{ borderWidth: 2, borderColor: '#555', borderRadius: 25, color: 'black', paddingHorizontal: 16, height:35 }, textInputStyle]}
+            style={[{ borderWidth: 2, borderColor: '#555', borderRadius: 25, color: 'black', paddingHorizontal: 16, minHeight:50 }, textInputStyle]}
             keyboardType={keyboardType}
           />
         )}

@@ -25,7 +25,7 @@ const EditProfile = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [selectedImage, setSelectedImage] = useState()
-  const [methodOfContact, setMethodOfContact] = useState()
+  const [methodOfContact, setMethodOfContact] = useState('Phone')
 
   useEffect(() => {
     setFetching(true);
@@ -59,7 +59,7 @@ const EditProfile = ({ navigation, route }) => {
 
   const onSubmit = async data => {
     setLoading(true);
-    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, image: selectedImage, preferred_method_of_contact : methodOfContact }, route.params?.authStack);
+    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, image: selectedImage, preferred_method_of_contact: methodOfContact }, route.params?.authStack);
     setLoading(false);
     if (success) navigation.goBack();
   };
@@ -89,9 +89,9 @@ const EditProfile = ({ navigation, route }) => {
               keyboardType="phone-pad"
               curved
             />
-            <View style={{backgroundColor: 'white', borderRadius: 26, overflow: 'hidden', marginTop : 8}}>
-            <Text style={{ fontWeight: 'bold', fontSize: 14, color : 'black', padding : 8, backgroundColor : '#eee', paddingHorizontal : 24 }} >Preferred Method of contact</Text>
-              <View style={{ flexDirection: 'row',  }} >
+            <View style={{ backgroundColor: 'white', borderRadius: 26, overflow: 'hidden', marginTop: 8 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 14, color: 'black', padding: 8, backgroundColor: '#eee', paddingHorizontal: 24 }} >Preferred Method of contact</Text>
+              <View style={{ flexDirection: 'row', }} >
                 <CheckBox
                   center
                   title='Phone'
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     backgroundColor: 'transparent',
     margin: 0,
-    padding : 0,
-    paddingVertical : 15
+    padding: 0,
+    paddingVertical: 15
   }
 });

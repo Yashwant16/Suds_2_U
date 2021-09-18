@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import { ScrollView } from 'react-native';
 import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import Colors from '../../Constants/Colors';
 import { BookingContext } from '../Providers/BookingProvider';
@@ -16,14 +17,14 @@ export default BusinessWash = ({ navigation }) => {
   }, [])
 
   const onContinue = () => {
-    if (width.length == 0) Alert.alert("Width", "Please enter width to contiue.")
-    if (length.length == 0) Alert.alert("Length", "Please enter length to contiue.")
+    if (width.length == 0) return Alert.alert("Width", "Please enter width to contiue.")
+    if (length.length == 0) return Alert.alert("Length", "Please enter length to contiue.")
     setCurrentBooking(cv => ({ ...cv, length, width }))
     navigation.navigate(' Business wash ');
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }} style={{flex: 1, backgroundColor: '#fff' }}>
       <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
       <SafeAreaView />
       <View style={{ alignItems: 'center', width: '100%', padding: 18, flex: 1 }}>
@@ -48,7 +49,7 @@ export default BusinessWash = ({ navigation }) => {
             autoCapitalize='none' />
         </View>
       </View>
-      <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 10 }}>
+      <View style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'center', marginTop: 'auto' }}>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
@@ -71,7 +72,7 @@ export default BusinessWash = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

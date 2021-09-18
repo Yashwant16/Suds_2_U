@@ -8,6 +8,7 @@ import Colors from '../../Constants/Colors';
 import ListEmpty from '../Components/ListEmpty';
 import { ERROR, LOADING } from '../Providers';
 import { AuthContext } from '../Providers/AuthProvider';
+import { BookingContext } from '../Providers/BookingProvider';
 
 export default Promotions = () => {
 
@@ -15,8 +16,14 @@ export default Promotions = () => {
   const netInfo = useNetInfo()
 
   const { getPromotions } = useContext(AuthContext)
+  const { getRewards } = useContext(BookingContext)
 
-  useEffect(() => getPromotions(setPromotions), [])
+  const [rewards, setRewards] = useState(LOADING)
+
+  useEffect(() => {
+    getRewards(setRewards)
+    getPromotions(setPromotions)
+  }, [])
 
   const Item = ({ item }) => (
     <View style={{
@@ -32,7 +39,7 @@ export default Promotions = () => {
 
   const List = () => {
     switch (promotions) {
-      case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={'blue'} size="large" />
+      case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={Colors.blue_color} size="large" />
       case ERROR: return <ListEmpty opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="No promotions at this time." />
 
       default: return (
@@ -47,26 +54,48 @@ export default Promotions = () => {
     }
   }
 
+  const Rewards = () => {
+    switch (rewards) {
+      case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={Colors.blue_color} size="large" />
+      case ERROR: return (
+        <>
+          <View style={{ flexDirection: 'row', padding: 8 }}>
+            {[...Array(0)].map((v, i) => <Image key={i} style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />)}
+
+          </View>
+          <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>You are ten wash away from your free car wash</Text>
+        </>
+
+      )
+      default: return (
+        <>
+          <View style={{ flexDirection: 'row', padding: 8 }}>
+            {[...Array(rewards)].map((v, i) => <Image key={i} style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />)}
+
+          </View>
+          <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>{10-rewards<=3?'Congrats! ' : ''}You are {10-rewards} {10-rewards==1 ? 'wash' : 'washes'} away from your free car wash</Text>
+        </>
+
+      )
+    }
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF' }}>
       <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
       <SafeAreaView />
-      {/* <View style={{ padding: 21, alignItems: 'center', width: '100%' }}>
+      <View style={{ padding: 21, alignItems: 'center', width: '100%' }}>
         <View style={{
           backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 130, padding: 18, elevation: 5,
           borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
         }}>
-          <View style={{ flexDirection: 'row', padding: 8 }}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((v, i) => <Image key={i} style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />)}
-
-          </View>
-          <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>Congrats! Your are one wash away from your free car wash</Text>
+          <Rewards/>
         </View>
-        <Text style={{ color: '#aaa', fontSize: 20, marginBottom: 15, marginTop: 20, marginVertical: 15, textAlign: 'center', width: '100%' }}>Promo codes cannot be used together</Text> */}
+        <Text style={{ color: '#aaa', fontSize: 20, marginBottom: 15, marginTop: 20, marginVertical: 15, textAlign: 'center', width: '100%' }}>Promo codes cannot be used together</Text>
 
         <List />
 
-      {/* </View> */}
+      </View>
     </View>
   );
 }

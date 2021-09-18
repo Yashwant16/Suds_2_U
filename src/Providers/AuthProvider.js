@@ -123,7 +123,7 @@ const AuthProvider = ({ children }) => {
 
   const getPromotions = async (setState) => {
     setState(LOADING)
-    let json = await callApi('getPromotions', userData.api_token, {}, null, 'GET');
+    let json = await callApi('getPromotions', userData.api_token, {user_id : userData.id}, null, 'POST');
     if(json) setState(json.data)
     else return setState(ERROR)
 }

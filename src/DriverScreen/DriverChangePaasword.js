@@ -6,6 +6,8 @@ import LoadingView from '../Components/LoadingView';
 import ControllerInput from '../Components/ControllerInput';
 import {useForm} from 'react-hook-form';
 import {AuthContext} from '../Providers/AuthProvider';
+import { ScrollView } from 'react-native';
+import { changeStack } from '../Navigation/NavigationService';
 
 const DriverChangePassword = () => {
   const {changePassword} = useContext(AuthContext);
@@ -23,18 +25,20 @@ const DriverChangePassword = () => {
     setLoading(true);
     let success = await changePassword(data);
     setLoading(false);
-    if(success) reset()
+    if(success) {
+      Alert.alert('Success', 'Your password has been changed successfully.', [{text :'Ok', onPress:()=>changeStack('DriverHomeStack')}])
+      reset()
+    }
   };
 
   return (
-    <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
+    <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{flexGrow : 1, backgroundColor : 'white'}}>
         <ImageBackground
-          style={{width: '100%', height: '100%', flex: 1, justifyContent: 'space-evenly'}}
+          style={{width: '100%', height: '100%', flex: 1, justifyContent: 'space-evenly', paddingTop : 20}}
           source={require('../../Assets/imageBG.png')}>
           <LoadingView loading={loading}>
             <Image style={{width: 200, height: 200, tintColor: '#fff', alignSelf: 'center', marginBottom:50}} source={require('../../Assets/padlock.png')} />
-            <View style={{justifyContent: 'flex-end', paddingBottom: 100, paddingHorizontal: 21, alignItems: 'center'}}>
+            <View style={{justifyContent: 'flex-end', padding: 21, alignItems: 'center'}}>
               <View style={styles.inputs_container}>
                 <ControllerInput
                   label="OLD PASSWORD"
@@ -67,7 +71,7 @@ const DriverChangePassword = () => {
             </View>
           </LoadingView>
         </ImageBackground>
-      </KeyboardAvoidingView>
+      </ScrollView>
   );
 };
 export default DriverChangePassword;

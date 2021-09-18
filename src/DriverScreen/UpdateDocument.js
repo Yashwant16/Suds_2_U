@@ -17,7 +17,6 @@ const UpdateDocument = ({navigation, route}) => {
       </Card>
       <Card title="Step 2 : Background Check"></Card>
       <Card title="Step 3 : Vehicle Insurance"></Card>
-      <Card title="Step 4 : Vehicle Permit"></Card>
       <Card title="Step 5 : Vehicle Registration"></Card>
       <CardBtn isFromAuthStack={route.params?.authStack} navigation={navigation} />
     </View>

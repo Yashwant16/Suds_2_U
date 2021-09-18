@@ -8,7 +8,7 @@ import { ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { BookingContext, calculateTotalPrice } from '../Providers/BookingProvider';
 import { Alert } from 'react-native';
-import { useStripe } from '@stripe/stripe-react-native';
+import { useConfirmSetupIntent, useStripe } from '@stripe/stripe-react-native';
 import LoadingView from '../Components/LoadingView';
 import { requestOneTimePayment, requestBillingAgreement } from 'react-native-paypal';
 import { changeStack, navigate } from '../Navigation/NavigationService';
@@ -20,15 +20,20 @@ const PAYMENT_METHOD = { PAY_WITH_PAYPAL: 1, PAY_WITH_STRIPE: 2, NONE_CHOOSEN: 3
 const BookingReview = () => {
     const navigation = useNavigation()
     const [couponCode, setCouponCode] = useState('')
-    const { currentBooking, applyCoupon, customer_id, saveBooking, getPaymentIntent, setCurrentBooking } = useContext(BookingContext)
+    const { currentBooking, applyCoupon, customer_id, saveBooking, getPaymentIntent, setCurrentBooking,getExtraTimeFee,getServiceFee } = useContext(BookingContext)
     const [loading, setLoading] = useState(false)
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [clientSecret, setClientSecret] = useState()
     const [paidWith, setPaidWith] = useState(PAYMENT_METHOD.NONE_CHOOSEN)
+    const [extraTimeFee, setExtraTimeFee] = useState('Loading...')
+    const [serviceFee, setServiceFee] = useState('Loading...')
+
+    useEffect(() => getExtraTimeFee(setExtraTimeFee), []);
+    useEffect(() => getServiceFee(setServiceFee), []);
 
     const fetchPaymentSheetParams = async () => {
         setLoading(true)
-        let json = await getPaymentIntent(calculateTotalPrice(currentBooking) * 100)
+        let json = await getPaymentIntent(calculateTotalPrice(currentBooking, [extraTimeFee,serviceFee]) * 100)
         setLoading(false)
         if (json) return json
     };
@@ -76,11 +81,12 @@ const BookingReview = () => {
         console.log('Booking review > . > . >', json)
         if (json) {
             changeStack('CustomerHomeStack')
+            Alert.alert("Congrats!","Your wash appointment has been booked, you will receive a notification once the washer has confirmed. Thank you for your business.")
             // setTimeout(()=>navigate('On The Way', { booking_id: '66' }),1000)
         }
     }
 
-    useEffect(() => setCurrentBooking(cv => ({ ...cv, total: calculateTotalPrice(currentBooking) })), []);
+    useEffect(() => setCurrentBooking(cv => ({ ...cv, total: calculateTotalPrice(currentBooking, [extraTimeFee, serviceFee]) })), []);
 
     const onApplyCoupon = async () => {
         if (couponCode.length == 0) return Alert.alert('Error', 'Please insert a coupon code first.')
@@ -99,7 +105,7 @@ const BookingReview = () => {
             // For one time payments
             const value = await requestOneTimePayment(token,
                 {
-                    amount: calculateTotalPrice(currentBooking) + '', // required
+                    amount: calculateTotalPrice(currentBooking, [extraTimeFee, serviceFee]) + '', // required
                     currency: 'USD',
                     localeCode: 'en_US',
                     shippingAddressRequired: false,
@@ -107,6 +113,7 @@ const BookingReview = () => {
                     intent: 'authorize',      // one of 'authorize', 'sale', 'order'. defaults to 'authorize'. see details here: https://developer.paypal.com/docs/api/payments/v1/#payment-create-request-body
                 }
             )
+            
             onPaymentSuccess()
             console.log(value)
         } catch (error) {
@@ -115,11 +122,12 @@ const BookingReview = () => {
     }
 
     const onCancel=()=>{
-        setTimeout(()=>navigate('BOOKING DETAILS', { id: '66' }),1000)
+        console.log("bro code")
+       changeStack('CustomerHomeStack')
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#e28c39', }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#004b7d', }}>
             <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
                 <LoadingView loading={loading}>
                     <ScrollView >
@@ -135,11 +143,10 @@ const BookingReview = () => {
                             <Divider />
                             <Detail name={currentBooking.vehicle + (currentBooking.packageDetails?.name ? ' | ' + currentBooking.packageDetails?.name : 0)} detail={'$' + parseFloat(currentBooking.packageDetails?.price).toFixed(2)} />
                             {currentBooking.selectedAddOns?.map(addOn => <Detail name={addOn.add_ons_name} key={addOn.id} detail={'$' + parseFloat(addOn.add_ons_price).toFixed(2)} />)}
-                            <Detail name="Service Fee" detail="$10.00" />
-                            <Detail name="Distance Fee" detail="$10.00" />
-                            <Detail name="Extra Minutes" detail="$10.00" />
+                            <Detail name="Service" detail={typeof serviceFee =='number' ? '$'+serviceFee.toFixed(2) : serviceFee} />
+                            <Detail name="Extra Minutes" detail={typeof extraTimeFee =='number' ? '$'+extraTimeFee.toFixed(2) : extraTimeFee} />
                             <Divider />
-                            <Detail name="Total" detail={'$' + calculateTotalPrice(currentBooking).toFixed(2)} />
+                            <Detail name="Total" detail={'$' + calculateTotalPrice(currentBooking, [extraTimeFee,serviceFee]).toFixed(2)} />
                             <Divider />
                             <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginTop: 7 }}>
                                 <TextInput

@@ -13,7 +13,7 @@ const RvBusMH = ({ navigation }) => {
 
         <Text style={{ fontSize: 21, fontWeight: 'bold' }}>RV's, Bus, M.V.</Text>
         <Text style={{ marginTop: 10 }}>Pricing for all RV's, Buses, Mottorhomes are price at $6.00 per foot and are calculated below</Text>
-        <Text style={{ fontSize: 18, marginTop: 15 }}>How many feet is your assets?</Text>
+        <Text style={{ fontSize: 18, marginTop: 15 }}>How many feet is your RV?</Text>
 
         <View style={{ width: '98%', padding: 13, marginTop: 25, height: 50, flexDirection: 'row', justifyContent: 'space-between', borderRadius: 25, borderWidth: 1 }}>
           <RNPickerSelect

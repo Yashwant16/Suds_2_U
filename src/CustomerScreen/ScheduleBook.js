@@ -13,7 +13,7 @@ import moment from 'moment';
 
 const ScheduleBook = ({ navigation, route }) => {
 
-  const { currentBooking, setCurrentBooking } = useContext(BookingContext)
+  const { currentBooking, setCurrentBooking,getWahserCalendar } = useContext(BookingContext)
 
   const [state, setState] = useState({
     isChecked: '',
@@ -58,21 +58,23 @@ const ScheduleBook = ({ navigation, route }) => {
 
   const [date, setDate] = useState(new Date(Date.now()));
   const [show, setShow] = useState(false);
+  const [busyDays, setBusyDays] = useState([])
 
   useEffect(() => {
+    getWahserCalendar(setBusyDays, currentBooking?.washer_id)
     return () => afterScheduleScreen.current = null
   }, [])
 
   const onContinue = () => {
-    setCurrentBooking(cv=>({...cv, booking_date : moment(date).format('YYYY-MM-DD'),booking_time : date.toLocaleTimeString() }))
+    setCurrentBooking(cv => ({ ...cv, booking_date: moment(date).format('YYYY-MM-DD'), booking_time: date.toLocaleTimeString() }))
     if (afterScheduleScreen.current != null) navigation.navigate(afterScheduleScreen.current)
     else navigation.navigate('Packages', route.params)
   }
 
   return (
-    <SafeAreaView style={{backgroundColor : 'white', flex : 1}}>
-    {/* <View style={{ flex: 1, backgroundColor: '#fff' }} > */}
-      <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
+      {/* <View style={{ flex: 1, backgroundColor: '#fff' }} > */}
+      <ScrollView style={{ backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
             {currentBooking.vehicle}
@@ -98,7 +100,10 @@ const ScheduleBook = ({ navigation, route }) => {
               backgroundColor: Colors.dark_orange, width: 30, height: 30, color: '#fff', fontWeight: 'bold',
               textAlign: 'center', paddingTop: 5,
             }}
+            disabledDates={busyDays.map(day=>new Date(day))}
+            disabledDatesTextStyle={{backgroundColor : '#00000050', padding : 5, color : 'white', borderRadius : 3}}
             selectedDayColor="#66ff33"
+            customDatesStyles
             selectedDayStyle={{
               backgroundColor: Colors.dark_orange, width: 30, height: 30, color: '#fff', fontWeight: 'bold',
               textAlign: 'center', paddingTop: 5, borderRadius: 0
@@ -114,7 +119,7 @@ const ScheduleBook = ({ navigation, route }) => {
           <View style={styles.textStyle}>
             <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', }}>
               Selected Date :
-          </Text>
+            </Text>
             <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', }}>
               {date?.toDateString()}
             </Text>
@@ -128,7 +133,7 @@ const ScheduleBook = ({ navigation, route }) => {
           <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 10, fontWeight: 'bold', color: Colors.blue_color }}>Total Hours: 2</Text>
         </View>
       </ScrollView>
-      <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginTop: 10,flexDirection : 'row' }}>
+      <View style={{ justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row' }}>
 
         <TouchableOpacity
           elevation={5}
@@ -141,8 +146,8 @@ const ScheduleBook = ({ navigation, route }) => {
         </TouchableOpacity>
         <TouchableOpacity
           elevation={5}
-          onPress={()=>changeStack('CustomerHomeStack')}
-          style={[styles.auth_btn, {backgroundColor : Colors.blue_color}]}
+          onPress={() => changeStack('CustomerHomeStack')}
+          style={[styles.auth_btn, { backgroundColor: Colors.blue_color }]}
           underlayColor='gray'
           activeOpacity={0.8}>
           <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>Cancel</Text>
@@ -159,8 +164,8 @@ const ScheduleBook = ({ navigation, route }) => {
         display="default"
         onChange={onDChange}
       />}
-     
-    {/* </View> */}
+
+      {/* </View> */}
     </SafeAreaView>
   )
 
@@ -190,8 +195,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 30,
     backgroundColor: '#e28c39',
-    alignItems : 'center',
-    flex : 1,
+    alignItems: 'center',
+    flex: 1,
     height: 60,
     justifyContent: 'center',
   },

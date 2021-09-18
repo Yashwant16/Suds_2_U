@@ -39,7 +39,7 @@ const UserTypeScreen = ({navigation}) => {
                 marginBottom: 5,
                 fontSize: 18,
               }}>
-              Hello Well come to suds-2-U
+              Hello Welcome to SUDS-2-U
             </Text>
             <Text style={{color: '#fff', textAlign: 'center', marginBottom: 5, fontSize: 18, fontWeight: 'bold'}}>Continue as a</Text>
             <View
@@ -55,7 +55,6 @@ const UserTypeScreen = ({navigation}) => {
                 onPress={() => {
                   navigation.navigate('chooseScreen');
                   type.current = CUSTOMER;
-                  // global.usertype='CUSTOMER'
                 }}
                 title="Customer"
               />
@@ -63,7 +62,6 @@ const UserTypeScreen = ({navigation}) => {
                 onPress={() => {
                   navigation.navigate('chooseScreen');
                   type.current = WASHER;
-                  // global.usertype='WASHER'
                 }}
                 title="Car Washer"
               />

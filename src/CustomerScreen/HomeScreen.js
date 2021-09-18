@@ -137,7 +137,7 @@ export default HomeScreen = ({ navigation }) => {
               <TouchableOpacity
                 elevation={5}
                 onPress={() => {
-                  navigation.navigate('OnDemand', { bookingType: SCHEDULED, headerTitle: 'Schedule a booking' })
+                  navigation.navigate('OnDemand', { bookingType: SCHEDULED, headerTitle: 'Schedule a Wash' })
                   console.log(bookingType)
                 }}
                 style={styles.auth_btn}

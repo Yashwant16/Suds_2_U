@@ -7,7 +7,7 @@ import messaging from '@react-native-firebase/messaging';
 import LoadingView from '../Components/LoadingView';
 import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS } from '../Providers/BookingProvider';
 import { dontShow, onStartAction } from '../Navigation/NavigationService';
-import { subscribeLocation } from '../Services/LocationServices';
+import { getCurrentAddress, subscribeLocation } from '../Services/LocationServices';
 import { ImageBackground } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
@@ -23,6 +23,7 @@ const WelcomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisibility] = useState(false);
   const [newJobBooking, setNewJobBooking] = useState();
   const [loading, setLoading] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState('Getting address...');
   const { getSingleBookingDetails, acceptJob, rejectJob, runningBooking, updateLocation } = useContext(BookingContext);
   const {
     userData: { latitude, longitude },
@@ -42,6 +43,7 @@ const WelcomeScreen = ({ navigation }) => {
   }, [runningBooking])
 
   useEffect(()=>{
+    getCurrentAddress().then(address=>console.log("--------------------------", address))
     console.log(runningBooking, "RUNNING BOOKING STATUS")
     switch (runningBooking?.status) {
       case WASHR_ON_THE_WAY:
@@ -209,7 +211,7 @@ const WelcomeScreen = ({ navigation }) => {
 
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center' }}>
               <Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />
-              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{'currentAddress'}</Text>
+              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{currentAddress}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
               <TouchableOpacity

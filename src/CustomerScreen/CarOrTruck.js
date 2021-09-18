@@ -115,7 +115,7 @@ const RenderItem = ({ item, onClick, checked }) => (
   <TouchableOpacity onPress={onClick} style={{ padding: 10, flex: 1, margin: 20, backgroundColor: '#fff', borderRadius: 10, paddingVertical: 10 }}>
     <View style={{ flexDirection: 'row' }}>
       <Image style={{ height: 60, width: 60, padding: 5, borderRadius: 5 }} source={{ uri: "http://suds-2-u.com/public/vehicle/" + item.image }} />
-      <Text style={{ marginHorizontal: 5, fontSize: 18 }}>{`${item.make} ${item.year} ${item.model}`}</Text>
+      <Text style={{ marginHorizontal: 5, fontSize: 18, flex : 1 }}>{`${item.make} ${item.year} ${item.model}`}</Text>
       <CheckBox
         style={{ padding: 5, alignSelf: 'center', marginLeft: 'auto' }}
         onClick={onClick}
