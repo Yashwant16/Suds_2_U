@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Text, View, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Text, View, Image, StyleSheet, TouchableOpacity ,SafeAreaView} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
 import { Icon } from 'react-native-elements';
@@ -13,6 +13,7 @@ import { BookingContext } from '../Providers/BookingProvider';
 import { Alert } from 'react-native';
 import { Platform } from 'react-native';
 import LoadingView from '../Components/LoadingView';
+
 Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
 
 const GETTING_LOCATION = 'Getting Address...'
@@ -83,7 +84,7 @@ const OnDemand = ({ route }) => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.blue_color }}>
+    <SafeAreaView style={{ flexGrow : 1, backgroundColor: Colors.blue_color }}>
       <LoadingView loading={loading} />
       <MapView
         style={{ flex: 1 }}

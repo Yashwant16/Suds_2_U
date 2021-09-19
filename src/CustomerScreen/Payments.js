@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, ImageBackground, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, ImageBackground, useWindowDimensions, TabBarIOSItem } from 'react-native';
 
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
@@ -10,11 +10,12 @@ import { Modal } from 'react-native';
 
 const Payments = ({ navigation }) => {
   const [showCardVisible, setShowCardVisiblity] = useState(false)
+
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-      <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/bg_img.png')}>
-        <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1}}>
+      <StatusBar translucent backgroundColor={Colors.blue_color} barStyle="light-content" />
+      <ImageBackground style={{flex : 1}} source={require('../../Assets/bg_img.png')}>
+        
           <View style={{ alignItems: 'center' }}>
             <TouchableOpacity
               elevation={5}
@@ -52,7 +53,7 @@ const Payments = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <View style={{ alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+   
             <TouchableOpacity
               elevation={5}
               onPress={()=>setShowCardVisiblity(true)}
@@ -61,7 +62,7 @@ const Payments = ({ navigation }) => {
               activeOpacity={0.8}>
               <Text style={{ fontSize: 15, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Add New Credit/Debit Card </Text>
             </TouchableOpacity>
-          </View>
+       
           <Modal
             visible={showCardVisible}
             transparent={true}
@@ -69,7 +70,7 @@ const Payments = ({ navigation }) => {
             statusBarTranslucent
             animationType="fade">
             <TouchableOpacity onPress={()=>setShowCardVisiblity(false)} activeOpacity={1} style={{ flex: 1, backgroundColor: "#00000080", alignItems: 'center', justifyContent: 'center' }} >
-              <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, position : 'absolute', left : 20, right : 20 }}>
+              <TouchableOpacity activeOpacity={1} style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, position : 'absolute', left : 20, right : 20, zIndex : 20 }}>
                 <Text style={{fontWeight : 'bold', fontSize : 18, textAlign : 'center', margin : 20}}>Add Card Info</Text>
                 <CardField
                   postalCodeEnabled={true}
@@ -95,18 +96,18 @@ const Payments = ({ navigation }) => {
                     console.log('focusField', focusedField);
                   }}
                 />
-                <TouchableOpacity style={{backgroundColor : Colors.blue_color, padding : 16, justifyContent : 'center', alignItems : 'center', margin : 10, borderRadius : 10, width :useWindowDimensions().width-60}}>
-                  <Text style={{fontFamily : 'bold', color : 'white',}}>
+                <TouchableOpacity onPress={()=>setShowCardVisiblity(false)} style={{backgroundColor : Colors.blue_color, padding : 16, justifyContent : 'center', alignItems : 'center', margin : 10, borderRadius : 10, width :useWindowDimensions().width-60}}>
+                  <Text style={{fontWeight : 'bold', color : 'white',}}>
                     Done
                   </Text>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </TouchableOpacity>
           </Modal>
 
-        </SafeAreaView>
+        
       </ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   add_auth_btn: {
-    marginTop: 16,
+    marginTop: 'auto',
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: Colors.blue_color,

@@ -1,6 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import React, { useContext, useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, useWindowDimensions } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 import { StyleSheet, SafeAreaView, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
 
@@ -14,6 +14,7 @@ export default Promotions = () => {
 
   const [promotions, setPromotions] = useState(LOADING)
   const netInfo = useNetInfo()
+  const windowsDimensions = useWindowDimensions()
 
   const { getPromotions } = useContext(AuthContext)
   const { getRewards } = useContext(BookingContext)
@@ -27,8 +28,8 @@ export default Promotions = () => {
 
   const Item = ({ item }) => (
     <View style={{
-      backgroundColor: '#fff', alignItems: 'center', marginHorizontal: 15, height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10, elevation: 5,
-      borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
+      backgroundColor: '#fff', alignItems: 'center', marginHorizontal: 5, height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10, elevation: 5,
+      borderRadius: 10, shadowOpacity: 0.3, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
     }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
         <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{item.name}</Text>
@@ -44,8 +45,10 @@ export default Promotions = () => {
 
       default: return (
         <FlatList
+        ListHeaderComponent={()=><View style={{height : 5}} />}
+        ListFooterComponent={()=><View style={{height : 200}} />}
           keyExtractor={item => item.id}
-          data={promotions}
+          data={promotions} 
           style={{ width: '100%' }}
           renderItem={({ item }) => <Item item={item} />}
         />
@@ -81,22 +84,25 @@ export default Promotions = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+    <SafeAreaView style={{flex : 1, backgroundColor: '#FFF' }}>
+      <View style={{flex : 1}}>
+
+   
       <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-      <SafeAreaView />
       <View style={{ padding: 21, alignItems: 'center', width: '100%' }}>
         <View style={{
           backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 130, padding: 18, elevation: 5,
-          borderRadius: 10, shadowOpacity: 0.8, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
+          borderRadius: 10, shadowOpacity: 0.3, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
         }}>
           <Rewards/>
         </View>
         <Text style={{ color: '#aaa', fontSize: 20, marginBottom: 15, marginTop: 20, marginVertical: 15, textAlign: 'center', width: '100%' }}>Promo codes cannot be used together</Text>
-
+        <View style={{width : windowsDimensions.width, height : 1, backgroundColor : '#999', opacity : .5, zIndex : 20}} />
         <List />
 
       </View>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 

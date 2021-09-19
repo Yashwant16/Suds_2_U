@@ -7,7 +7,7 @@ import ControllerInput from '../Components/ControllerInput';
 import {useForm} from 'react-hook-form';
 import {AuthContext} from '../Providers/AuthProvider';
 import { ScrollView } from 'react-native';
-import { changeStack } from '../Navigation/NavigationService';
+import { changeStack, type, WASHER } from '../Navigation/NavigationService';
 
 const DriverChangePassword = () => {
   const {changePassword} = useContext(AuthContext);
@@ -26,7 +26,7 @@ const DriverChangePassword = () => {
     let success = await changePassword(data);
     setLoading(false);
     if(success) {
-      Alert.alert('Success', 'Your password has been changed successfully.', [{text :'Ok', onPress:()=>changeStack('DriverHomeStack')}])
+      Alert.alert('Success', 'Your password has been changed successfully.', [{text :'Ok', onPress:()=>changeStack(type.current==WASHER ? 'DriverHomeStack' : 'CustomerHomeStack')}])
       reset()
     }
   };

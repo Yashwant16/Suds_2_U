@@ -127,7 +127,7 @@ const BookingReview = () => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#004b7d', }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#004b00', }}>
             <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
                 <LoadingView loading={loading}>
                     <ScrollView >

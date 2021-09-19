@@ -49,7 +49,7 @@ const Error = ({error, label}) => {
 const PickerList = ({dismiss, list, loading, onSelect}) => {
   const [endReached, setEndReached] = useState(false);
   return (
-    <Modal animationType="fade" transparent={true}>
+    <Modal animationType="fade" transparent={true} statusBarTranslucent={true}>
       <TouchableOpacity onPress={dismiss} style={styles.containerInModal}>
         <View style={{borderRadius: 25, backgroundColor: 'white', width: loading ? 'auto' : '100%', maxHeight: '70%'}}>
           {loading ? (
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#00000050',
     position: 'absolute',
-    top: 56,
+    top: 0,
     bottom: 0,
     left: 0,
     padding: 20,
