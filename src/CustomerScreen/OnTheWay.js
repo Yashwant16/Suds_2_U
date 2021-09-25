@@ -5,19 +5,21 @@ import Colors from '../../Constants/Colors';
 import { SafeAreaView } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import LoadingView from '../Components/LoadingView';
-import { BookingContext, WASH_IN_PROGRESS, WASH_PENDING } from '../Providers/BookingProvider'
+import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS, WASH_PENDING } from '../Providers/BookingProvider'
 import { ERROR, LOADING, partialProfileUrl } from '../Providers';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native';
 import { getCurrentPosition } from '../Services/LocationServices';
+import { changeStack } from '../Navigation/NavigationService';
+import { Avatar } from 'react-native-elements';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
 
 
 export default OnTheWay = ({ route }) => {
   const navigation = useNavigation()
   const [loading, setLoading] = useState(true)
-  const { getWasherLocation, getSingleBookingDetails, getNearByWasherLocations, sendSMS } = useContext(BookingContext)
+  const { getWasherLocation, getSingleBookingDetails, getNearByWasherLocations, sendSMS, cancelRequest } = useContext(BookingContext)
   const [booking, setBooking] = useState()
   const { booking_id } = useMemo(() => route?.params, [route])
   const [origin, setOrigin] = useState()
@@ -29,18 +31,28 @@ export default OnTheWay = ({ route }) => {
   useEffect(() => {
     if (!booking) return
     let interval = setInterval(function x() {
-      getWasherLocation(booking.washer_id).then(json => {
-        if (json?.data) {
-          if (!origin) setOrigin({ latitude: parseFloat(json?.data[0].latitude), longitude: parseFloat(json?.data[0].longitude) })
-          setWasherLocation(json?.data[0])
-        }
-      })
+      if(booking?.booking_status === WASHR_ON_THE_WAY || !washerLocation) {
+        getWasherLocation(booking.washer_id).then(json => {
+          if (json?.data[0]) {
+            if (!origin) setOrigin({ latitude: parseFloat(json?.data[0]?.latitude), longitude: parseFloat(json?.data[0]?.longitude) })
+            setWasherLocation(json?.data[0])
+          }
+        })
+      }
       return x;
     }(), 60000);
     return () => clearInterval(interval)
   }, [booking])
 
-  useEffect(() => { getBookingWithId(booking_id); getNearByWasherLocations(setNearbyWashers) }, [])
+  useEffect(() => { 
+     getBookingWithId(booking_id).then(() =>{
+      if(booking?.booking_status === WASH_PENDING) getNearByWasherLocations(setNearbyWashers)
+      })
+   }, [])
+
+  const onCancelRequest = () => {
+    if (booking.booking_status == WASH_PENDING) return Alert.alert('Cancel Request', 'Are you sure you want to cancel?', [{ text: 'Ok', onPress: () => cancelRequest({ amount: 0, booking_id: booking.booking_id }, () => changeStack('CustomerHomeStack')) }])
+  }
 
   const getBookingWithId = async (id) => {
     let json = await getSingleBookingDetails(id);
@@ -56,7 +68,7 @@ export default OnTheWay = ({ route }) => {
       let info = await getCurrentPosition()
       if (info) mapRef.current.animateCamera({ zoom: 15, pitch: 2, heading: 2, altitude: 2, center: { ...info.coords } }, { duration: 1000 })
       else console.log(info)
-    }; 
+    };
     const mapRef = useRef(null)
     useEffect(() => {
       if (nearbyWashers != ERROR && nearbyWashers != LOADING) getOneTimeLocation()
@@ -80,29 +92,47 @@ export default OnTheWay = ({ route }) => {
 
       default:
         console.log("NEARBY WASHERS", nearbyWashers)
-        return <MapView
-          ref={mapRef}
-          style={{ width: '100%', flex: 1 }}
-          initialRegion={{
-            ...(origin ? origin : getCurrentPosition(booking)),
-            latitude: 37.421050, longitude: -122.087384,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }} >
+        return (
+          <SafeAreaView style={{ flex: 1 }}>
+            <MapView
+              ref={mapRef}
+              style={{ flex: 1, width: '100%' }}
+              initialRegion={{
+                ...(origin ? origin : getCurrentPosition(booking)),
+                latitude: 37.421050, longitude: -122.087384,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }} >
 
-          {nearbyWashers.map((v, i) => <Marker key={i}
-            coordinate={{ latitude: parseFloat(v.latitude), longitude: parseFloat(v.longitude) }}>
-          </Marker>)}
-        </MapView>
+              {nearbyWashers.map((userData, i) =>
+                <Marker key={i}
+                  coordinate={{ latitude: parseFloat(userData.latitude), longitude: parseFloat(userData.longitude) }}>
+                  <Avatar
+                    size="medium"
+                    rounded
+                    title={userData?.name ? userData.name.split(' ').slice(0, 2).map(n => n[0].toUpperCase()).join('') : null}
+                    source={userData?.image ? { uri: partialProfileUrl + userData.image } : null}
+                    containerStyle={{ marginRight: 16, backgroundColor: Colors.blue_color }}
+                    activeOpacity={0.7}
+                  />
+                </Marker>
+              )}
+
+            </MapView>
+            <TouchableOpacity onPress={onCancelRequest} activeOpacity={.5} style={{ position: 'absolute', bottom: 10, right: 10, left: 10, backgroundColor: '#db4c42', elevation: 20, padding: 20, borderRadius: 5, elevation: 5, shadowColor: 'red' }}>
+              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Cancel Request</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        )
     }
   }
 
-  if (booking.booking_status == WASH_PENDING) {
-    navigation.setOptions({ title: 'Nearby washers' })
+  // if (booking.booking_status == WASH_PENDING) {
+  //   navigation.setOptions({ title: 'Nearby washers' })
 
-    return <NearbyWashers />
+  //   return <NearbyWashers />
 
-  }
+  // }
 
   return (
     <View style={{ flex: 1, position: 'relative' }}>
@@ -159,20 +189,20 @@ export default OnTheWay = ({ route }) => {
           </View>
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
           <View style={{ flexDirection: 'row', padding: 10 }}>
-            <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={booking.userdetails.image ? { uri: partialProfileUrl + booking.userdetails.image } : require('../../Assets/icon/user.png')} />
+            <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={booking?.userdetails[0]?.image ? { uri: partialProfileUrl + booking.userdetails[0].image } : require('../../Assets/icon/user.png')} />
             <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 18, alignSelf: 'center' }}>{booking.userdetails[0]?.name}</Text>
           </View>
 
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
           <View style={{ flexDirection: 'row', justifyContent: 'center', }}>
             <TouchableOpacity onPress={() => Linking.openURL(`tel:${booking.userdetails.mobile}`)} style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
-              <Image style={{ width: 20, height: 20, tintColor: '#0EFF74', }} source={require('../../Assets/call.png')} />
+              <Image style={{ width: 20, height: 20, tintColor: '#0EFF74', }} source={{uri : partialProfileUrl + booking?.userdetails[0]?.image}} />
               <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CALL WASHER</Text>
             </TouchableOpacity>
             <View style={{ width: 1, height: 45, backgroundColor: '#aaa' }} />
             <TouchableOpacity style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
               <Image style={{ width: 20, height: 20, tintColor: 'red', }} source={require('../../Assets/error.png')} />
-              <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL BOOKING </Text>
+              <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL REQUEST </Text>
             </TouchableOpacity>
           </View>
           <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
@@ -189,7 +219,7 @@ export default OnTheWay = ({ route }) => {
               onChangeText={setMessage}
               autoCapitalize='none' />
             <TouchableOpacity
-              onPress={() =>sendSMS(setLoading,()=>setMessage(''),booking.washer_id,message )}>
+              onPress={() => sendSMS(setLoading, () => setMessage(''), booking.washer_id, message)}>
 
               <Text style={{ color: '#445F98', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>SEND</Text>
             </TouchableOpacity>

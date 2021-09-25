@@ -38,8 +38,8 @@ const CompleteProfile = ({ navigation, route }) => {
           reset({
             ...data,
             // country: {name: data.country_name, id: data.country},
-            state: { name: data.state_name, id: data.state },
-            city: { name: data.city_name, id: data.city },
+            state: data.state_name ? { name: data.state_name, id: data.state } : undefined,
+            city: data.city_name ? { name: data.city_name, id: data.city } : undefined,
             phone_number: data.mobile,
           });
         }
@@ -48,7 +48,7 @@ const CompleteProfile = ({ navigation, route }) => {
   }, []);
 
   const getStateList = async () => {
-    return await getStates(231);
+    return (await getStates(231));
   };
 
   const getCityList = async () => {
@@ -61,7 +61,7 @@ const CompleteProfile = ({ navigation, route }) => {
     console.log(data)
     if (!selectedImage) return Alert.alert('Picture', 'Please insert a profile picture.')
     setLoading(true);
-    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, phone_number: data.mobile, image: selectedImage }, route.params?.authStack);
+    let success = await completeProfile({ ...data, country: 231, state: data.state.id, city: data.city.id, phone_number: data.mobile, image: selectedImage, preferred_method_of_contact : methodOfContact }, route.params?.authStack);
     setLoading(false);
     if (success) route.params?.authStack ? navigation.navigate('UPDATE DOCUMENT') : navigation.goBack();
   };

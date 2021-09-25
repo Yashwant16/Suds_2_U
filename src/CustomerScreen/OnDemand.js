@@ -28,10 +28,11 @@ const OnDemand = ({ route }) => {
 
   useEffect(() => getOneTimeLocation(), [])
   useEffect(() => {
+    if(route.params?.changeLocation) return
     setCurrentBooking({})
     if (route.params?.headerTitle) navigation.setOptions({ title: route.params.headerTitle })
     return () => setCurrentBooking({})
-  }, [])
+  }, [route])
 
   const getFormattedAddress = (lat, lng) => {
     setState({ ...state, locationStatus: GETTING_LOCATION })

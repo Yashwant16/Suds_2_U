@@ -24,16 +24,19 @@ const AddNewVehicle = ({ navigation }) => {
   const [selectedImage, setSelectedImage] = useState()
 
 
-  const getYearList = async () => {
-    const selectedMake = getValues('make')?.name;
-    if (selectedMake) return await getYear(selectedMake);
-    else Alert.alert('Select Make', 'Please select a make first');
+  const getMakeList = async () => {
+    const selectedYear = getValues('year')?.name;
+    console.log(selectedYear)
+    if (selectedYear) return await getMake(selectedYear);
+    else Alert.alert('Select Make', 'Please select a year first');
   };
 
   const getModelList = async () => {
     const selectedYear = getValues('year')?.name;
-    if (selectedYear) return await getModel(selectedYear);
-    else Alert.alert('Select Year', 'Please select a year first');
+    const selectedMake = getValues('make')?.name
+    if (selectedYear && selectedMake) return await getModel(selectedMake, selectedYear);
+    else if (!selectedYear) Alert.alert('Select Year', 'Please select a year first');
+    else if (!selectedMake) Alert.alert('Select Male', 'Please select a make first');
   };
 
   const onSubmit = async data => {
@@ -58,21 +61,22 @@ const AddNewVehicle = ({ navigation }) => {
     <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
       <LoadingView fetching={fetching} loading={loading}>
         <ScrollView style={styles.container}>
+          
           <CustomPicker
-            asynFunction={getMake}
-            fieldName="make"
-            rules={{ required: true }}
-            control={control}
-            errors={formState?.errors}
-            label="Make"
-          />
-          <CustomPicker
-            asynFunction={getYearList}
+            asynFunction={getYear}
             fieldName="year"
             rules={{ required: true }}
             control={control}
             errors={formState?.errors}
             label="Year"
+          />
+          <CustomPicker
+            asynFunction={getMakeList}
+            fieldName="make"
+            rules={{ required: true }}
+            control={control}
+            errors={formState?.errors}
+            label="Make"
           />
           <CustomPicker
             asynFunction={getModelList}

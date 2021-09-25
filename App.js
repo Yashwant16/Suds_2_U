@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import LoadingView from './src/Components/LoadingView';
 import { AppContext } from './src/Providers/AppProvider';
 import { appIsOpen } from './src/Services/NotificatoinService';
+import { Modal } from 'react-native';
 
 Icon.loadFont();
 

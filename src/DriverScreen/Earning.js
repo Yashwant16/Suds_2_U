@@ -61,7 +61,7 @@ const Earning = () => {
           <View style={{flex: 1, paddingHorizontal: 7}}>
             <FlatList
               style={{width: '100%', flex: 1}}
-              keyExtractor={item => item.id}
+              keyExtractor={(item, index) => index}
               showsVerticalScrollIndicator={false}
               data={data}
               renderItem={renderItem}

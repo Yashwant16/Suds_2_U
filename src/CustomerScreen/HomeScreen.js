@@ -54,7 +54,8 @@ export default HomeScreen = ({ navigation }) => {
   useEffect(() => {
     nav.current = navigation
     updateUserLocation()
-    getCurrentAddress().then(setCurrentAddress)
+    setTimeout(() => getCurrentAddress().then(setCurrentAddress), 2000)
+
 
     const unsubscribe = messaging().onMessage(async remoteMessage => {
 
@@ -118,8 +119,7 @@ export default HomeScreen = ({ navigation }) => {
             <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Welcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>{userData.name}</Text></Text>
 
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center' }}>
-              <Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />
-              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{currentAddress}</Text>
+              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center', flex: 1, paddingHorizontal: 20 }}><Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />{currentAddress}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
               <TouchableOpacity

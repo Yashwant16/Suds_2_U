@@ -17,6 +17,9 @@ import { AuthContext } from '../../Providers/AuthProvider';
 import { Alert } from 'react-native';
 import { BookingContext, WASHER_ACCEPTED, WASHR_ON_THE_WAY, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../../Providers/BookingProvider';
 import { AppContext } from '../../Providers/AppProvider';
+import BackgroundCheck from '../../DriverScreen/BackgroundCheck';
+import VehicleInsurance from '../../DriverScreen/VehicleInsurance';
+import VehicleRegistration from '../../DriverScreen/VehicleRegistration';
 
 const Stack = createStackNavigator();
 
@@ -25,11 +28,11 @@ const DriverHomeStack = () => {
   const navigation = useNavigation();
 
   const { getOnlineStatus } = useContext(AuthContext);
-  const {setLoading} = useContext(AppContext)
+  const { setLoading } = useContext(AppContext)
 
   const title = useMemo(() => getActionFromState(navigation.dangerouslyGetState()), [route]);
   const [onlineStatus, setOnlineStatus] = useState()
-  
+
 
   useEffect(() => getOnlineStatus().then(json => setOnlineStatus(json?.status)), [])
 
@@ -64,15 +67,15 @@ const DriverHomeStack = () => {
   };
 
   const handleBooking = async (id) => {
-    if(!id) return
+    if (!id) return
     setLoading(true);
     let booking = (await getSingleBookingDetails(id))?.data;
     setLoading(false);
     if (!booking) return Alert('Error', 'Error getting the booking')
     switch (booking.booking_status) {
       case WASH_PENDING:
-          setNewJobBooking(booking);
-          setModalVisibility(true);
+        setNewJobBooking(booking);
+        setModalVisibility(true);
         break;
       case WASH_REJECTED: return Alert.alert('Rejected', 'You rejected this job request')
       case WASHER_ACCEPTED:
@@ -105,6 +108,9 @@ const DriverHomeStack = () => {
       <Stack.Screen name="BOOKING DETAILS" component={BookingDetails} />
       <Stack.Screen name="UPLOAD DRIVING LICENSE" component={UploadDriverLicense} initialParams={{ authStack: false }} />
       <Stack.Screen name="EDIT PROFILE" component={CompleteProfile} />
+      <Stack.Screen name="BACKGROUND CHECK" component={BackgroundCheck} />
+      <Stack.Screen name="VEHICLE INSURANCE" component={VehicleInsurance} />
+      <Stack.Screen name="VEHICLE REGISTRATION" component={VehicleRegistration} />
       <Stack.Screen name="PACKAGE DETAILS" component={PackgeScreen} />
     </Stack.Navigator>
   );

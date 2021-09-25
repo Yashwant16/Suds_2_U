@@ -6,14 +6,19 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView } fr
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarPicker from 'react-native-calendar-picker';
 import Colors from '../../Constants/Colors';
-import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { Icon } from 'react-native-elements';
 import { afterScheduleScreen, changeStack } from '../Navigation/NavigationService';
 import { BookingContext } from '../Providers/BookingProvider';
 import moment from 'moment';
+import { Modal } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { Alert } from 'react-native';
 
 const ScheduleBook = ({ navigation, route }) => {
 
-  const { currentBooking, setCurrentBooking,getWahserCalendar } = useContext(BookingContext)
+  const { currentBooking, setCurrentBooking, getWahserCalendar } = useContext(BookingContext)
+
+  const [timeSelected,setTimeSelected] = useState(false)
 
   const [state, setState] = useState({
     isChecked: '',
@@ -48,24 +53,27 @@ const ScheduleBook = ({ navigation, route }) => {
     //function to handle the date change
     console.log('date..', moment(date).format('YYYY-MM-DD'), new Date(date).toLocaleTimeString())
     setDate(new Date(date))
+    setShow(true)
   };
 
-  const onDChange = (event, selectedDate) => {
+  const onDChange = ( selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
+    setTimeSelected(true)
     setDate(currentDate);
   };
 
   const [date, setDate] = useState(new Date(Date.now()));
   const [show, setShow] = useState(false);
-  const [busyDays, setBusyDays] = useState([])
+  const [busyDays, setBusyDays] = useState([... new Array(new Date().getDate()-1)].map((value, index) => new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+(index+1)))
 
   useEffect(() => {
-    getWahserCalendar(setBusyDays, currentBooking?.washer_id)
+    // getWahserCalendar(setBusyDays, currentBooking?.washer_id)
     return () => afterScheduleScreen.current = null
   }, [])
 
   const onContinue = () => {
+    if(!timeSelected) return Alert.alert('Select time', 'Please select time before you continue.')
     setCurrentBooking(cv => ({ ...cv, booking_date: moment(date).format('YYYY-MM-DD'), booking_time: date.toLocaleTimeString() }))
     if (afterScheduleScreen.current != null) navigation.navigate(afterScheduleScreen.current)
     else navigation.navigate('Packages', route.params)
@@ -73,7 +81,7 @@ const ScheduleBook = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-      {/* <View style={{ flex: 1, backgroundColor: '#fff' }} > */}
+      {show && <DailySchedule dismiss={() => setShow(false)} item={show} date={date} onDChange={onDChange}/>}
       <ScrollView style={{ backgroundColor: '#fff' }}>
         <View style={{ backgroundColor: '#e28c39' }}>
           <Text style={styles.titleStyle}>
@@ -100,10 +108,11 @@ const ScheduleBook = ({ navigation, route }) => {
               backgroundColor: Colors.dark_orange, width: 30, height: 30, color: '#fff', fontWeight: 'bold',
               textAlign: 'center', paddingTop: 5,
             }}
-            disabledDates={busyDays.map(day=>new Date(day))}
-            disabledDatesTextStyle={{backgroundColor : '#00000050', padding : 5, color : 'white', borderRadius : 3}}
+            
+            disabledDates={busyDays.map(day => new Date(day))}
+            disabledDatesTextStyle={{ padding: 5, color: '#bbb', borderRadius: 3 }}
             selectedDayColor="#66ff33"
-            customDatesStyles
+            
             selectedDayStyle={{
               backgroundColor: Colors.dark_orange, width: 30, height: 30, color: '#fff', fontWeight: 'bold',
               textAlign: 'center', paddingTop: 5, borderRadius: 0
@@ -124,13 +133,11 @@ const ScheduleBook = ({ navigation, route }) => {
               {date?.toDateString()}
             </Text>
           </View>
-          <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 15, fontWeight: 'bold' }}>Select Time</Text>
-
           <TouchableOpacity onPressIn={() => setShow(true)} style={{ marginTop: 15, padding: 15, width: '85%', alignSelf: 'center', alignItems: 'center', borderRadius: 10, backgroundColor: '#f5f5f5', borderWidth: 1, borderColor: '#ccc', }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#555' }}>{(new Date(date).toLocaleTimeString())}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#555' }}>{timeSelected ? date.toLocaleTimeString() : 'Select Time'}</Text>
           </TouchableOpacity>
 
-          <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 10, fontWeight: 'bold', color: Colors.blue_color }}>Total Hours: 2</Text>
+          {/* <Text style={{ textAlign: 'center', fontSize: 16, marginTop: 10, fontWeight: 'bold', color: Colors.blue_color }}>Total Hours: 2</Text> */}
         </View>
       </ScrollView>
       <View style={{ justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row' }}>
@@ -141,7 +148,7 @@ const ScheduleBook = ({ navigation, route }) => {
           style={styles.auth_btn}
           underlayColor='gray'
           activeOpacity={0.8}>
-          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>Continue</Text>
+          <Text style={{fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', marginTop: 3 }}>Continue</Text>
 
         </TouchableOpacity>
         <TouchableOpacity
@@ -156,14 +163,14 @@ const ScheduleBook = ({ navigation, route }) => {
 
       </View>
 
-      {show && <DateTimePicker
+      {/* {show && <DateTimePicker
         testID="dateTimePicker"
         value={date}
         mode={'time'}
         is24Hour={true}
         display="default"
         onChange={onDChange}
-      />}
+      />} */}
 
       {/* </View> */}
     </SafeAreaView>
@@ -191,9 +198,6 @@ const styles = StyleSheet.create({
     padding: 7, paddingVertical: 15, fontWeight: 'bold'
   },
   auth_btn: {
-
-    paddingTop: 10,
-    paddingBottom: 30,
     backgroundColor: '#e28c39',
     alignItems: 'center',
     flex: 1,
@@ -201,6 +205,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+
+
+const DailySchedule = ({ dismiss, date, onDChange }) => {
+
+  const onSelect = (index)=>{
+    date.setHours(index,0,0,0)
+    onDChange(date)
+  }
+  
+  return (
+    <View >
+      <Modal
+        transparent={true}
+        hardwareAccelerated
+        statusBarTranslucent
+        animationType="fade">
+        <TouchableOpacity activeOpacity={1} onPress={dismiss} style={{ flex: 1, backgroundColor: "#00000080", alignItems: 'center', justifyContent: 'center' }} >
+          <TouchableOpacity activeOpacity={1} style={{ backgroundColor: 'white', borderRadius: 20, position: 'absolute', marginHorizontal: 25, overflow: 'hidden', height: '80%' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#e5e5e5', padding: 16, width: 300 }}>
+              <Icon name="calendar-today" />
+              <Text style={{ fontSize: 16, paddingHorizontal: 16 }}>{date.toDateString()}</Text>
+            </View>
+            <FlatList
+              data={[... new Array(24)]}
+              keyExtractor={(item, index) => index}
+              renderItem={({item,index})=><Hour item={item} index={index} select={onSelect} selected={index==date.getHours()} />}
+              contentContainerStyle={{ padding: 10 }}
+              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  )
+}
+
+const Hour = ({ item, index,selected, select }) => (
+  <TouchableOpacity onPress={()=>select(index)} style={{ borderRadius: 10, borderWidth: 1.5, borderColor: '#ddd', padding: 15, alignItems: 'center', backgroundColor : selected ?Colors.blue_color :'white' }} >
+    <Text style={{ fontSize: 16, fontWeight: 'bold', color : selected ? 'white' : 'black' }} >{index%12==0 ? '12' : index%12}:00 {index > 11 ? 'PM' : 'AM'}</Text>
+  </TouchableOpacity>
+)
+
 
 // React Native Time Picker – To Pick the Time using Native Time Picker
 // https://aboutreact.com/react-native-timepicker/

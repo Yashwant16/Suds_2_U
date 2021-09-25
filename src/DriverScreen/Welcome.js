@@ -42,24 +42,24 @@ const WelcomeScreen = ({ navigation }) => {
 
   }, [runningBooking])
 
-  useEffect(()=>{
-    getCurrentAddress().then(address=>console.log("--------------------------", address))
+  useEffect(() => {
+    setTimeout(() => getCurrentAddress().then(setCurrentAddress), 2000)
     console.log(runningBooking, "RUNNING BOOKING STATUS")
     switch (runningBooking?.status) {
       case WASHR_ON_THE_WAY:
-         getBookingWithId(runningBooking.booking_id).then(booking=>{
+        getBookingWithId(runningBooking.booking_id).then(booking => {
           if (booking) navigation.navigate('ON JOB', { booking, onTheWay: true })
         })
         break;
-        case WASH_IN_PROGRESS:
-          getBookingWithId(runningBooking.booking_id).then(booking=>{
-            if (booking) navigation.navigate('WORK IN PROGRESS', { booking });
-          })
-          break;
+      case WASH_IN_PROGRESS:
+        getBookingWithId(runningBooking.booking_id).then(booking => {
+          if (booking) navigation.navigate('WORK IN PROGRESS', { booking });
+        })
+        break;
       default:
         break;
     }
-  },[])
+  }, [])
 
   const getBookingWithId = async (id) => {
     setLoading(true);
@@ -87,9 +87,9 @@ const WelcomeScreen = ({ navigation }) => {
 
   const _handleAppStateChange = (nextAppState) => nextAppState == "active" ? setTimeout(() => onStartAction.current ? handleNotificationClick(onStartAction.current) : null, 500) : null
 
-  const handleNotificationClick = async (notification)=>{
+  const handleNotificationClick = async (notification) => {
     console.log("HANDELNG CLICKED NOTIFICATION")
-    if(notification.data.type == NOTIFICATION_TYPES.NEW_ON_DEMAND_REQUEST){
+    if (notification.data.type == NOTIFICATION_TYPES.NEW_ON_DEMAND_REQUEST) {
       setLoading(true);
       let json = await getSingleBookingDetails(notification.data.booking_id);
       setLoading(false);
@@ -100,7 +100,7 @@ const WelcomeScreen = ({ navigation }) => {
     } else if (notification.data.type == NOTIFICATION_TYPES.WASH_FINISHED) {
       navigation.navigate('BOOKING DETAILS', { id: '67' })
     }
-    onStartAction.current=null //clear the notification once it has been handled.
+    onStartAction.current = null //clear the notification once it has been handled.
   }
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const WelcomeScreen = ({ navigation }) => {
       console.log(remoteMessage.data)
 
       PushNotification.action
-      
+
       if (remoteMessage.data.type == 0) {
         setLoading(true);
         let json = await getSingleBookingDetails(remoteMessage.data.booking_id);
@@ -210,8 +210,7 @@ const WelcomeScreen = ({ navigation }) => {
             <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Welcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>{userData.name}</Text></Text>
 
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center' }}>
-              <Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />
-              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{currentAddress}</Text>
+            <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center', flex: 1, paddingHorizontal: 20 }}><Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />{currentAddress}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
               <TouchableOpacity

@@ -84,8 +84,8 @@ const VendorProfile = ({ navigation, route }) => {
         </View>
 
         <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-evenly', alignSelf: 'flex-start', alignItems: 'center' }}>
-          <Text style={{ marginRight: 15, fontSize: 18, color: '#555', fontWeight: 'bold' }}>{currentBooking.washer_details.name}</Text>
-          <Rating readonly startingValue={parseFloat(currentBooking.washer_details.rating)} imageSize={20} />
+          <Text style={{ marginRight: 15, fontSize: 18, color: '#555', fontWeight: 'bold' }}>{currentBooking.washer_details?.name}</Text>
+          <Rating readonly startingValue={parseFloat(currentBooking.washer_details?.rating)} imageSize={20} />
         </View>
       </View>
 

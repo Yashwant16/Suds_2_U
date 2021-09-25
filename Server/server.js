@@ -27,6 +27,8 @@ app.post('/payment-sheet', jsonParser, async (req, res) => {
     amount: charge,
     currency: 'usd',
     customer: customer.id,
+    payment_method_types: ['card'],
+    capture_method: 'manual',
   });
   res.json({
     paymentIntent: paymentIntent.client_secret,

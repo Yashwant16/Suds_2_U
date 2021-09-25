@@ -14,6 +14,8 @@ import CompleteProfile from '../../DriverScreen/CompleteProfile';
 import UpdateDocument from '../../DriverScreen/UpdateDocument';
 import BackgroundCheck from '../../DriverScreen/BackgroundCheck';
 import UploadDriverLicense from '../../DriverScreen/UploadDriverLicense';
+import VehicleInsurance from '../../DriverScreen/VehicleInsurance';
+import VehicleRegistration from '../../DriverScreen/VehicleRegistration';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +34,8 @@ const AuthStack = () => {
       <Stack.Screen name="BACKGROUND CHECK" component={BackgroundCheck} />
       <Stack.Screen name="TERMS & CONDITIONS" component={TermsConditions} />
       <Stack.Screen name="UPDATE DOCUMENT" component={UpdateDocument} initialParams={{authStack: true}} />
+      <Stack.Screen name="VEHICLE INSURANCE" component={VehicleInsurance} initialParams={{authStack: true}} />
+      <Stack.Screen name="VEHICLE REGISTRATION" component={VehicleRegistration} initialParams={{authStack: true}} />
       <Stack.Screen name="UPLOAD DRIVING LICENSE" component={UploadDriverLicense} initialParams={{authStack: true}} />
     </Stack.Navigator>
   );

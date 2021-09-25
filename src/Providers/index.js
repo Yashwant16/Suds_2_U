@@ -11,6 +11,7 @@ import PackageProvider from './PackageProvider';
 export const BASE_URL = 'https://suds-2-u.com/api/';
 export const ERROR = 45
 export const LOADING = 64
+export const EMPTY = 641
 
 export const partialProfileUrl = "http://suds-2-u.com/public/profile/"
 
@@ -20,7 +21,7 @@ const Providers = ({ children }) => {
     <AppProvider>
       <AuthProvider>
         <RatingProvider>
-          <EarningProvider>
+        <EarningProvider>
             <BookingProvider>
               <PackageProvider>
                 {children}

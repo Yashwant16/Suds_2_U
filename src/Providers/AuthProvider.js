@@ -1,16 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { callApi, ERROR, LOADING } from '.';
+import { callApi, EMPTY, ERROR, LOADING } from '.';
 import { changeStack, CUSTOMER, navigate, type, WASHER } from '../Navigation/NavigationService';
 import messaging from '@react-native-firebase/messaging';
 import { getCurrentPosition } from '../Services/LocationServices';
+import { AppContext } from './AppProvider';
 
 export const AuthContext = React.createContext();
 
 const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState({});
   const [loginData, setLoginData] = useState({})
+  const { setLoading } = useContext(AppContext)
 
   const getToken = async () => {
     // return 'random token'
@@ -82,7 +84,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const completeProfile = async (data, isFromAuthStack) => {
-    let json = await callApi(type.current == WASHER ? 'save_complete_profile' : 'updateUserPofile', userData.api_token, { ...data, user_id: userData.id });
+    let json = await callApi(type.current == WASHER ? 'save_complete_profile' : 'updateUserPofile', userData.api_token, { ...data, user_id: userData.id, hourly_rate: 0 });
     if (!json) return;
     let userDetailJson = await getUserDetails()
     if (!userDetailJson) return
@@ -123,21 +125,39 @@ const AuthProvider = ({ children }) => {
 
   const getPromotions = async (setState) => {
     setState(LOADING)
-    let json = await callApi('getPromotions', userData.api_token, {user_id : userData.id}, null, 'POST');
-    if(json) setState(json.data)
+    let json = await callApi('getPromotions', userData.api_token, { user_id: userData.id }, null, 'POST');
+    if (json) setState(json.data)
     else return setState(ERROR)
-}
+  }
   const getStates = async country_id => await callApi('get_state', userData.api_token, { country_id });
 
   const getCities = async state_id => await callApi('get_city', userData.api_token, { state_id });
 
   const forgotPassword = async emailid => await callApi('forget_password', 'ABCDEFGHIJK', { emailid });
 
-  const addCard = async data => await callApi('addCard', userData.api_token, { ...data, user_id: userData.id });
+  const addCard = async (data, onSuccess) => {
+    if (!data?.complete) return Alert.alert('Incomplete', 'Card not complete', [])
+    setLoading(true)
+    let success = await callApi('addCard', userData.api_token, { ...data, user_id: userData.id })
+    setLoading(false)
+    if (success) onSuccess()
+  }
 
   const updateCard = async data => await callApi('updateCard', userData.api_token, { ...data, user_id: userData.id });
 
-  const getCardDetails = async () => await callApi('getCardDetails', userData.api_token, { user_id: userData.id });
+  const getCardDetails = async (setState) => {
+    setState(LOADING)
+    let json = await callApi('getCardDetails', userData.api_token, { user_id: userData.id })
+    setState(json ? (json.data.length == 0 ? EMPTY : json.data) : ERROR)
+  }
+
+  const submitBackgroundCheckData = async (data, onSuccess) => {
+    setLoading(true)
+    let json = await callApi('addBackground', userData.api_token, { ...data, user_id: userData.id });
+    setLoading(false)
+    if (!json) return;
+    return onSuccess()
+  };
 
   const changeImage = async (image) => {
     let json = await callApi('userImage', userData.api_token, { user_id: userData.id, image })
@@ -151,15 +171,85 @@ const AuthProvider = ({ children }) => {
     }
   }
 
+  const submitVehicleInsurance = async (data, onSuccess) => {
+    setLoading(true)
+    let json = await callApi('addVehicleInsurance', userData.api_token, { ...data, user_id: userData.id });
+    setLoading(false)
+    if (!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+    return onSuccess()
+  };
+
+  const submitVehicleRegistration = async (data, onSuccess) => {
+    setLoading(true)
+    let json = await callApi('addVehicleRegistration', userData.api_token, { ...data, user_id: userData.id });
+    setLoading(false)
+    if (!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+    return onSuccess()
+  };
+
+  const getBackgroundData = async (setState, onGetSuccess) => {
+    setLoading(true)
+    await wait()
+    setLoading(false)
+    let json = {
+      data: {
+        "user_id": 107,
+        "first_name": "Jhon",
+        "middle_name": "Stirn",
+        "last_name": "Doe",
+        "social_security_number": "8998648468",
+        "drivers_license_number": "9864648568",
+        "state_issuing_license": "Texas",
+        "present_street_address": "Hdhcisvsjb",
+        "city_state_zip": "Hxu Dee vdjdb",
+        "dob": "2021-09-19"
+      }
+    }
+    setState(json ? json.data : ERROR)
+    if (json) onGetSuccess(json.data)
+    if (!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+  };
+
+  const getInsuranceDetail = async (setState, onGetSuccess) => {
+    setLoading(true)
+    await wait()
+    setLoading(false)
+    let json = { data: { name: 'john', carriers_name: 'Insurance name', policy_number: '220', image: 'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dmlld3xlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&w=1000&q=80', expiration_date: '2021-05-05' } }
+    setState(json ? json.data : ERROR)
+    if (json) onGetSuccess(json.data)
+    if (!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+  };
+
+  const getRegistrationDetail = async (setState, onGetSuccess) => {
+    setLoading(true)
+    await wait()
+    setLoading(false)
+    let json = { data: { name: 'john', issued_state: 'Texas', image: 'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dmlld3xlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&w=1000&q=80', exp_date: '2021-05-05' } }
+    setState(json ? json.data : ERROR)
+    if (json) onGetSuccess(json.data)
+    if (!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+  };
+
+  const checkDocuments = async (setState) => {
+    setState(LOADING)
+    let json = await callApi('checkDocument', userData.api_token, { user_id: userData.id })
+    setState(json || ERROR)
+  }
+
   const otpVerified = async () => {
     let json = await callApi('otpVerify', userData.api_token, { id: userData.id })
     if (json) setUserData(json.data)
     return json
   };
 
-  const documentVerified = async () => {
+  const documentVerified = async (onSuccess) => {
+    setLoading(true)
     let json = await callApi('documentVerify', userData.api_token, { id: userData.id })
-    if (json) setUserData(json.data)
+    if (json) {
+      onSuccess()
+      setUserData(json.data)
+    }
+    setLoading(false)
     return json
   };
 
@@ -182,11 +272,13 @@ const AuthProvider = ({ children }) => {
     await AsyncStorage.setItem('userData', JSON.stringify({ ...savedUserData, ...data, stage }))
   }
   const logout = async () => {
-    await AsyncStorage.removeItem('userData');
+    await AsyncStorage.clear();
     changeStack('AuthStack');
     setUserData({});
     messaging().deleteToken().then(() => console.log('Token deleted'))
   };
+
+  const partialImageUrl = "http://suds-2-u.com/public/document/"
 
   return (
     <AuthContext.Provider
@@ -222,7 +314,14 @@ const AuthProvider = ({ children }) => {
         updateCard,
         updateUserLocation,
         changeImage,
-        getPromotions
+        getPromotions,
+        submitBackgroundCheckData,
+        checkDocuments,
+        submitVehicleInsurance,
+        submitVehicleRegistration,
+        getRegistrationDetail,
+        getInsuranceDetail,
+        getBackgroundData
       }}>
       {children}
     </AuthContext.Provider>
@@ -230,4 +329,9 @@ const AuthProvider = ({ children }) => {
 };
 
 export default AuthProvider;
+
+
+const wait = (ms) => {
+  return new Promise(resolve => setTimeout(() => resolve(), ms || 2000))
+}
 

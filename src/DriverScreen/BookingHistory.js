@@ -6,7 +6,7 @@ import Colors from '../../Constants/Colors';
 import ListEmpty from '../Components/ListEmpty';
 import LoadingView from '../Components/LoadingView';
 import { partialProfileUrl } from '../Providers';
-import { ACTIONS, BookingContext, WASHER_ACCEPTED, WASHER_ARRIVED, WASHR_ON_THE_WAY, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../Providers/BookingProvider';
+import { ACTIONS, BookingContext, WASHER_ACCEPTED, WASHER_ARRIVED, WASHR_ON_THE_WAY, WASH_CANCELLED, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../Providers/BookingProvider';
 
 
 const BookingHistory = ({ navigation }) => {
@@ -42,7 +42,7 @@ const BookingHistory = ({ navigation }) => {
 export default BookingHistory;
 
 const Item = ({ item, navigation }) => {
-  useEffect(() => console.log(JSON.stringify(item, null, 2)), [])
+  // useEffect(() => console.log(JSON.stringify(item, null, 2)), [])
   const [modalVisible, setModalVisibility] = useState(false);
   const [newJobBooking, setNewJobBooking] = useState();
   const [loading, setLoading] = useState(false);
@@ -80,6 +80,7 @@ const Item = ({ item, navigation }) => {
         }
         break;
       case WASH_REJECTED: return Alert.alert('Rejected', 'You rejected this job request')
+      case WASH_CANCELLED: return Alert.alert('Cancelled', 'Request has been cancelled by the customer.')
       case WASHER_ACCEPTED:
         let booking = await getBookingWithId(item.booking_id)
         if (booking) navigation.navigate('ON JOB', { booking })
@@ -140,6 +141,7 @@ const ListFooter = () => (
 );
 
 const getWashStatus = (status) => {
+  console.log("STATSUS STATUS STUATS", status)
   switch (status) {
     case WASH_PENDING: return { name: "Pending", color: 'orange', naviagteTo: 'BOOKING DETAILS' }
     case WASHER_ACCEPTED: return { name: "Accepted", color: 'orange', naviagteTo: 'BOOKING DETAILS' }
@@ -148,5 +150,6 @@ const getWashStatus = (status) => {
     case WASH_IN_PROGRESS: return { name: "In progress", color: 'orange', naviagteTo: 'Work In Progress' }
     case WASH_COMPLETED: return { name: "Success", color: Colors.green, naviagteTo: 'BOOKING DETAILS' }
     case WASH_REJECTED: return { name: "Rejected", color: 'red', naviagteTo: 'BOOKING DETAILS' }
+    case WASH_CANCELLED: return { name: "Cancelled", color: 'red', naviagteTo: 'BOOKING DETAILS' }
   }
 }

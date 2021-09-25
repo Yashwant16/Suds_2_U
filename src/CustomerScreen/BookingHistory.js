@@ -6,7 +6,7 @@ import Colors from '../../Constants/Colors';
 import ListEmpty from '../Components/ListEmpty';
 import { ERROR, LOADING, partialProfileUrl } from '../Providers';
 import { AppContext } from '../Providers/AppProvider';
-import { ACTIONS, BookingContext, WASHER_ACCEPTED, WASHER_ARRIVED, WASHR_ON_THE_WAY, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../Providers/BookingProvider';
+import { ACTIONS, BookingContext, WASHER_ACCEPTED, WASHER_ARRIVED, WASHR_ON_THE_WAY, WASH_CANCELLED, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../Providers/BookingProvider';
 
 const BookingHistory = ({ navigation }) => {
   const netInfo = useNetInfo();
@@ -16,17 +16,17 @@ const BookingHistory = ({ navigation }) => {
     getRewards
   } = useContext(BookingContext);
 
-  useEffect(() => {dispatch({ type: ACTIONS.Start }); getRewards(setRewards)}, []);
+  useEffect(() => { dispatch({ type: ACTIONS.Start }); getRewards(setRewards) }, []);
   const [rewards, setRewards] = useState(LOADING)
 
   const Rewards = () => {
     switch (rewards) {
-      case LOADING: return <Text style={{fontWeight : 'bold', fontSize : 16, color : 'white', textAlign : 'center'}}>Loading...</Text>
+      case LOADING: return <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white', textAlign: 'center' }}>Loading...</Text>
       case ERROR: return (
-        <View style={{flexDirection : 'row', alignItems : 'center', paddingHorizontal : 20}}>
-          <Text style={{fontWeight : 'bold', fontSize : 16, color : 'white'}}>Error loading rewrds.</Text>
-          <TouchableOpacity onPress={()=>getRewards(setRewards)} style={{ padding: 5, backgroundColor: Colors.blue_color, borderRadius: 5, marginHorizontal : 10 }}>
-            <Text style={{ color: 'white', includeFontPadding : false }} >Retry</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>Error loading rewrds.</Text>
+          <TouchableOpacity onPress={() => getRewards(setRewards)} style={{ padding: 5, backgroundColor: Colors.blue_color, borderRadius: 5, marginHorizontal: 10 }}>
+            <Text style={{ color: 'white', includeFontPadding: false }} >Retry</Text>
           </TouchableOpacity>
         </View>
       )
@@ -43,7 +43,7 @@ const BookingHistory = ({ navigation }) => {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <SafeAreaView />
-      <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', justifyContent : 'center'}}>
+      <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', justifyContent: 'center' }}>
         <Rewards></Rewards>
       </View>
       <FlatList
@@ -65,7 +65,6 @@ const BookingHistory = ({ navigation }) => {
 
 export default BookingHistory;
 const Item = ({ item, navigation }) => {
-  console.log(JSON.stringify(item, null, 2))
   const washStatusObject = useMemo(() => getWashStatus(item.status), [item])
   const { getSingleBookingDetails } = useContext(BookingContext);
   const { setLoading } = useContext(AppContext)
@@ -84,14 +83,15 @@ const Item = ({ item, navigation }) => {
     let booking;
     switch (item.status) {
       case WASH_PENDING:
-        navigation.navigate('On The Way', { booking_id : item.booking_id })
-        break;
+        if (item.type == 1) return Alert.alert('Pending', 'Washer has not yet accepted your request.')
+        else return navigation.navigate('On The Way', { booking_id: item.booking_id })
       case WASH_REJECTED: return Alert.alert('Rejected', 'Washer rejected this job request')
+      case WASH_CANCELLED: return Alert.alert('Cancelled', 'You cancelled this request.')
       case WASHER_ACCEPTED:
         navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
         break;
       case WASHR_ON_THE_WAY:
-        navigation.navigate('On The Way', { booking_id : item.booking_id })
+        navigation.navigate('On The Way', { booking_id: item.booking_id })
         break;
       case WASH_IN_PROGRESS:
         booking = await getBookingWithId(item.booking_id)
@@ -100,6 +100,7 @@ const Item = ({ item, navigation }) => {
       case WASH_COMPLETED:
         navigation.navigate('BOOKING DETAILS', { id: item.booking_id });
         break;
+        
       default:
         break;
     }
@@ -166,5 +167,6 @@ const getWashStatus = (status) => {
     case WASH_IN_PROGRESS: return { name: "In progress", color: 'orange', naviagteTo: 'Work In Progress' }
     case WASH_COMPLETED: return { name: "Success", color: Colors.green, naviagteTo: 'BOOKING DETAILS' }
     case WASH_REJECTED: return { name: "Rejected", color: 'red', naviagteTo: 'BOOKING DETAILS' }
+    case WASH_CANCELLED: return { name: "Cancelled", color: 'red', naviagteTo: 'BOOKING DETAILS' }
   }
 }

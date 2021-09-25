@@ -8,6 +8,8 @@ import { AppState } from 'react-native';
 import { WASHER } from '../Navigation/NavigationService';
 import * as RNLocalize from "react-native-localize";
 import { getCurrentPosition } from '../Services/LocationServices';
+import { AppContext } from './AppProvider';
+import { Alert } from 'react-native';
 
 export const BookingContext = React.createContext();
 
@@ -18,6 +20,7 @@ export const WASHER_ARRIVED = 3
 export const WASH_IN_PROGRESS = 4
 export const WASH_COMPLETED = 5
 export const WASH_REJECTED = 6
+export const WASH_CANCELLED = 7
 
 export const ACTIONS = {
   OnFail: 'onFail',
@@ -81,6 +84,7 @@ const reducer = (state, { type, payload }) => {
 };
 
 const BookingProvider = ({ children }) => {
+  const { setLoading } = useContext(AppContext);
   const { userData } = useContext(AuthContext);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [vehicles, setVehicles] = useState(LOADING)
@@ -143,11 +147,11 @@ const BookingProvider = ({ children }) => {
 
   const addMoreMinutes = async (booking_id, extra_time) => callApi('addMoreTime', userData.api_token, { booking_id, extra_time })
 
-  const getMake = async () => customCallApi('make', userData.api_token, {}, 'GET', 'Make')
+  const getMake = async (year) => customCallApi('make', userData.api_token, { year}, 'POST', 'Make')
 
-  const getYear = async (Make) => customCallApi('year', userData.api_token, { Make }, 'POST', 'Year')
+  const getYear = async () => customCallApi('year', userData.api_token, {  }, 'GET', 'Year')
 
-  const getModel = async (Year) => customCallApi('model', userData.api_token, { Year }, 'POST', 'Model')
+  const getModel = async (make, year) => customCallApi('model', userData.api_token, { make, year }, 'POST', 'Model')
 
   const addNewVehicle = async data => callApi('addVehicle', userData.api_token, { ...data, user_id: userData.id, category_id: 1 })
 
@@ -157,7 +161,7 @@ const BookingProvider = ({ children }) => {
 
   const getNearByVendor = async (lat, long) => callApi('automaticallyShowVendor', userData.api_token, { lat, long })
 
-  const applyCoupon = async coupan_code => await callApi('applycoupan', userData.api_token, { coupan_code })
+  const applyCoupon = async params => await callApi('applycoupan', userData.api_token, params)
 
   const getPaymentIntent = async amount => await callApi('paymentorder', userData.api_token, { booking_id: 3, user_id: userData.id, amount })
 
@@ -208,6 +212,14 @@ const BookingProvider = ({ children }) => {
     else setVehicles(ERROR)
   }
 
+  const addReview = async (data,onSuccess ) => {
+    setLoading(true)
+    let json = await callApi('addReviewRating', userData.api_token, { user_id: userData.id, ...data })
+    setLoading(false)
+    if(!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+    else onSuccess()
+  }
+
   const syncCurrentRunningBooking = async (user = userData) => {
     if (!user?.api_token) return
     let json = await callApi(user.role_as == WASHER ? 'runningjob' : 'customerrunningbooking', user.api_token, { user_id: user.id })
@@ -248,6 +260,13 @@ const BookingProvider = ({ children }) => {
     else setState('Error')
   }
 
+  const cancelRequest = async (data, onSuccess) =>{
+    setLoading(true)
+    let json = await callApi('cancelRequest', userData.api_token, {...data, user_id : userData.id})
+    if(json) onSuccess()
+    setLoading(false)
+  }
+
   return <BookingContext.Provider value={{
     state,
     dispatch,
@@ -286,18 +305,21 @@ const BookingProvider = ({ children }) => {
     sendSMS,
     getWahserCalendar,
     getExtraTimeFee,
-    getServiceFee
+    getServiceFee,
+    addReview,
+    cancelRequest
   }}>{children}</BookingContext.Provider>;
 };
 
 
 export default BookingProvider;
 
-export const calculateTotalPrice = (booking, fees) => {
+export const calculateTotalPrice = (booking, fees, discountRate) => {
   let addOnsPrice = (booking?.selectedAddOns?.length == 0 ? 0 : booking?.selectedAddOns?.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)) || 0
   let packagePrice = (parseFloat(booking?.packageDetails?.price)) || 0
   let totalFees = fees.filter(fee=>typeof fee == 'number').reduce((p,c)=>p+c,0)
-  return addOnsPrice + packagePrice + totalFees
+  let total = addOnsPrice + packagePrice + totalFees
+  return total - (total * discountRate)
 }
 
 export const getWashStatus = (status) => {

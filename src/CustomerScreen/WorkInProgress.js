@@ -3,18 +3,17 @@ import { TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { View, Image, Text } from 'react-native';
 import Colors from '../../Constants/Colors';
-import { Overlay, Icon } from 'react-native-elements';
-import { BookingContext } from '../Providers/BookingProvider';
 import LoadingView from '../Components/LoadingView';
 
 const WorkInProgress = ({ navigation, route }) => {
-    const [deadline, setDeadline] = useState(Date.now()+3800000);
-    const [timeRemaining, setTimeRemaining] = useState(deadline - Date.now())
+
+    const [timeRemaining, setTimeRemaining] = useState(0)
     const [loading, setLoading] = useState(false);
     const booking = useMemo(() => route.params?.booking, [route])
+    const deadline = useMemo(() => getDeadline(booking), [booking])
 
     useEffect(() => {
-        const interval = setInterval(() => setTimeRemaining(deadline- Date.now()), 1000);
+        const interval = setInterval(() => setTimeRemaining(deadline - new Date().getTime()), 1000);
         return () => clearInterval(interval);
     }, [deadline]);
     return (
@@ -27,19 +26,19 @@ const WorkInProgress = ({ navigation, route }) => {
                     <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', color: 'gray' }}>Your service has started now!</Text>
                 </View>
 
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                {deadline && <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 110 }}>{parseMilllisecond(timeRemaining)}</Text>
                     <View style={{ flexDirection: 'row', width: '55%', justifyContent: 'space-between' }}>
                         <Text style={{ color: '#999' }}>Hours</Text>
                         <Text style={{ color: '#999' }}>Minutes</Text>
                     </View>
-                </View>
+                </View>}
 
                 <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
                     <TouchableOpacity onPress={() => navigation.navigate('JOB FINISHED', { booking })} style={[styles.btns, { backgroundColor: Colors.blue_color }]}>
                         <Text style={styles.btnText}>Need Help?</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>navigation.navigate('Select Add Ons')} style={[styles.btns, { backgroundColor: Colors.dark_orange }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Select Add Ons')} style={[styles.btns, { backgroundColor: Colors.dark_orange }]}>
                         <Text style={styles.btnText}>+ Add Add-on</Text>
                     </TouchableOpacity>
                 </View>
@@ -54,9 +53,24 @@ const parseMilllisecond = ms => {
     const zeroPad = (num, places) => String(num).padStart(places, '0');
     let hour = Math.floor(ms / 3600000);
     let minute = Math.floor((ms % 3600000) / 60000);
-    return `${zeroPad(hour, 2)}:${zeroPad(minute, 2)}`;
-  };
-  
+    return `${zeroPad(hour, 2)}:${zeroPad(Math.abs(minute), 2)}`;
+};
+
+const stringToms = string => {
+    if (!string) return 0
+    var time = "02 : 00";
+    var array = time.split(":");
+    var seconds = parseInt(array[0], 10) * 60 * 60 + parseInt(array[1], 10) * 60;
+    return seconds * 1000
+}
+
+const getDeadline = (booking) => {
+    if (!booking) return Date.now()
+    let start_time = new Date(booking?.start_time)
+    let extra_time = stringToms(booking?.extra_time)
+    let package_time = stringToms(booking?.package_time)
+    return start_time.getTime() + extra_time + package_time
+}
 
 const styles = StyleSheet.create({
     container: {

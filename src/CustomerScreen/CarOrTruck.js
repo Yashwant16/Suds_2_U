@@ -114,7 +114,10 @@ export default CarOrTruck;
 const RenderItem = ({ item, onClick, checked }) => (
   <TouchableOpacity onPress={onClick} style={{ padding: 10, flex: 1, margin: 20, backgroundColor: '#fff', borderRadius: 10, paddingVertical: 10 }}>
     <View style={{ flexDirection: 'row' }}>
-      <Image style={{ height: 60, width: 60, padding: 5, borderRadius: 5 }} source={{ uri: "http://suds-2-u.com/public/vehicle/" + item.image }} />
+      <View style={{overflow : 'hidden', borderRadius  :5, borderWidth : 1 ,borderColor : '#00000030' }}>
+      <Image style={{ height: 60, width: 60, padding: 5, resizeMode:item.image!='undefined' ? 'cover' : 'contain' }}  source={item.image!='undefined' ? { uri: "http://suds-2-u.com/public/vehicle/" + item.image } : require('../../Assets/car_default.png')} />
+      </View>
+
       <Text style={{ marginHorizontal: 5, fontSize: 18, flex : 1 }}>{`${item.make} ${item.year} ${item.model}`}</Text>
       <CheckBox
         style={{ padding: 5, alignSelf: 'center', marginLeft: 'auto' }}

@@ -26,7 +26,7 @@ const DriverChangePassword = () => {
     let success = await changePassword(data);
     setLoading(false);
     if(success) {
-      Alert.alert('Success', 'Your password has been changed successfully.', [{text :'Ok', onPress:()=>changeStack(type.current==WASHER ? 'DriverHomeStack' : 'CustomerHomeStack')}])
+      Alert.alert('Success', 'Password changed successfully.', [{text :'Ok', onPress:()=>changeStack(type.current==WASHER ? 'DriverHomeStack' : 'CustomerHomeStack')}])
       reset()
     }
   };

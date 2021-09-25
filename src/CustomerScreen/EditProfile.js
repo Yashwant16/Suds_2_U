@@ -36,9 +36,9 @@ const EditProfile = ({ navigation, route }) => {
           if (data.image) setSelectedImage({ uri: partialProfileUrl + data.image })
           reset({
             ...data,
-            country: { name: data.country_name, id: data.country },
-            state: { name: data.state_name, id: data.state },
-            city: { name: data.city_name, id: data.city },
+            // country: { name: data.country_name, id: data.country },
+            state: data.state_name ? { name: data.state_name, id: data.state } : undefined,
+            city: data.city_name ? { name: data.city_name, id: data.city } : undefined,
             phone_number: data.mobile,
           });
           setMethodOfContact(data.preferred_method_of_contact)
@@ -48,7 +48,7 @@ const EditProfile = ({ navigation, route }) => {
   }, []);
 
   const getStateList = async () => {
-    return await getStates(231);
+    return (await getStates(231));
   };
 
   const getCityList = async () => {

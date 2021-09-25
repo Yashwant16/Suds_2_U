@@ -14,7 +14,7 @@ const CustomPicker = ({label, control, rules, errors, fieldName, asynFunction}) 
     setShowList(true);
     setLoading(true);
     let data = (await asynFunction())?.data;
-    if (data) setList(data);
+    if (data) setList(data.reverse());
     else setShowList(false);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setLoading(false);
