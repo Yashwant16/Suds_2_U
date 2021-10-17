@@ -24,7 +24,7 @@ const BookingHistory = ({ navigation }) => {
       case LOADING: return <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white', textAlign: 'center' }}>Loading...</Text>
       case ERROR: return (
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>Error loading rewrds.</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>Error loading rewards.</Text>
           <TouchableOpacity onPress={() => getRewards(setRewards)} style={{ padding: 5, backgroundColor: Colors.blue_color, borderRadius: 5, marginHorizontal: 10 }}>
             <Text style={{ color: 'white', includeFontPadding: false }} >Retry</Text>
           </TouchableOpacity>
@@ -68,54 +68,26 @@ const Item = ({ item, navigation }) => {
   const washStatusObject = useMemo(() => getWashStatus(item.status), [item])
   const { getSingleBookingDetails } = useContext(BookingContext);
   const { setLoading } = useContext(AppContext)
-  const param = useMemo(() => {
-    switch (item.status) {
-      case WASH_PENDING: return { id: item.booking_id }
-      case WASHR_ON_THE_WAY:
-      case WASHER_ACCEPTED:
-        return { booking: { ...item, wash_lat_lng: { latitude: 8.968911, longitude: 38.721940 } } }
-      case WASH_IN_PROGRESS: return { booking: { ...item, wash_lat_lng: { latitude: 8.968911, longitude: 38.721940 } } }
-      default: return { id: item.booking_id }
-    }
-  }, [item])
 
   const onPress = async () => {
-    let booking;
     switch (item.status) {
       case WASH_PENDING:
         if (item.type == 1) return Alert.alert('Pending', 'Washer has not yet accepted your request.')
-        else return navigation.navigate('On The Way', { booking_id: item.booking_id })
+        else return navigation.navigate('Near By Washers', { booking_id: item.booking_id })
       case WASH_REJECTED: return Alert.alert('Rejected', 'Washer rejected this job request')
       case WASH_CANCELLED: return Alert.alert('Cancelled', 'You cancelled this request.')
-      case WASHER_ACCEPTED:
-        navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
-        break;
-      case WASHR_ON_THE_WAY:
-        navigation.navigate('On The Way', { booking_id: item.booking_id })
-        break;
-      case WASH_IN_PROGRESS:
-        booking = await getBookingWithId(item.booking_id)
-        if (booking) navigation.navigate('Work In Progress', { booking });
-        break;
-      case WASH_COMPLETED:
-        navigation.navigate('BOOKING DETAILS', { id: item.booking_id });
-        break;
-        
+      case WASHER_ACCEPTED: return navigation.navigate('BOOKING DETAILS', { id: item.booking_id })
+      case WASHR_ON_THE_WAY: return navigation.navigate('On The Way', { booking_id: item.booking_id })
+      case WASH_IN_PROGRESS: return navigation.navigate('Work In Progress', { booking_id: item.booking_id });
+      case WASH_COMPLETED: return navigation.navigate('BOOKING DETAILS', { id: item.booking_id });
       default:
         break;
     }
   }
 
-  const getBookingWithId = async (id) => {
-    setLoading(true);
-    let json = await getSingleBookingDetails(item.booking_id);
-    setLoading(false);
-    if (json?.data) return json.data
-    else Alert.alert('Error', 'Something went wrong')
-  }
-
   return (
     <TouchableOpacity style={{ padding: 16, flex: 1 }} onPress={onPress}>
+      <Text>{item.type}</Text>
       <View style={{ flexDirection: 'row' }}>
         <Image style={{ height: 70, width: 70, marginRight: 10, padding: 10, borderRadius: 35 }} source={(item.userdetails[0]?.image || item.userdetails?.image) ? { uri: partialProfileUrl + (item.userdetails[0]?.image || item.userdetails?.image) } : require('../../Assets/icon/user.png')} />
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>

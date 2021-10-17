@@ -2,7 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { Linking } from 'react-native';
 import React from 'react';
-import { navigate, onStartAction } from '../Navigation/NavigationService';
+import { navigate, navigationRef, onStartAction } from '../Navigation/NavigationService';
 
 async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -33,8 +33,9 @@ export const initNotificatoins = () => {
 
         // // (required) Called when a remote is received or opened, or local notification is opened
         onNotification: function (notification) {
-            console.log('NOTIFICATION CLICK',appIsOpen.current, notification)
-            onStartAction.current = notification
+            // console.log('NOTIFICATION CLICK',appIsOpen.current, notification)
+            // navigationRef.current.navigate('Creddit/Debit Card')
+            // onStartAction.current = notification
             // onStartAction.current = {action : ()=>navigate('BOOKING DETAILS', { id: '67' })}
             // if(true){
             //     setTimeout(() => { 

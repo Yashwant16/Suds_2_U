@@ -6,11 +6,13 @@ import Colors from '../../Constants/Colors';
 import ListEmpty from '../Components/ListEmpty';
 import LoadingView from '../Components/LoadingView';
 import { partialProfileUrl } from '../Providers';
+import { AppContext } from '../Providers/AppProvider';
 import { ACTIONS, BookingContext, WASHER_ACCEPTED, WASHER_ARRIVED, WASHR_ON_THE_WAY, WASH_CANCELLED, WASH_COMPLETED, WASH_IN_PROGRESS, WASH_PENDING, WASH_REJECTED } from '../Providers/BookingProvider';
 
 
 const BookingHistory = ({ navigation }) => {
   const netInfo = useNetInfo();
+  const {setNewJobRequestId} = useContext(AppContext)
   const {
     state: { bookingHistory, loading, hasLoadedAllItems, refreshing, type },
     dispatch,
@@ -42,53 +44,17 @@ const BookingHistory = ({ navigation }) => {
 export default BookingHistory;
 
 const Item = ({ item, navigation }) => {
-  // useEffect(() => console.log(JSON.stringify(item, null, 2)), [])
-  const [modalVisible, setModalVisibility] = useState(false);
-  const [newJobBooking, setNewJobBooking] = useState();
   const [loading, setLoading] = useState(false);
-  const { getSingleBookingDetails, acceptJob, rejectJob, dispatch } = useContext(BookingContext);
+  const { getSingleBookingDetails} = useContext(BookingContext);
   const washStatusObject = useMemo(() => getWashStatus(item.status), [item])
-
-  const accept = async () => {
-    setModalVisibility(false);
-    setLoading(true);
-    let success = await acceptJob(newJobBooking?.booking_id);
-    setLoading(false);
-    if (success) {
-      dispatch({ type: ACTIONS.Start })
-      navigation.navigate('ON JOB', { booking: newJobBooking })
-    }
-  };
-
-  const hide = async ({}) => {
-    setLoading(true);
-    let json = await rejectJob(newJobBooking.booking_id);
-    setLoading(false);
-    if (json) dispatch({ type: ACTIONS.Start })
-    setModalVisibility(false);
-  };
 
   const onPress = async () => {
     switch (item.status) {
-      case WASH_PENDING:
-        setLoading(true);
-        let json = await getSingleBookingDetails(item.booking_id);
-        setLoading(false);
-        if (json) {
-          setNewJobBooking(json.data);
-          setModalVisibility(true);
-        }
-        break;
+      case WASH_PENDING: return setNewJobRequestId(item.booking_id)
       case WASH_REJECTED: return Alert.alert('Rejected', 'You rejected this job request')
       case WASH_CANCELLED: return Alert.alert('Cancelled', 'Request has been cancelled by the customer.')
-      case WASHER_ACCEPTED:
-        let booking = await getBookingWithId(item.booking_id)
-        if (booking) navigation.navigate('ON JOB', { booking })
-        break;
-      case WASHR_ON_THE_WAY:
-        booking = await getBookingWithId(item.booking_id)
-        if (booking) navigation.navigate('ON JOB', { booking, onTheWay: true })
-        break;
+      case WASHER_ACCEPTED: return navigation.navigate('ON JOB', { booking_id : item.booking_id })
+      case WASHR_ON_THE_WAY: return navigation.navigate('ON JOB', { booking, onTheWay: true })
       case WASH_IN_PROGRESS:
         booking = await getBookingWithId(item.booking_id)
         if (booking) navigation.navigate('WORK IN PROGRESS', { booking });
@@ -111,7 +77,6 @@ const Item = ({ item, navigation }) => {
 
   return (
     <TouchableOpacity style={{ padding: 16, flex: 1 }} onPress={onPress}>
-      <LoadingView loading={loading} />
       <View style={{ flexDirection: 'row' }}>
         <Image style={{ height: 70, width: 70, marginRight: 10, padding: 10, borderRadius: 35 }} source={(item.userdetails[0]?.image || item.userdetails?.image) ? { uri: partialProfileUrl + (item.userdetails[0]?.image || item.userdetails?.image) } : require('../../Assets/icon/user.png')} />
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -129,7 +94,6 @@ const Item = ({ item, navigation }) => {
           </View>
         </View>
       </View>
-      <NewJobModal booking={newJobBooking} accept={accept} modalVisible={modalVisible} hide={hide} setModalVisible={setModalVisibility} />
     </TouchableOpacity>
   );
 };

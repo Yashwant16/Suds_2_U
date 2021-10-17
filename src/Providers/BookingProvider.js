@@ -113,7 +113,12 @@ const BookingProvider = ({ children }) => {
     else dispatch({ type: ACTIONS.OnFail });
   };
 
-  const getSingleBookingDetails = async booking_id => await callApi('singlebookingdetails', userData.api_token, { booking_id: booking_id, time_zone: RNLocalize.getTimeZone() });
+  const getSingleBookingDetails = async (booking_id, setState) => {
+    setState ? setState(LOADING) : setLoading(true)
+    let json = await callApi('singlebookingdetails', userData.api_token, { booking_id: booking_id, time_zone: RNLocalize.getTimeZone() })
+    setState ? setState(json?.data ? json.data : ERROR) : setLoading(false)
+    return json
+  }
 
   const acceptJob = async booking_id => {
     let json = await callApi('accept_job', userData.api_token, { user_id: userData.id, booking_id })
@@ -122,7 +127,12 @@ const BookingProvider = ({ children }) => {
     return json
   }
 
-  const rejectJob = async booking_id => await callApi('reject_job', userData.api_token, { user_id: userData.id, booking_id });
+  const rejectJob = async booking_id => {
+    setLoading(true)
+    let json = await callApi('reject_job', userData.api_token, { user_id: userData.id, booking_id })
+    setLoading(false)
+    return json
+  }
 
   const finishedjob = async data => {
     let json = await callApi('finishedjob', userData.api_token, { ...data, user_id: userData.id })
@@ -147,9 +157,9 @@ const BookingProvider = ({ children }) => {
 
   const addMoreMinutes = async (booking_id, extra_time) => callApi('addMoreTime', userData.api_token, { booking_id, extra_time })
 
-  const getMake = async (year) => customCallApi('make', userData.api_token, { year}, 'POST', 'Make')
+  const getMake = async (year) => customCallApi('make', userData.api_token, { year }, 'POST', 'Make')
 
-  const getYear = async () => customCallApi('year', userData.api_token, {  }, 'GET', 'Year')
+  const getYear = async () => customCallApi('year', userData.api_token, {}, 'GET', 'Year')
 
   const getModel = async (make, year) => customCallApi('model', userData.api_token, { make, year }, 'POST', 'Model')
 
@@ -212,11 +222,11 @@ const BookingProvider = ({ children }) => {
     else setVehicles(ERROR)
   }
 
-  const addReview = async (data,onSuccess ) => {
+  const addReview = async (data, onSuccess) => {
     setLoading(true)
     let json = await callApi('addReviewRating', userData.api_token, { user_id: userData.id, ...data })
     setLoading(false)
-    if(!json) Alert.alert('Error', 'Something went wrong. Please try again.')
+    if (!json) Alert.alert('Error', 'Something went wrong. Please try again.')
     else onSuccess()
   }
 
@@ -227,43 +237,44 @@ const BookingProvider = ({ children }) => {
     else setRunningBooking(json.data)
   }
 
-  const getNearByWasherLocations = async (setState) => {
-    setState(LOADING)
+  const getNearByWasherLocations = async (onSuccess, onFailure) => {
+    setLoading(true)
     const userLocation = (await getCurrentPosition()).coords
     let json = await callApi('get_washser', userData.api_token, { lat: userLocation.latitude, long: userLocation.longitude })
-    if (json) setState(json.data)
-    else setState(ERROR)
+    setLoading(false)
+    if (json) onSuccess(json.data, userLocation)
+    else onFailure(userLocation)
   }
 
-  const sendSMS = async (setLoading, onSuccess,to_id,message) =>{
+  const sendSMS = async (setLoading, onSuccess, to_id, message) => {
     setLoading(true)
-    let json = await callApi('sendingSms', userData.api_token, { from_id : userData.id, to_id, message, type : "user"})
+    let json = await callApi('sendingSms', userData.api_token, { from_id: userData.id, to_id, message, type: "user" })
     if (json) onSuccess()
     setLoading(false)
   }
 
-  const getWahserCalendar = async (setState,washer_id) =>{
-    if(!washer_id) return
-    let json = await callApi('getWasherCalendar', userData.api_token, {washer_id})
+  const getWahserCalendar = async (setState, washer_id) => {
+    if (!washer_id) return
+    let json = await callApi('getWasherCalendar', userData.api_token, { washer_id })
     if (json) setState([json.data.booking_date])
   }
 
-  const getExtraTimeFee = async (setState) =>{
-    let json = await callApi('extratime',  userData.api_token, {}, null, 'GET')
+  const getExtraTimeFee = async (setState) => {
+    let json = await callApi('extratime', userData.api_token, {}, null, 'GET')
     if (json) setState(json.data[0].price)
     else setState('Error')
   }
 
-  const getServiceFee = async (setState) =>{
-    let json = await callApi('service',  userData.api_token, {}, null, 'GET')
+  const getServiceFee = async (setState) => {
+    let json = await callApi('service', userData.api_token, {}, null, 'GET')
     if (json?.data?.price) setState(parseFloat(json.data.price))
     else setState('Error')
   }
 
-  const cancelRequest = async (data, onSuccess) =>{
+  const cancelRequest = async (data, onSuccess) => {
     setLoading(true)
-    let json = await callApi('cancelRequest', userData.api_token, {...data, user_id : userData.id})
-    if(json) onSuccess()
+    let json = await callApi('cancelRequest', userData.api_token, { ...data, user_id: userData.id })
+    if (json) onSuccess()
     setLoading(false)
   }
 
@@ -317,7 +328,7 @@ export default BookingProvider;
 export const calculateTotalPrice = (booking, fees, discountRate) => {
   let addOnsPrice = (booking?.selectedAddOns?.length == 0 ? 0 : booking?.selectedAddOns?.map(addOn => parseFloat(addOn.add_ons_price)).reduce((p, c) => p + c)) || 0
   let packagePrice = (parseFloat(booking?.packageDetails?.price)) || 0
-  let totalFees = fees.filter(fee=>typeof fee == 'number').reduce((p,c)=>p+c,0)
+  let totalFees = fees.filter(fee => typeof fee == 'number').reduce((p, c) => p + c, 0)
   let total = addOnsPrice + packagePrice + totalFees
   return total - (total * discountRate)
 }

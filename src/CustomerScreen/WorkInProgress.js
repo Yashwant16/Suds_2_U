@@ -1,51 +1,66 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { View, Image, Text } from 'react-native';
 import Colors from '../../Constants/Colors';
+import ListEmpty from '../Components/ListEmpty';
 import LoadingView from '../Components/LoadingView';
+import { ERROR, LOADING } from '../Providers';
+import { BookingContext } from '../Providers/BookingProvider';
 
 const WorkInProgress = ({ navigation, route }) => {
 
     const [timeRemaining, setTimeRemaining] = useState(0)
     const [loading, setLoading] = useState(false);
-    const booking = useMemo(() => route.params?.booking, [route])
+    const [booking, setBooking] = useState()
+    const { booking_id } = useMemo(() => route?.params, [route])
     const deadline = useMemo(() => getDeadline(booking), [booking])
+    const { getSingleBookingDetails } = useContext(BookingContext)
 
     useEffect(() => {
         const interval = setInterval(() => setTimeRemaining(deadline - new Date().getTime()), 1000);
         return () => clearInterval(interval);
     }, [deadline]);
-    return (
-        <View style={styles.container}>
-            <LoadingView containerStyle={{ height: '100%' }} loading={loading}>
 
-                <View style={{ alignItems: 'center', width: '100%', padding: 21 }}>
-                    <Image style={{ width: 85, height: 85, tintColor: '#0AFF06', marginTop: 30 }} source={require('../../Assets/checkmark.png')} />
-                    <Text style={{ fontSize: 22, marginVertical: 10, fontWeight: 'bold', color: 'gray', marginTop: 30 }}>Congratulation!</Text>
-                    <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', color: 'gray' }}>Your service has started now!</Text>
-                </View>
+    
+    useEffect(()=>getSingleBookingDetails(booking_id, setBooking),[])
 
-                {deadline && <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 110 }}>{parseMilllisecond(timeRemaining)}</Text>
-                    <View style={{ flexDirection: 'row', width: '55%', justifyContent: 'space-between' }}>
-                        <Text style={{ color: '#999' }}>Hours</Text>
-                        <Text style={{ color: '#999' }}>Minutes</Text>
+    switch (booking) {
+        case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={Colors.blue_color} size="large" />
+        case ERROR: return <ListEmpty retry={() => getSingleBookingDetails(booking_id, setBooking)} opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="Error loading the booking." />
+
+        default: return (
+            <View style={styles.container}>
+                <LoadingView containerStyle={{ height: '100%' }} loading={loading}>
+
+                    <View style={{ alignItems: 'center', width: '100%', padding: 21 }}>
+                        <Image style={{ width: 85, height: 85, tintColor: '#0AFF06', marginTop: 30 }} source={require('../../Assets/checkmark.png')} />
+                        <Text style={{ fontSize: 22, marginVertical: 10, fontWeight: 'bold', color: 'gray', marginTop: 30 }}>Congratulation!</Text>
+                        <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', color: 'gray' }}>Your service has started now!</Text>
                     </View>
-                </View>}
 
-                <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
-                    <TouchableOpacity onPress={() => navigation.navigate('JOB FINISHED', { booking })} style={[styles.btns, { backgroundColor: Colors.blue_color }]}>
-                        <Text style={styles.btnText}>Need Help?</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate('Select Add Ons')} style={[styles.btns, { backgroundColor: Colors.dark_orange }]}>
-                        <Text style={styles.btnText}>+ Add Add-on</Text>
-                    </TouchableOpacity>
-                </View>
+                    {deadline && <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 110 }}>{parseMilllisecond(timeRemaining)}</Text>
+                        <View style={{ flexDirection: 'row', width: '55%', justifyContent: 'space-between' }}>
+                            <Text style={{ color: '#999' }}>Hours</Text>
+                            <Text style={{ color: '#999' }}>Minutes</Text>
+                        </View>
+                    </View>}
 
-            </LoadingView>
-        </View>
-    );
+                    <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
+                        <TouchableOpacity onPress={() => navigation.navigate('JOB FINISHED', { booking })} style={[styles.btns, { backgroundColor: Colors.blue_color }]}>
+                            <Text style={styles.btnText}>Need Help?</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Select Add Ons')} style={[styles.btns, { backgroundColor: Colors.dark_orange }]}>
+                            <Text style={styles.btnText}>+ Add Add-on</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </LoadingView>
+            </View>
+        );
+    }
+
 };
 export default WorkInProgress;
 
@@ -65,7 +80,7 @@ const stringToms = string => {
 }
 
 const getDeadline = (booking) => {
-    if (!booking) return Date.now()
+    if (!booking || typeof booking == 'number') return Date.now()
     let start_time = new Date(booking?.start_time)
     let extra_time = stringToms(booking?.extra_time)
     let package_time = stringToms(booking?.package_time)

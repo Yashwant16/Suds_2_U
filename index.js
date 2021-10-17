@@ -8,14 +8,14 @@ import {name as appName} from './app.json';
 import { initNotificatoins } from './src/Services/NotificatoinService';
 
 export const NOTIFICATION_TYPES = {
-  NEW_ON_DEMAND_REQUEST : 0,
-  NEW_SCHEDULED_REQUEST : 1,
-  JOB_ACCEPTED : 2,
-  JOB_REJECT : 3,
-  WASHER_ON_THE_WAY : 4,
-  WASHER_ARRIVED : 5,
-  WASH_IN_PROGRESS : 6,
-  WASH_FINISHED : 7
+  NEW_ON_DEMAND_REQUEST : "0",
+  NEW_SCHEDULED_REQUEST : "1",
+  JOB_ACCEPTED : "2",
+  JOB_REJECT : "3",
+  WASHER_ON_THE_WAY : "4",
+  WASHER_ARRIVED : "5",
+  WASH_IN_PROGRESS : "6",
+  WASH_FINISHED : "7"
 }
 
 // import messaging from '@react-native-firebase/messaging';

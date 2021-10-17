@@ -18,7 +18,7 @@ const AddCard = () => {
 
   const [state, setState] = useState(LOADING)
 
-  const {getCardDetails} = useContext(AuthContext)
+  const { getCardDetails } = useContext(AuthContext)
 
   useEffect(() => getCardDetails(setState), [])
 
@@ -28,10 +28,10 @@ const AddCard = () => {
     case LOADING:
       return <ActivityIndicator color={Colors.background_color} size="large" style={{ justifyContent: 'flex-start', padding: 50 }} />
     case EMPTY:
-      return <ListEmpty emptyMsg="You have not added anycards yet." retry={() => getCardDetails(setState)} />
+      return <ListEmpty emptyMsg="You have not added any cards yet." retry={() => getCardDetails(setState)} />
     default:
       return (
-        <FlatList data={state} renderItem={Card} keyExtractor={(item, index) => index} />
+        <FlatList contentContainerStyle={{flexGrow : 1}} data={state} renderItem={Card} keyExtractor={(item, index) => index} />
       )
   }
 };

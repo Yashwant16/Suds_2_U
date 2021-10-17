@@ -8,8 +8,8 @@ export const bookingType = React.createRef()
 export const afterScheduleScreen = React.createRef()
 export const WASHER = '2'
 export const CUSTOMER = '3'
-export const ON_DEMAND = '4'
-export const SCHEDULED = '5'
+export const ON_DEMAND = '1'
+export const SCHEDULED = '0'
 export let dontShow = false
 
 export function setTrue() {

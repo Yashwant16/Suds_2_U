@@ -1,92 +1,138 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import React, { useContext, useEffect, useState } from 'react';
-import { Alert, Modal, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { Alert, Modal, StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import MapView from 'react-native-maps';
 import Colors from '../../Constants/Colors';
-import { partialProfileUrl } from '../Providers';
+import { ERROR, LOADING, partialProfileUrl } from '../Providers';
+import { AppContext } from '../Providers/AppProvider';
 import { AuthContext } from '../Providers/AuthProvider';
+import { BookingContext } from '../Providers/BookingProvider';
+import ListEmpty from './ListEmpty';
 
-export default NewJobModal = ({ modalVisible, hide, accept, booking, setModalVisible }) => {
+export default NewJobModal = () => {
+  const netInfo = useNetInfo()
   const { userData } = useContext(AuthContext)
+  const { newJobRequestId, setNewJobRequestId } = useContext(AppContext)
+  const { getSingleBookingDetails, acceptJob, rejectJob,dispatch } = useContext(BookingContext)
+  const [booking, setBooking] = useState()
+
+  useEffect(() => newJobRequestId ? getSingleBookingDetails(newJobRequestId, setBooking) : null, [newJobRequestId])
+
+  const onAccept = async () => {
+    let success = await acceptJob(newJobRequestId);
+    if (success) {
+      setNewJobRequestId(false)
+      dispatch({ type: ACTIONS.Start })
+      navigation.navigate('ON JOB', { booking_id: newJobRequestId })
+    }
+  }
+
+  const onReject = async () => {
+    let success = await rejectJob(newJobRequestId);
+    if (success) {
+      dispatch({ type: ACTIONS.Start })
+      setNewJobRequestId(false)
+    }
+  }
+
+  const Body = () => {
+    switch (booking) {
+      case LOADING: return (
+        <TouchableOpacity activeOpacity={1} style={{ backgroundColor: 'white', borderRadius: 15, position: 'absolute', padding: 40, overflow: 'hidden' }}>
+          <ActivityIndicator size="large" color={Colors.blue_color} />
+        </TouchableOpacity>
+      )
+      case ERROR: return (
+        <TouchableOpacity activeOpacity={1} style={{ backgroundColor: 'white', borderRadius: 15, position: 'absolute', padding: 20, overflow: 'hidden',  marginHorizontal : 20 }}>
+          <ListEmpty retry={()=>getSingleBookingDetails(newJobRequestId, setBooking)} opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="Error loading request details." />
+        </TouchableOpacity>
+      )
+      default:
+        return (
+          <TouchableOpacity activeOpacity={1} style={styles.modalView}>
+            <Text
+              style={{
+                backgroundColor: Colors.blue_color,
+                padding: 18,
+                fontSize: 22,
+                textAlign: 'center',
+                width: '100%',
+                color: '#fff',
+                fontWeight: 'bold',
+                borderTopLeftRadius: 5,
+                borderTopRightRadius: 5,
+              }}>
+              New Job Request
+            </Text>
+            <View style={{ flexDirection: 'row' }}>
+
+              <View style={{ padding: 20, justifyContent: 'center', alignItems: 'center', width: '50%' }}>
+                <Image style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5e5e5' }} source={(booking?.userdetails[0]?.image || booking?.userdetails?.image) ? { uri: partialProfileUrl + (booking.userdetails[0]?.image || booking.userdetails?.image) } : require('../../Assets/icon/user.png')} />
+                <Text>{(booking?.userdetails[0]?.name || booking?.userdetails?.name)?.split(' ')[0]}</Text>
+              </View>
+
+              <View style={{ width: 1, height: '100%', backgroundColor: '#ddd' }} />
+
+              <View style={{ padding: 20, justifyContent: 'center', alignItems: 'center', width: '50%' }}>
+                <Image style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5e5e5' }} source={userData?.image ? { uri: partialProfileUrl + userData.image } : require('../../Assets/icon/user.png')} />
+                <Text>{userData?.name}</Text>
+              </View>
+
+            </View>
+            <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
+            <View style={{ flexDirection: 'row', padding: 10 }}>
+              <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Package: </Text>
+              <Text style={{ color: '#999', fontWeight: 'bold' }}>{booking?.vehicledetails[0]?.model || booking?.vehicle_type}</Text>
+            </View>
+            <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
+            <View style={{ flexDirection: 'row', padding: 10 }}>
+              <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Address: </Text>
+              <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', width: '70%' }}>{booking?.wash_location}</Text>
+            </View>
+            {booking?.extra_add_ons && <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />}
+            {booking?.extra_add_ons && <View style={{ flexDirection: 'row', padding: 10, justifyContent: 'center' }}>
+              <Text style={{ color: Colors.dark_orange, fontWeight: 'bold', marginLeft: 15 }}>Add-on: </Text>
+              <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', marginRight: 15, width: '70%' }}>
+                {booking?.extraaddonsdetails?.length > 1
+                  ? booking?.extraaddonsdetails?.map(addon => addon.add_ons_name).reduce((p, c) => `${p}, ${c}`)
+                  : booking?.extraaddonsdetails[0]?.add_ons_name}
+              </Text>
+            </View>}
+            <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
+            <View style={{ height: 130, zIndex: 50, backgroundColor: 'red', width: '100%' }}>
+              {booking?.wash_lat_lng && <MapView
+                style={{ width: '100%', flex: 1 }}
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
+                camera={{
+                  zoom: 15,
+                  pitch: 2,
+                  heading: 2,
+                  altitude: 2,
+                  center: { latitude: parseFloat(booking.wash_lat_lng.latitude), longitude: parseFloat(booking.wash_lat_lng.longitude) },
+                }}
+              />}
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <BottomButton title="Reject Job" onPress={onReject} style={{ backgroundColor: Colors.red, borderBottomLeftRadius: 5 }} />
+              <BottomButton title="Accept Job" onPress={onAccept} style={{ backgroundColor: Colors.green, borderBottomRightRadius: 5 }} />
+            </View>
+          </TouchableOpacity>
+        )
+    }
+  }
+
   return (
     <Modal
-      animationType="fade"
       transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text
-            style={{
-              backgroundColor: Colors.blue_color,
-              padding: 18,
-              fontSize: 22,
-              textAlign: 'center',
-              width: '100%',
-              color: '#fff',
-              fontWeight: 'bold',
-              borderTopLeftRadius: 5,
-              borderTopRightRadius: 5,
-            }}>
-            New Job Request
-          </Text>
-          <View style={{ flexDirection: 'row' }}>
-
-            <View style={{ padding: 20, justifyContent: 'center', alignItems: 'center', width: '50%' }}>
-              <Image style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5e5e5' }} source={(booking?.userdetails[0]?.image || booking?.userdetails?.image) ? { uri: partialProfileUrl + (booking.userdetails[0]?.image || booking.userdetails?.image) } : require('../../Assets/icon/user.png')} />
-              <Text>{(booking?.userdetails[0]?.name || booking?.userdetails?.name)?.split(' ')[0]}</Text>
-            </View>
-
-            <View style={{ width: 1, height: '100%', backgroundColor: '#ddd' }} />
-
-            <View style={{ padding: 20, justifyContent: 'center', alignItems: 'center', width: '50%' }}>
-              <Image defaultSource={require('../../Assets/icon/user.png')} style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5e5e5' }} source={userData?.image ? { uri: partialProfileUrl + userData.image } : require('../../Assets/icon/user.png')} />
-              <Text>{userData?.name}</Text>
-            </View>
-
-          </View>
-          <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
-          <View style={{ flexDirection: 'row', padding: 10 }}>
-            <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Package: </Text>
-            <Text style={{ color: '#999', fontWeight: 'bold' }}>{booking?.vehicledetails[0]?.model || booking?.vehicle_type}</Text>
-          </View>
-          <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
-          <View style={{ flexDirection: 'row', padding: 10 }}>
-            <Text style={{ color: Colors.dark_orange, fontWeight: 'bold' }}>Address: </Text>
-            <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', width : '70%' }}>{booking?.wash_location}</Text>
-          </View>
-          {booking?.extra_add_ons && <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />}
-          {booking?.extra_add_ons && <View style={{ flexDirection: 'row', padding: 10, justifyContent: 'center' }}>
-            <Text style={{ color: Colors.dark_orange, fontWeight: 'bold', marginLeft: 15 }}>Add-on: </Text>
-            <Text numberOfLines={1} style={{ color: '#999', fontWeight: 'bold', marginRight: 15,width : '70%'  }}>
-              {booking?.extraaddonsdetails?.length > 1
-                ? booking?.extraaddonsdetails?.map(addon => addon.add_ons_name).reduce((p, c) => `${p}, ${c}`)
-                : booking?.extraaddonsdetails[0]?.add_ons_name}
-            </Text>
-          </View>}
-          <View style={{ width: '100%', height: 1, backgroundColor: '#ddd' }} />
-          <View style={{ height: 130, zIndex: 50, backgroundColor: 'red', width: '100%' }}>
-            {booking?.wash_lat_lng && <MapView
-              style={{ width: '100%', flex: 1 }}
-              scrollEnabled={false}
-              zoomEnabled={false}
-              rotateEnabled={false}
-              camera={{
-                zoom: 15,
-                pitch: 2,
-                heading: 2,
-                altitude: 2,
-                center: { latitude: parseFloat(booking.wash_lat_lng.latitude), longitude: parseFloat(booking.wash_lat_lng.longitude) },
-              }}
-            />}
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <BottomButton title="Reject Job" onPress={hide} style={{ backgroundColor: Colors.red, borderBottomLeftRadius: 5 }} />
-            <BottomButton title="Accept Job" onPress={accept} style={{ backgroundColor: Colors.green, borderBottomRightRadius: 5 }} />
-          </View>
-        </View>
-      </View>
+      visible={newJobRequestId!=false ? true : false}
+      hardwareAccelerated
+      statusBarTranslucent
+      animationType="fade">
+      <TouchableOpacity activeOpacity={1} onPress={() => setNewJobRequestId(false)} style={{ flex: 1, backgroundColor: "#00000080", alignItems: 'center', justifyContent: 'center' }} >
+        <Body />
+      </TouchableOpacity>
     </Modal>
   );
 };

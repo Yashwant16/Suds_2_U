@@ -96,8 +96,9 @@ const BookingReview = () => {
         if (json) {
             AsyncStorage.removeItem('pending_coupon')
             changeStack('CustomerHomeStack')
+            console.log('SAVE BOOKING RESPONSE =>',json)
             if(bookingType.current==SCHEDULED)return Alert.alert("Congrats!", "Your wash appointment has been booked, you will receive a notification once the washer has confirmed. Thank you for your business.")
-            if(bookingType.current==ON_DEMAND) return setTimeout(()=>navigate('On The Way', { booking_id: json.booking_id }),1000)
+            if(bookingType.current==ON_DEMAND) return setTimeout(()=>navigate('Near By Washer', { booking_id: json.booking_id }),1000)
         }
     }
 

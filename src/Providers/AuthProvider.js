@@ -19,8 +19,6 @@ const AuthProvider = ({ children }) => {
     return await messaging().getToken()
   }
 
-  useEffect(() => messaging().getToken().then((token) => console.log(token)), [])
-
   const updateUserLocation = async () => {
     try {
       const { latitude, longitude } = (await getCurrentPosition()).coords

@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Modal } from 'react-native';
+import { useNetInfo } from '@react-native-community/netinfo';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Modal } from 'react-native';
 import { TextInput } from 'react-native';
 import { Image } from 'react-native';
 import { Alert } from 'react-native';
@@ -7,8 +8,10 @@ import { Text, View, ImageBackground, StyleSheet, TouchableOpacity, ScrollView }
 import { Icon, Rating } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 import Divider from '../Components/Divider';
+import ListEmpty from '../Components/ListEmpty';
 import LoadingView from '../Components/LoadingView';
 import { CUSTOMER, type } from '../Navigation/NavigationService';
+import { ERROR, LOADING } from '../Providers';
 import { BookingContext, WASH_COMPLETED } from '../Providers/BookingProvider';
 
 const images = [
@@ -19,30 +22,23 @@ const images = [
 ]
 
 const BookingDetails = ({ route }) => {
+  const netInfo = useNetInfo()
   const [booking, setBooking] = useState();
   const [tips] = useState(['$10', '$15', '$20', 'Custom']);
   const [selectedTip, setSelectedTip] = useState('$15');
-  const [fetching, setFetching] = useState(true);
-  const [emptyResponse, setEmptyResponse] = useState(false)
   const { getSingleBookingDetails } = useContext(BookingContext);
+  const booking_id = useMemo(() => route.params?.id, [])
+  const [reviewPopupVisible, setReviewPopupVisibility] = useState(false)
 
-  const getBooking = async () => {
-    setFetching(true);
-    let json = await getSingleBookingDetails(route.params?.id);
-    setFetching(false);
-    json?.empty ? setEmptyResponse(true) : setBooking(json?.data);
-    console.log(JSON.stringify(json?.data))
-  };
+  useEffect(() => getSingleBookingDetails(booking_id, setBooking), [])
 
-  useEffect(() => getBooking(route.params?.id), []);
+  const Body = () => {
+    switch (booking) {
+      case LOADING: return <ActivityIndicator size="large" color={Colors.blue_color} style={{ alignSelf: 'center', height: '100%' }} />
+      case ERROR: return <ListEmpty retry={() => getSingleBookingDetails(booking_id, setBooking)} opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="Error loading request details." />
 
-  const [reviewPopupVisible, setReviewPopuVisibility] = useState(false)
-
-  return (
-    <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
-      {reviewPopupVisible && <ReviewPopup refreshDetail={getBooking} booking={booking} dismiss={() => setReviewPopuVisibility(false)} />}
-      <ScrollView style={styles.container}>
-        <LoadingView empty={emptyResponse} fetching={fetching}>
+      default: return (
+        <ScrollView style={styles.container}>
           <Text style={[styles.text, { fontWeight: 'bold' }]}>Wash Location</Text>
           <Text style={[styles.text]}>{booking?.wash_location}</Text>
           <Divider style={{ marginTop: 10, marginBottom: 10 }} />
@@ -65,14 +61,13 @@ const BookingDetails = ({ route }) => {
               ))}
             </View>)
             : null}
-          {!booking?.rating || booking.rating == '0' && type.current==CUSTOMER && (
-            <TouchableOpacity onPress={()=>setReviewPopuVisibility(true)} style={{backgroundColor : Colors.blue_color, borderRadius : 10, alignItems : 'center', justifyContent : 'center', padding : 18,}} > 
-              <Text style={{fontWeight : 'bold', color : 'white', fontSize : 16}} >Leave a Review</Text>
+          {!booking?.rating || booking.rating == '0' && type.current == CUSTOMER && (
+            <TouchableOpacity onPress={() => setReviewPopupVisibility(true)} style={{ backgroundColor: Colors.blue_color, borderRadius: 10, alignItems: 'center', justifyContent: 'center', padding: 18, }} >
+              <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 16 }} >Leave a Review</Text>
             </TouchableOpacity>
           )}
           {booking?.rating && booking.rating != '0' && <Text style={[styles.text, { fontWeight: 'bold', textAlign: 'center', paddingVertical: 10 }]}>Your rating on this job</Text>}
           {booking?.rating && booking.rating != '0' && <View style={{ padding: 10, backgroundColor: 'white', borderRadius: 20, alignItems: 'center' }}>
-            {/* <Rating rating={booking?.rating} size={30} /> */}
             <Rating
               showRating
               readonly
@@ -86,11 +81,19 @@ const BookingDetails = ({ route }) => {
             {Object.values(booking.image[0]).map((v, i) => <Image key={i} style={{ borderRadius: 10, height: 200, marginBottom: 10 }} source={{ uri: v }} />)}
 
           </View>}
+        </ScrollView>
+      )
+    }
+  }
 
-        </LoadingView>
-      </ScrollView>
+  
+  return (
+    <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
+      {reviewPopupVisible && <ReviewPopup refreshDetail={getBooking} booking={booking} dismiss={() => setReviewPopupVisibility(false)} />}
+      <Body />
     </ImageBackground>
   );
+
 };
 
 export default BookingDetails;

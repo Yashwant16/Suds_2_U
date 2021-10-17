@@ -13,31 +13,33 @@ import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS } from '../Providers
 import { ActivityIndicator } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
+import NotificationController from '../Services/NotificationController';
 export const nav = React.createRef(null);
 export default HomeScreen = ({ navigation }) => {
 
-  const { userData, updateUserLocation, changeImage } = useContext(AuthContext)
-  const { setLoading } = useContext(AppContext)
+const { userData, updateUserLocation, changeImage } = useContext(AuthContext)
+  const { setLoading, setNewJobRequestId } = useContext(AppContext)
   const { runningBooking, getSingleBookingDetails, getRewards } = useContext(BookingContext)
   const [currentAddress, setCurrentAddress] = useState('Getting address...')
   const [rewards, setRewards] = useState(LOADING)
 
   useEffect(() => {
-    console.log(runningBooking?.status, "RUNNING BOOKING STATUS")
-    switch (runningBooking?.status) {
-      case WASHR_ON_THE_WAY:
-        getBookingWithId(runningBooking.booking_id).then(booking => {
-          if (booking) navigation.navigate('On The Way', { booking, onTheWay: true })
-        })
-        break;
-      case WASH_IN_PROGRESS:
-        getBookingWithId(runningBooking.booking_id).then(booking => {
-          if (booking) navigation.navigate('Work In Progress', { booking });
-        })
-        break;
-      default:
-        break;
-    }
+    // messaging().onNotificationOpenedApp((message) => console.log('notification opened', message))
+    // console.log(runningBooking?.status, "RUNNING BOOKING STATUS")
+    // switch (runningBooking?.status) {
+    //   case WASHR_ON_THE_WAY:
+    //     getBookingWithId(runningBooking.booking_id).then(booking => {
+    //       if (booking) navigation.navigate('On The Way', { booking, onTheWay: true })
+    //     })
+    //     break;
+    //   case WASH_IN_PROGRESS:
+    //     getBookingWithId(runningBooking.booking_id).then(booking => {
+    //       if (booking) navigation.navigate('Work In Progress', { booking });
+    //     })
+    //     break;
+    //   default:
+    //     break;
+    // }
 
     getRewards(setRewards)
   }, [])
@@ -55,19 +57,6 @@ export default HomeScreen = ({ navigation }) => {
     nav.current = navigation
     updateUserLocation()
     setTimeout(() => getCurrentAddress().then(setCurrentAddress), 2000)
-
-
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-
-      console.log('--------', remoteMessage.data)
-
-      PushNotification.localNotification({
-        channelId: 'channel-id',
-        message: remoteMessage.notification.body,
-        title: remoteMessage.notification.title,
-        data: remoteMessage.data
-      })
-    });
 
     return () => unsubscribe()
   }, [])
@@ -104,6 +93,7 @@ export default HomeScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1, }}>
       <LoadingView />
+      <NotificationController />
       <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', justifyContent: 'center' }}>
         <Rewards></Rewards>
       </View>

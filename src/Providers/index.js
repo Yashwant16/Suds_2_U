@@ -13,7 +13,7 @@ export const ERROR = 45
 export const LOADING = 64
 export const EMPTY = 641
 
-export const partialProfileUrl = "http://suds-2-u.com/public/profile/"
+export const partialProfileUrl = "https://suds-2-u.com/public/profile/"
 
 
 const Providers = ({ children }) => {
@@ -94,7 +94,7 @@ export const callApi2 = async (subfix, AppKey, params, onFalse, method = 'POST')
     console.log('TEXT', text)
     let jsonResponse = JSON.parse(text)
     console.log("SAVE BOOKING JSON REPONSE", jsonResponse);
-    if (jsonResponse.response) return jsonResponse.response
+    if (jsonResponse.response) return jsonResponse
     else Alert.alert('Alert', jsonResponse.message);
   } catch (error) {
     console.log("Savebooking error > ", error);
