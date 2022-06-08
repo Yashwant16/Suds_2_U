@@ -1,142 +1,148 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput,Button,ImageBackground } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import React, { useContext, useState } from 'react';
+import { StyleSheet, Text, View, Image, StatusBar, SafeAreaView, TouchableOpacity, TextInput, Button, ImageBackground, useWindowDimensions, TabBarIOSItem } from 'react-native';
+
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
+import { navigate } from '../Navigation/NavigationService';
+import { CardField, useStripe } from '@stripe/stripe-react-native';
+import { Modal } from 'react-native';
+import { AuthContext } from '../Providers/AuthProvider';
 
-export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
-      
-      drawerLabel: 'Payments',
-     
-      drawerIcon: ({ tintColor }) => (
-        <View>
 
-    <Image  style={{width:25,height:25,tintColor:'#FFF'}} source={require('../../Assets/dollar-symbol.png')}/> 
+const Payments = ({ navigation }) => {
+  const [showCardVisible, setShowCardVisiblity] = useState(false)
+  const [cardDetails, setCardDetails] = useState()
+  const { addCard } = useContext(AuthContext)
 
-    </View>
-      ),
-    };
-  
-    render() {
-      return (
-        <View style={{flex:1}} >
-                          <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                          <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                  height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                      <TouchableOpacity  onPress={() => {this.props.navigation.openDrawer();}}>
-                      <Image style={{width:25,height:25,tintColor:'#fff',marginTop:5}} source={require('../../Assets/menu.png')}/>
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar translucent backgroundColor={Colors.blue_color} barStyle="light-content" />
+      <ImageBackground style={{ flex: 1 }} source={require('../../Assets/bg_img.png')}>
 
-                 </TouchableOpacity> 
-                    }
-                  centerComponent={
-                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>PAYMENTS</Text>
-                }
-                />
-                 
-                 <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
-                 <SafeAreaView style={{flex:1}} >  
-                 <View style={{alignItems:'center'}}>
-                <TouchableOpacity
-                    elevation={5} 
-                        onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
-                        style={styles.auth_btn}
-                        underlayColor='gray'
-                        activeOpacity={0.8}
-                    // disabled={this.state.disableBtn}
-                    >
-                      <View style={{flexDirection:'row'}}>
-                        
-                        <View style={{flexDirection:'row'}}> 
-                        <Image style={{width:25,height:25,tintColor:Colors.blue_color ,marginHorizontal:10}} source={require('../../Assets/icon/paypal-logo.png')}/>
-                        <Text style={{ fontSize: 15,  color:'#000' ,fontWeight:'bold',marginTop:5}}>PayPal</Text>
-   
-                        </View>
-                        <View style={{alignItems:'flex-end',flex:1}}>
-                        <Image style={{width:19,height:19,tintColor:'#aaa' ,marginHorizontal:10,marginTop:3}} source={require('../../Assets/icon/right_back.png')}/>
-                        </View>
-                        </View>
-                    </TouchableOpacity>
-                    </View>
-                    <View style={{alignItems:'center'}}>
-                <TouchableOpacity
-                    elevation={5} 
-                        onPress={() => { this.props.navigation.navigate('CustomerApp'); }}
-                        style={styles.auth_btn}
-                        underlayColor='gray'
-                        activeOpacity={0.8}
-                    // disabled={this.state.disableBtn}
-                    >
-                      <View style={{flexDirection:'row'}}>
-                        
-                        <View style={{flexDirection:'row'}}> 
-                        <Image style={{width:25,height:25,tintColor:Colors.blue_color ,marginHorizontal:10}} source={require('../../Assets/icon/credit-card.png')}/>
-                        <Text style={{ fontSize: 15,  color:'#000' ,fontWeight:'bold',marginTop:5}}>Creddit/Debit Card</Text>
-   
-                        </View>
-                        <View style={{alignItems:'flex-end',flex:1}}>
-                        <Image style={{width:19,height:19,tintColor:'#aaa' ,marginHorizontal:10,marginTop:3}} source={require('../../Assets/icon/right_back.png')}/>
-                        </View>
-                        </View>
-                    </TouchableOpacity>
-                    </View>
-
-<View style={{alignItems:'center',justifyContent:'flex-end',flex:1,}}> 
-                    <TouchableOpacity
-                    elevation={5} 
-                        onPress={() => { this.props.navigation.navigate('AddCard'); }}
-                        style={styles.add_auth_btn}
-                        underlayColor='gray'
-                        activeOpacity={0.8}
-                    // disabled={this.state.disableBtn}
-                    >
-                        <Text style={{ fontSize: 15, textAlign: 'center', color:'#fff' ,fontWeight:'bold'}}>Add New Credit/Debit Card </Text>
-                    </TouchableOpacity>
-                    </View>
-                    </SafeAreaView>  
-                    </ImageBackground>
-                 
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity
+            elevation={5}
+            onPress={() => navigate('PAYPAL')}
+            style={styles.auth_btn}
+            underlayColor="gray"
+            activeOpacity={0.8}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginHorizontal: 10 }} source={require('../../Assets/icon/paypal-logo.png')} />
+                <Text style={{ fontSize: 15, color: '#000', fontWeight: 'bold', marginTop: 5 }}>PayPal</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end', flex: 1 }}>
+                <Image style={{ width: 19, height: 19, tintColor: '#aaa', marginHorizontal: 10, marginTop: 3 }} source={require('../../Assets/icon/right_back.png')} />
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
-      );
-    }
-  }
-  
-  const styles = StyleSheet.create({
-    auth_textInput: {
-       
-        alignSelf: 'center',
-        width: '93%',
-        // borderWidth: 1,
-        borderBottomWidth:1,
-        height:40,
-        color: Colors.text_color,
-        marginTop: 10,
-      
-    },
-    auth_btn: {
-        marginTop: 16,
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: Colors.text_white,
-        borderRadius: 5,
-        width: '90%',
-        height: 50,
-        justifyContent: 'center',
-    },
-    add_auth_btn: {
-      marginTop: 16,
-      paddingTop: 10,
-      paddingBottom: 10,
-      backgroundColor: Colors.blue_color,
-      borderRadius: 5,
-      width: '100%',
-      height: 70,
-      justifyContent: 'center',
-  },
-})
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity
+            elevation={5}
+            onPress={() => navigation.navigate('Creddit/Debit Card')}
+            style={styles.auth_btn}
+            underlayColor="gray"
+            activeOpacity={0.8}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginHorizontal: 10 }} source={require('../../Assets/icon/credit-card.png')} />
+                <Text style={{ fontSize: 15, color: '#000', fontWeight: 'bold', marginTop: 5 }}>Creddit/Debit Card</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end', flex: 1 }}>
+                <Image style={{ width: 19, height: 19, tintColor: '#aaa', marginHorizontal: 10, marginTop: 3 }} source={require('../../Assets/icon/right_back.png')} />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
 
+
+        <TouchableOpacity
+          elevation={5}
+          onPress={() => setShowCardVisiblity(true)}
+          style={styles.add_auth_btn}
+          underlayColor="gray"
+          activeOpacity={0.8}>
+          <Text style={{ fontSize: 15, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Add New Credit/Debit Card </Text>
+        </TouchableOpacity>
+
+        <Modal
+          visible={showCardVisible}
+          transparent={true}
+          hardwareAccelerated
+          statusBarTranslucent
+          animationType="fade">
+          <TouchableOpacity onPress={() => setShowCardVisiblity(false)} activeOpacity={1} style={{ flex: 1, backgroundColor: "#00000080", alignItems: 'center', justifyContent: 'center' }} >
+            <TouchableOpacity activeOpacity={1} style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, position: 'absolute', left: 20, right: 20, zIndex: 20 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 18, textAlign: 'center', margin: 20 }}>Add Card Info</Text>
+              <CardField
+
+                postalCodeEnabled={true}
+                placeholder={{
+                  number: '4242 4242 4242 4242',
+                }}
+                cardStyle={{
+                  backgroundColor: '#00000010',
+                  textColor: '#000000',
+                }}
+                style={{
+                  margin: 0,
+                  backgroundColor: '#00000010',
+                  width: '100%',
+                  height: 50,
+                  marginTop: 0,
+
+                }}
+                onCardChange={setCardDetails}
+                onFocus={(focusedField) => {
+                  console.log('focusField', focusedField);
+                }}
+              />
+              <TouchableOpacity onPress={() => addCard(cardDetails, () => setShowCardVisiblity(false))} style={{ backgroundColor: Colors.blue_color, padding: 16, justifyContent: 'center', alignItems: 'center', margin: 10, borderRadius: 10, width: useWindowDimensions().width - 60 }}>
+                <Text style={{ fontWeight: 'bold', color: 'white', }}>
+                  Done
+                </Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
+
+
+      </ImageBackground>
+    </SafeAreaView>
+  );
+};
+
+export default Payments
+
+const styles = StyleSheet.create({
+  auth_textInput: {
+    alignSelf: 'center',
+    width: '93%',
+    // borderWidth: 1,
+    borderBottomWidth: 1,
+    height: 40,
+    color: Colors.text_color,
+    marginTop: 10,
+  },
+  auth_btn: {
+    marginTop: 16,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: Colors.text_white,
+    borderRadius: 5,
+    width: '90%',
+    height: 50,
+    justifyContent: 'center',
+  },
+  add_auth_btn: {
+    marginTop: 'auto',
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: Colors.blue_color,
+    borderRadius: 5,
+    width: '100%',
+    height: 70,
+    justifyContent: 'center',
+  },
+});

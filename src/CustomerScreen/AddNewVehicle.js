@@ -1,195 +1,123 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, ImageBackground,Picker } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Image, ImageBackground, StyleSheet, Alert, TouchableOpacity, View, Text } from 'react-native';
+import { ScrollView, } from 'react-native-gesture-handler';
 import Colors from '../../Constants/Colors';
-import RNPickerSelect from 'react-native-picker-select';
-import { ScrollView } from 'react-native';
+import ControllerInput from '../Components/ControllerInput';
+import CtaButton from '../Components/CtaButton';
+import CustomPicker from '../Components/CustomPicker';
+import LoadingView from '../Components/LoadingView';
+import { BookingContext } from '../Providers/BookingProvider';
+import { launchImageLibrary } from 'react-native-image-picker';
 
-export default class MyNotificationsScreen extends React.Component {
+const AddNewVehicle = ({ navigation }) => {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    formState,
+  } = useForm();
+  const { getMake, getYear, getModel, addNewVehicle, getVehicles } = useContext(BookingContext);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [selectedImage, setSelectedImage] = useState()
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      card_no: "",
-      card_name: '',
-      expire_month: '',
-      expire_year: '',
-      cvv_no: '',
-      password: "",choosenIndex: 0 
+
+  const getMakeList = async () => {
+    const selectedYear = getValues('year')?.name;
+    console.log(selectedYear)
+    if (selectedYear) return await getMake(selectedYear);
+    else Alert.alert('Select Make', 'Please select a year first');
+  };
+
+  const getModelList = async () => {
+    const selectedYear = getValues('year')?.name;
+    const selectedMake = getValues('make')?.name
+    if (selectedYear && selectedMake) return await getModel(selectedMake, selectedYear);
+    else if (!selectedYear) Alert.alert('Select Year', 'Please select a year first');
+    else if (!selectedMake) Alert.alert('Select Male', 'Please select a make first');
+  };
+
+  const onSubmit = async data => {
+    console.log(data)
+    setLoading(true);
+    let success = await addNewVehicle({ ...data, make: data.make.name, year: data.year.name, model: data.model.name, vehicle_type: 1, image: selectedImage });
+    setLoading(false);
+    if (success) {
+      navigation.goBack()
+      getVehicles()
     }
+  };
+
+  const imageSelectCallBack = (res) => {
+    if (res.didCancel) return
+    console.log(res?.assets);
+    setSelectedImage(res?.assets[0])
   }
-  render() {
 
-    return (
-      <View style={{ flex: 1 }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={82}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.navigate('BookWasher_Now') }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
 
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: '600', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Add New Vehicle</Text>
-          }
-        />
+  return (
+    <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
+      <LoadingView fetching={fetching} loading={loading}>
+        <ScrollView style={styles.container}>
+          
+          <CustomPicker
+            asynFunction={getYear}
+            fieldName="year"
+            rules={{ required: true }}
+            control={control}
+            errors={formState?.errors}
+            label="Year"
+          />
+          <CustomPicker
+            asynFunction={getMakeList}
+            fieldName="make"
+            rules={{ required: true }}
+            control={control}
+            errors={formState?.errors}
+            label="Make"
+          />
+          <CustomPicker
+            asynFunction={getModelList}
+            fieldName="model"
+            rules={{ required: true }}
+            control={control}
+            errors={formState?.errors}
+            label="Model"
+          />
+          <TouchableOpacity onPressIn={() => launchImageLibrary({}, imageSelectCallBack)} style={{ backgroundColor: 'white', borderRadius: 30, padding: 20, marginTop: 8, alignItems: 'center' }}>
+            <View style={{ width: 50, height: 50, padding: 15, backgroundColor: Colors.blue_color, alignItems: 'center', justifyContent: 'center', borderRadius: 10, alignSelf: 'center' }}>
+              <Image style={{ width: 35, height: 35, }} source={require('../../Assets/camera.png')} />
+            </View>
+            <Text style={{ color: '#999', paddingTop: 10 }}>Upload car photo</Text>
+          </TouchableOpacity>
+          <CtaButton onPress={handleSubmit(onSubmit)} primary title="Continue" style={{ width: '100%', marginTop: 8 }} />
+        </ScrollView>
+      </LoadingView>
+    </ImageBackground>
+  );
+};
 
-        <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
-          <SafeAreaView />
-          <ScrollView>
-          <View style={{ alignItems: 'center', marginTop: 15 }}>
-          {/* <Picker style={styles.pickerStyle}  
-                        selectedValue={this.state.language}  
-                        onValueChange={(itemValue, itemPosition) =>  
-                            this.setState({language: itemValue, choosenIndex: itemPosition})}  
-                    >  
-                     <Picker.Item label="Select" value="" /> 
-                    <Picker.Item label="Java" value="java" />  
-                    <Picker.Item label="JavaScript" value="js" />  
-                    <Picker.Item label="React Native" value="rn" />  
-                </Picker>  */}
-
-<TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
-              placeholder="Make"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-
-<TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
-              placeholder="Year"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-                 <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
-              placeholder="Model"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
-              placeholder="Engine"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-
-              <View style={[styles.camera_textInput]}>
-<TouchableOpacity style={{alignItems:'center'}}>
-  <View style={{backgroundColor:Colors.blue_color,width:50,height:50,justifyContent:'center',alignItems:'center',borderRadius:5}}>
-<Image style={{ width: 35, height:35, tintColor: '#000', alignItems:'center' ,backgroundColor:Colors.blue_color, }} source={require('../../Assets/icon/camera.png')} />
-</View>
-<Text style={{fontSize:16,color:'#ccc'}}>Upload Car Photo</Text>
-</TouchableOpacity>
-              </View>
-            <TouchableOpacity
-              elevation={5}
-              onPress={() => { this.props.navigation.navigate('SelectPackage'); }}
-              style={styles.auth_btn}
-              underlayColor='gray'
-              activeOpacity={0.8}
-            // disabled={this.state.disableBtn}
-            >
-              <Text style={{ fontSize: 16, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Continue </Text>
-            </TouchableOpacity>
-            
-          </View>
-          </ScrollView>
-          <SafeAreaView />
-        </ImageBackground>
-
-      </View>
-    );
-  }
-}
+export default AddNewVehicle;
 
 const styles = StyleSheet.create({
-  auth_textInput: {
-
-    alignSelf: 'center',
-    width: '93%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 50,
-    color: '#000',
-    borderRadius: 25, paddingLeft: 15,
-    marginTop: 10,
-
+  imgBg: {
+    flex: 1,
   },
-  camera_textInput: {
-
-    alignItems: 'center',
-    justifyContent:'center',
-    width: '93%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 110,
-    color: '#000',
-    borderRadius: 50, paddingLeft: 15,
-    marginTop: 10,
-
+  container: {
+    width: '100%',
+    height: '100%',
+    paddingTop: 15,
+    paddingHorizontal: 30,
   },
-  short_textInput: {
-
-    alignSelf: 'center',
-    width: '46%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 50,
-    color: '#000',
-    borderRadius: 25, paddingLeft: 15,
-    marginTop: 10,
-
+  text: {
+    fontWeight: 'bold',
+    padding: 18,
+    fontSize: 16,
+    width: '100%',
+    borderRadius: 50,
+    backgroundColor: 'white',
+    marginTop: 8,
   },
-  auth_btn: {
-    marginTop: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.blue_color,
-    borderRadius: 5,
-    width: '90%',
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-  },
-  container: {  
-    flex: 1,  
-   
-},  
-textStyle:{  
-   margin: 24,  
-   fontSize: 16,  
-   
-  
-},  
-pickerStyle:{  
-   height: 50,  
-   width: "93%",  
- fontSize:11, 
-   backgroundColor:'#fff',
-   borderRadius:25,
-   justifyContent: 'center', 
-
-}  
-})
-
+});

@@ -1,11 +1,13 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 
-export default InputsContainer = ({children})=>(
+const InputsContainer = ({children})=>(
     <View style={styles.container}>
         {children}
     </View>
 )
+
+export default InputsContainer
 
 const styles = StyleSheet.create({
     container:{
@@ -14,7 +16,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: {width: 1, height: 1},
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.2,
         shadowRadius: 3.5,
         borderRadius: 15,
         elevation: 5,

@@ -2,13 +2,13 @@ import React from 'react';
 import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
 import Colors from '../../Constants/Colors';
 
-const CustomInput = ({label, iconSource, setState, state, placeholder, secure}) => {
+const CustomInput = ({label, iconSource, setState, state, placeholder, secure, noIcon}) => {
   return (
     <View>
       <Text style={styles.input_label}>{label}</Text>
       <View style={{width: '95%', flexDirection: 'row'}}>
         <TextInput style={[styles.auth_textInput]} placeholder={placeholder} secureTextEntry={secure} onChangeText={text => setState({text})} value={state} placeholderTextColor={Colors.dark_gray} autoCapitalize="none" />
-        <Image source={iconSource} style={styles.input_icon} />
+        {!noIcon &&<Image source={iconSource} style={styles.input_icon} />}
       </View>
     </View>
   );

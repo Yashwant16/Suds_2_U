@@ -1,251 +1,170 @@
-
-import {
-
-  PermissionsAndroid,
-  Platform,
-  Button,
-} from 'react-native';
-
-//import all the components we are going to use.
-import Geolocation from '@react-native-community/geolocation';
-
-
-import React from 'react';
-import {Text, View, Image, StyleSheet,TouchableOpacity,TextInput} from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Text, View, Image, StyleSheet, TouchableOpacity ,SafeAreaView} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
-import { Header, Icon, Avatar } from 'react-native-elements';
-import { SafeAreaView } from 'react-native';
-export default class OnJob extends React.Component {
-    static navigationOptions = {
-        drawerLabel: 'Home',
-        drawerIcon: ({tintColor}) => (
-          <View>
-            <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
-          </View>
-        ),
-      };
-    
-      constructor(props) {
-        super(props);
-        this.state = {arrived: false,
-            currentLongitude:'-122.406417',
-            currentLatitude:'37.785834',
-            locationStatus:''
+import { Icon } from 'react-native-elements';
+import { getCurrentPosition, subscribeLocationLocation } from '../Services/LocationServices';
+import { bookingType, changeStack, navigate, ON_DEMAND, SCHEDULED } from '../Navigation/NavigationService';
+import { useNavigation } from '@react-navigation/core';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+const GOOGLE_MAPS_APIKEY = 'AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM';
+import Geocoder from 'react-native-geocoding';
+import { BookingContext } from '../Providers/BookingProvider';
+import { Alert } from 'react-native';
+import { Platform } from 'react-native';
+import LoadingView from '../Components/LoadingView';
 
-        };
-      }
-    componentWillMount =()=>{
-        this.getOneTimeLocation()
+Geocoder.init("AIzaSyDC6TqkoPpjdfWkfkfe641ITSW6C9VSKDM");
+
+const GETTING_LOCATION = 'Getting Address...'
+const ERROR_GETTING_LOCATION = "Error getting location"
+
+
+const OnDemand = ({ route }) => {
+  const navigation = useNavigation()
+  const [state, setState] = useState({ latitude: 29.744503, longitude: -95.362809, locationStatus: GETTING_LOCATION })
+  const { setCurrentBooking, currentBooking, getNearByVendor } = useContext(BookingContext)
+  const [loading, setLoading] = useState()
+
+  useEffect(() => getOneTimeLocation(), [])
+  useEffect(() => {
+    if(route.params?.changeLocation) return
+    setCurrentBooking({})
+    if (route.params?.headerTitle) navigation.setOptions({ title: route.params.headerTitle })
+    return () => setCurrentBooking({})
+  }, [route])
+
+  const getFormattedAddress = (lat, lng) => {
+    setState({ ...state, locationStatus: GETTING_LOCATION })
+    Geocoder.from(lat, lng)
+      .then(json => setState({ ...state, latitude: lat, longitude: lng, locationStatus: json.results[0].formatted_address }))
+      .catch(error => { console.warn(error); setState({ ...state, locationStatus: ERROR_GETTING_LOCATION }) })
+  }
+
+  const getOneTimeLocation = async () => {
+    if (currentBooking?.wash_lat_lng) setTimeout(() => {
+      mapRef.current.animateCamera({ zoom: 15, pitch: 2, heading: 2, altitude: 2, center: { ...currentBooking.wash_lat_lng } }, { duration: 1 })
+    }, 5)
+    let info = await getCurrentPosition()
+    if (info) {
+      mapRef.current.animateCamera({ zoom: 15, pitch: 2, heading: 2, altitude: 2, center: { ...info.coords } }, { duration: 1000 })
+      // subscribeLocationLocation()
     }
+    else console.log(info)
+  };
 
-      useEffect =() => {
-        requestLocationPermission = async () => {
-          if (Platform.OS === 'ios') {
-           this.getOneTimeLocation();
-          this.subscribeLocationLocation();
-          } else {
-            try {
-              const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                {
-                  title: 'Location Access Required',
-                  message: 'This App needs to Access your location',
-                }
-              );
-              if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                //To Check, If Permission is granted
-               this. getOneTimeLocation();
-               this. subscribeLocationLocation();
-              } else {
-                setLocationStatus('Permission Denied');
-              }
-            } catch (err) {
-              console.warn(err);
-            }
-          }
-        };
-        requestLocationPermission();
-        return () => {
-          Geolocation.clearWatch(watchID);
-        };
-      }
-    
-       getOneTimeLocation = () => {
-        // setLocationStatus('Getting Location ...');
-        Geolocation.getCurrentPosition(
-          //Will give you the current location
-          (position) => {
-            // setLocationStatus('You are Here');
-            const currentLongitude = JSON.stringify(position.coords.longitude);
-            //getting the Longitude from the location json
-            const currentLatitude = JSON.stringify(position.coords.latitude);
-            //getting the Latitude from the location json
-             this.setState({ currentLongitude:currentLongitude
-            })
-            console.log('longitude:',currentLongitude)
-            //Setting state Longitude to re re-render the Longitude Text
-             this.setState({  currentLatitude:currentLatitude})
-             console.log('latitude:',currentLatitude)
-            //Setting state Latitude to re re-render the Longitude Text
-          },
-          (error) => {
-            // setLocationStatus(error.message);
-          },
-          { enableHighAccuracy: false, timeout: 30000, maximumAge: 1000 }
-        );
-      };
-    
-       subscribeLocationLocation = () => {
-        watchID = Geolocation.watchPosition(
-          (position) => {
-            // setLocationStatus('You are Here');
-            //Will give you the location on location change
-            console.log(position);
-            const currentLongitude = JSON.stringify(position.coords.longitude);
-            //getting the Longitude from the location json
-            const currentLatitude = JSON.stringify(position.coords.latitude);
-            //getting the Latitude from the location json
-            this.setState({ currentLongitude:currentLongitude
-            })
-            console.log('latitude:',currentLongitude)
-            //Setting state Longitude to re re-render the Longitude Text
-             this.setState({  currentLatitude:currentLatitude})
-             console.log('latitude:',currentLatitude)
-            //Setting state Latitude to re re-render the Longitude Text
-          },
-          (error) => {
-            // setLocationStatus(error.message);
-          },
-          { enableHighAccuracy: false, maximumAge: 1000 }
-        );
-      };
-    
+  const mapRef = useRef(null)
 
-      
-    render(){
+  const onPlaceSelected = (data, details = null) => {
+    console.log(details)
+    mapRef.current.animateCamera({
+      zoom: 15,
+      pitch: 2,
+      heading: 2,
+      altitude: 50,
+      center: { latitude: details.geometry.location.lat, longitude: details.geometry.location.lng }
+    }, { duration: 1000 })
+    setState({ latitude: details.geometry.location.lat, longitude: details.geometry.location.lng, locationStatus: data?.description })
+  }
+
+  const onConfirmLocation = async () => {
+    if (state.locationStatus == GETTING_LOCATION) return Alert.alert('Please wait', state.locationStatus, [{ text: 'Ok', onPress: (state.locationStatus == GETTING_LOCATION) ? () => null : onConfirmLocation }])
+    if (state.locationStatus == ERROR_GETTING_LOCATION) return Alert.alert('Error', 'Error etting your location. Please check your internet connection.')
+    bookingType.current = route.params?.bookingType ? route.params.bookingType : ON_DEMAND
+    let wash_lat_lng = (await mapRef.current.getCamera())?.center
+    setCurrentBooking(cv => ({ ...cv, wash_location: state.locationStatus, lat: wash_lat_lng.latitude, long: wash_lat_lng.longitude, type: bookingType.current == SCHEDULED ? 1 : 0 }))
+    if (route.params?.changeLocation) return navigation.goBack()
+    if (bookingType.current == ON_DEMAND) {
+      setLoading(true)
+      let json = await getNearByVendor(state.latitude, state.longitude)
+      setLoading(false)
+      if (json?.data) setCurrentBooking(cv => ({ ...cv, washer_id: json.data.id }))
+      else return
+    }
+    navigate("Select Vehicle Type")
+  }
+
   return (
-  <View style={{flex:1}}>
-          <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('SelectAddOns') }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>ON-DEMAND SERVICES</Text>
-                    }
-                />
+    <SafeAreaView style={{ flexGrow : 1, backgroundColor: Colors.blue_color }}>
+      <LoadingView loading={loading} />
       <MapView
-        style={{flex: 1}}
-        initialRegion={{
-            latitude: this.state.currentLatitude,
-            longitude: this.state.currentLongitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}>
-                <View style={styles.jobDestination}>
-        <View style={{flex: 1, flexDirection: 'row', }}>
-          <Image style={{height: 25, width: 25, marginRight: 15, padding: 0, alignSelf: 'center', tintColor: '#999',marginLeft:10}} source={require('../../Assets/search.png')} />
-        
-            <View style={{alignItems: 'center', paddingTop:15,}}>
-              <Text style={{marginHorizontal: 5, fontSize: 14, color: Colors.dark_orange,fontWeight:'bold',marginLeft:20}}>PLEASE ENTER YOUR SERVICE ADDRESS</Text>
-              <Text style={{marginHorizontal: 5, fontSize: 14, color: '#444'}}>994 Colin Gateway Suite 981</Text>
-            </View>
-            {/* <Image style={{height: 25, width: 25, marginRight: 10, padding: 10, alignSelf: 'center', tintColor: '#444'}} source={require('../../Assets/location.png')} /> */}
-          </View>
-        </View>
-        <Marker
-          coordinate={{latitude: 37.78825, longitude: -122.4324}}
-          title="Your Live Location"
-          
-        //   description="this is a marker example"
-        >
-                      <Image style={{height: 40, width: 38, marginRight: 15, padding: 0, alignSelf: 'center', tintColor: Colors.blue_color,marginLeft:10}} source={require('../../Assets/livelocation.png')} />
-        </Marker>
-
-        <TouchableOpacity 
-   onPress={() => {this.getOneTimeLocation();}}
-        activeOpacity={0.7}
-        style={{justifyContent:'flex-end',alignSelf:'flex-end',flex:1,padding:10,}}>
-            <View style={{width:45,height:45,borderRadius:22,backgroundColor:'#fff',alignItems:'center',justifyContent:'center',shadowOpacity:0.5}}>
-        <Image style={{ width: 25, height: 25, tintColor: '#000',  }} source={require('../../Assets/getlive.png')} />
-        </View>
-        </TouchableOpacity>
+        style={{ flex: 1 }}
+        onRegionChangeComplete={({ latitude, longitude }) => getFormattedAddress(latitude, longitude)}
+        showsCompass={false}
+        ref={map => mapRef.current = map}
+        initialRegion={{ latitude: state.latitude, longitude: state.longitude, latitudeDelta: .009, longitudeDelta: .009 }}>
       </MapView>
-      <TouchableOpacity
-                            elevation={5}
-                            onPress={() => { this.props.navigation.navigate(''); }}
-                            style={styles.auth_btn}
-                            underlayColor='gray'
-                            activeOpacity={0.8}
-                        // disabled={this.state.disableBtn}
-                        >
-                            <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold' }}>CONFIRM LOCATION</Text>
 
-                        </TouchableOpacity>
+      <View style={styles.jobDestination}>
+        <Icon name="search" style={{ paddingTop: 12.5 }} color="#999" />
+        <GooglePlacesInput onPress={onPlaceSelected} placeholder={state.locationStatus} />
       </View>
+
+      <View style={{ marginTop: 'auto' }}>
+        <TouchableOpacity
+          onPress={() => { getOneTimeLocation() }}
+          activeOpacity={0.7}
+          style={{ elevation: 2, shadowColor: '#555', shadowRadius: 5, shadowOpacity: .2, borderRadius: 25, padding: 10, margin: 10, backgroundColor: 'white', position: 'absolute', right: 0, bottom: 65 }}>
+          <Icon name="gps-fixed" />
+        </TouchableOpacity>
+        <TouchableOpacity
+        disabled={(state.locationStatus == ERROR_GETTING_LOCATION || state.locationStatus == GETTING_LOCATION)}
+          onPress={onConfirmLocation}
+          style={[styles.auth_btn, {backgroundColor : (state.locationStatus == ERROR_GETTING_LOCATION || state.locationStatus == GETTING_LOCATION) ? '#6da9f2' : Colors.blue_color}]}
+          activeOpacity={0.8}>
+          <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.buton_label, fontWeight: 'bold', }}>{(state.locationStatus !== ERROR_GETTING_LOCATION && state.locationStatus !== GETTING_LOCATION) ? 'CONFIRM LOCATION' : state.locationStatus }</Text>
+        </TouchableOpacity>
+      </View>
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, justifyContent: 'center', alignItems: 'center' }}>
+        <Icon size={50} color="orange" name="place" style={{ paddingBottom: 35 }} />
+      </View>
+
+    </SafeAreaView>
+  );
+}
+
+export default OnDemand
+
+const GooglePlacesInput = ({ onPress, placeholder }) => {
+  return (
+    <GooglePlacesAutocomplete
+      placeholder={placeholder}
+      fetchDetails
+      styles={{ textInput: { marginBottom: 0, height: 45 } }}
+      onFail={(err) => console.log(err)}
+      onPress={onPress}
+      numberOfLines={1}
+      query={{
+        key: GOOGLE_MAPS_APIKEY,
+        language: 'en',
+      }}
+    />
   );
 };
 
-}
-
 const styles = StyleSheet.create({
-    customerDetails: {
-      shadowOffset: {width: 1, height: 1},
-      shadowColor: '#777',
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 5,
-      flexDirection: 'row',
-      backgroundColor: '#fff',
-      borderRadius: 4,
-      padding: 10,
-      marginBottom: 10,
-    },
-  
-    jobDestination: {
-      shadowOffset: {width: 1, height: 1},
-      shadowColor: '#333',padding:5,
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 5,
-      flexDirection: 'row',
-      backgroundColor: '#fff',
-      borderRadius: 4,
-    //   padding: 10,
-      position: 'absolute',
-      top: 10,
-      left: 10,
-      right: 10,
-    },
-    auth_textInput: {
-  
-      alignSelf: 'center',
-      width: '55%',
-      // borderWidth: 1,
-      marginLeft:5,
-      marginRight:15,
-      borderBottomWidth: 0,
-      height: 40,
-      color: Colors.text_color,
-      marginTop: 5,
-  
-  },
   auth_btn: {
-
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor:Colors.blue_color,
-
+    backgroundColor: Colors.blue_color,
     width: '100%',
     height: 65,
     justifyContent: 'center',
-},
-  });
-  
+  },
+  jobDestination: {
+    shadowOffset: { width: 1, height: 1 },
+    shadowColor: '#333',
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 5,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    padding: 5,
+    paddingHorizontal: 15,
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
+  },
+});

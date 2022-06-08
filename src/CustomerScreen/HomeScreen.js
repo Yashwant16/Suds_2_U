@@ -1,105 +1,147 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import Colors from '../../Constants/Colors';
 import { ImageBackground } from 'react-native';
+import { bookingType, ON_DEMAND, SCHEDULED } from '../Navigation/NavigationService';
+import { AuthContext } from '../Providers/AuthProvider';
+import { getCurrentAddress } from '../Services/LocationServices';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { ERROR, LOADING, partialProfileUrl } from '../Providers';
+import { AppContext } from '../Providers/AppProvider';
+import LoadingView from '../Components/LoadingView';
+import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS } from '../Providers/BookingProvider';
+import { ActivityIndicator } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
+import NotificationController from '../Services/NotificationController';
+export const nav = React.createRef(null);
+export default HomeScreen = ({ navigation }) => {
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-export default class MyNotificationsScreen extends React.Component {
-  static navigationOptions = {
+const { userData, updateUserLocation, changeImage } = useContext(AuthContext)
+  const { setLoading, setNewJobRequestId } = useContext(AppContext)
+  const { runningBooking, getSingleBookingDetails, getRewards } = useContext(BookingContext)
+  const [currentAddress, setCurrentAddress] = useState('Getting address...')
+  const [rewards, setRewards] = useState(LOADING)
 
-    drawerLabel: 'DashBoard',
-    drawerIcon: ({ tintColor }) => (
-      <View>
+  useEffect(() => {
+    // messaging().onNotificationOpenedApp((message) => console.log('notification opened', message))
+    // console.log(runningBooking?.status, "RUNNING BOOKING STATUS")
+    // switch (runningBooking?.status) {
+    //   case WASHR_ON_THE_WAY:
+    //     getBookingWithId(runningBooking.booking_id).then(booking => {
+    //       if (booking) navigation.navigate('On The Way', { booking, onTheWay: true })
+    //     })
+    //     break;
+    //   case WASH_IN_PROGRESS:
+    //     getBookingWithId(runningBooking.booking_id).then(booking => {
+    //       if (booking) navigation.navigate('Work In Progress', { booking });
+    //     })
+    //     break;
+    //   default:
+    //     break;
+    // }
 
-        <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/home.png')} />
-      </View>
-    ),
-  };
+    getRewards(setRewards)
+  }, [])
 
-  render() {
-    return (
-      <View style={{ flex: 1, }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
-        <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={79}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 4 }} source={require('../../Assets/menu.png')} />
-
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>DASHBOARD</Text>
-          }
-        />
-        <SafeAreaView />
-
-
-        <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', flexDirection: 'row' }}>
-          <Text style={{ color: '#fff', margin: 6, marginTop: 10,fontSize:16 ,fontWeight:'600' }}>Rewards</Text>
-
-          <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
-          <Image style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginTop: 5, }} source={require('../../Assets/drop.png')} />
-          <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
-          <Image style={{ width: 25, height: 25, tintColor: '#916832', marginTop: 5, }} source={require('../../Assets/drop.png')} />
-        </View>
-        <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={require('../../Assets/images.jpeg')}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between',  padding: 21 }}>
-            <TouchableOpacity style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#60d0de', alignItems: 'center',justifyContent:'center' }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/document.png')} />
-            </TouchableOpacity>
-          </View>
-          <View style={{ flex: 1, justifyContent: 'flex-end', }}>
-            <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom:-1 }} source={require('../../Assets/shape.png')} >
-
-              <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Wellcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>Randy Orton</Text></Text>
-
-              <View style={{ flexDirection: 'row', marginTop: 5 }}>
-                <Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}> 321 Main Street, san -USA</Text>
-              </View>
-              <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%',}}>
-                <TouchableOpacity
-                  elevation={5}
-                  onPress={() => { this.props.navigation.navigate('Login'); }}
-                  style={styles.auth_btn}
-                  underlayColor='gray'
-                  activeOpacity={0.8}
-                // disabled={this.state.disableBtn}
-                >
-                  <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>On-Demand</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  elevation={5}
-                  onPress={() => { this.props.navigation.navigate('BookWasher_Now'); }}
-                  style={styles.auth_btn}
-                  underlayColor='gray'
-                  activeOpacity={0.8}
-                // disabled={this.state.disableBtn}
-                >
-                  <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>Schedule</Text>
-                </TouchableOpacity>
-
-              </View>
-            </ImageBackground>
-          </View>
-        </ImageBackground>
-      </View>
-    );
+  const getBookingWithId = async (id) => {
+    setLoading(true);
+    let json = await getSingleBookingDetails(id);
+    setLoading(false);
+    if (json?.data) return json.data
+    else Alert.alert('Error', 'Something went wrong')
   }
+
+
+  useEffect(() => {
+    nav.current = navigation
+    updateUserLocation()
+    setTimeout(() => getCurrentAddress().then(setCurrentAddress), 2000)
+
+    return () => unsubscribe()
+  }, [])
+
+  const imageCallBack = async (res) => {
+    console.log(res)
+    if (res.didCancel) return
+    setLoading(true)
+    await changeImage(res.assets[0])
+    setLoading(false)
+  }
+
+  const Rewards = () => {
+    switch (rewards) {
+      case LOADING: return <ActivityIndicator color={Colors.blue_color} size="large" />
+      case ERROR: return (
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>Error loading rewrds.</Text>
+          <TouchableOpacity onPress={() => getRewards(setRewards)} style={{ padding: 5, backgroundColor: Colors.blue_color, borderRadius: 5, marginHorizontal: 10 }}>
+            <Text style={{ color: 'white', includeFontPadding: false }} >Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )
+
+      default: return (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ color: '#fff', margin: 6, marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Rewards : </Text>
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((v, i) => <Image key={i} style={{ width: 25, height: 25, marginTop: 5, tintColor: i < rewards ? Colors.blue_color : '#916832' }} source={require('../../Assets/drop.png')} />)}
+        </View>
+      )
+    }
+  }
+
+  return (
+    <View style={{ flex: 1, }}>
+      <LoadingView />
+      <NotificationController />
+      <View style={{ width: '100%', height: 40, backgroundColor: '#e28c39', justifyContent: 'center' }}>
+        <Rewards></Rewards>
+      </View>
+      <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: userData.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 21 }}>
+          <TouchableOpacity onPress={() => launchImageLibrary({}, imageCallBack)} style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
+            <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'flex-end', }}>
+          <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom: -1 }} source={require('../../Assets/shape.png')} >
+
+            <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Welcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>{userData.name}</Text></Text>
+
+            <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center' }}>
+              <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center', flex: 1, paddingHorizontal: 20 }}><Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />{currentAddress}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
+              <TouchableOpacity
+                elevation={5}
+                onPress={() => {
+                  navigation.navigate('OnDemand', { bookingType: ON_DEMAND, headerTitle: 'On Demand Services' })
+                  console.log(bookingType)
+                }}
+                style={styles.auth_btn}
+                underlayColor='gray'
+                activeOpacity={0.8}>
+                <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>On-Demand</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                elevation={5}
+                onPress={() => {
+                  navigation.navigate('OnDemand', { bookingType: SCHEDULED, headerTitle: 'Schedule a Wash' })
+                  console.log(bookingType)
+                }}
+                style={styles.auth_btn}
+                underlayColor='gray'
+                activeOpacity={0.8} >
+                <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>Schedule</Text>
+              </TouchableOpacity>
+
+            </View>
+          </ImageBackground>
+        </View>
+      </ImageBackground>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

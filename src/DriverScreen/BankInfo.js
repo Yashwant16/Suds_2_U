@@ -1,56 +1,122 @@
-import React from 'react';
-import { Text, View, Image, StatusBar, TouchableOpacity, Button } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header } from 'react-native-elements';
-import Colors from '../../Constants/Colors';
+import React, {useContext, useEffect, useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {View, ImageBackground, StyleSheet, Alert} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
+import ControllerInput from '../Components/ControllerInput';
+import CtaButton from '../Components/CtaButton';
+import CustomPicker from '../Components/CustomPicker';
+import LoadingView from '../Components/LoadingView';
+import {AuthContext} from '../Providers/AuthProvider';
 
-export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
+const routingNumbers = [
+  {name: '1', id: 1},
+  {name: '2', id: 2},
+  {name: '3', id: 3},
+  {name: '4', id: 4},
+];
 
-        drawerLabel: 'Bank Info',
-        drawerIcon: ({ tintColor }) => (
-            <View>
+const asynFunction = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({data:routingNumbers});
+    }, 2000);
+  });
+};
 
-                <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/dollar-symbol.png')} />
-            </View>
-        ),
-    };
+const BankInfo = () => {
+  const {saveBankInfo, getBankInfo} = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    watch,
+    formState: {errors},
+  } = useForm();
 
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
-
-                <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={82}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff' }} source={require('../../Assets/menu.png')} />
-
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Home</Text>
-                    }
-                />
-                <SafeAreaView />
-                <Button
-                    onPress={() => this.props.navigation.goBack()}
-                    title="Go back home"
-                />
-                <Text>DBDFGBFDGB</Text>
-            </View>
-        );
+  const onSubmit = async data => {
+    console.log({...data, routing_number: data.routing_number.name});
+    if (data.account_number !== data.confirm_account_number) Alert.alert('Account number', "Your account number doesn't match");
+    else {
+      setLoading(true);
+      await saveBankInfo({...data, routing_number: data.routing_number.name});
+      setLoading(false);
     }
-}
+  };
 
-  // const styles = StyleSheet.create({
-  //   icon: {
-  //     width: 24,
-  //     height: 24,
-  //   },
-  // });
+  useEffect(() => {
+    getUserBankDetails();
+  }, []);
+
+  const getUserBankDetails = async () => {
+    setFetching(true);
+    let json = await getBankInfo();
+    setFetching(false);
+    if (json?.response) {
+      console.log(JSON.stringify(json.data));
+      let savedRoutingNumber = routingNumbers.find(item => json.data.routing_number == item.name);
+      reset({...json.data, routing_number: savedRoutingNumber, confirm_account_number: json.data.account_number});
+    }
+  };
+
+  return (
+    <ImageBackground style={styles.imgBg} source={require('../../Assets/bg_img.png')}>
+      <LoadingView fetching={fetching} loading={loading}>
+        <ScrollView style={styles.container}>
+          <ControllerInput control={control} errors={errors} rules={{required: true}} fieldName="bank_name" placeholder="Bank Name" curved />
+          <ControllerInput
+            control={control}
+            errors={errors}
+            rules={{required: true}}
+            fieldName="account_number"
+            placeholder="Account Number"
+            keyboardType="numeric"
+            curved
+          />
+          <ControllerInput
+            control={control}
+            errors={errors}
+            fieldName="confirm_account_number"
+            placeholder="Confirm Account Number"
+            keyboardType="numeric"
+            curved
+          />
+          <CustomPicker
+            asynFunction={asynFunction}
+            fieldName="routing_number"
+            rules={{required: true}}
+            control={control}
+            errors={errors}
+            label="Routing Number"
+          />
+          <CtaButton onPress={handleSubmit(onSubmit)} primary title="Save" style={{width: '100%', marginTop: 8}} />
+        </ScrollView>
+      </LoadingView>
+    </ImageBackground>
+  );
+};
+
+export default BankInfo;
+
+const styles = StyleSheet.create({
+  imgBg: {
+    flex: 1,
+  },
+  container: {
+    width: '100%',
+    height: '100%',
+    paddingTop: 15,
+    paddingHorizontal: 30,
+  },
+  text: {
+    fontWeight: 'bold',
+    padding: 18,
+    fontSize: 16,
+    width: '100%',
+    borderRadius: 50,
+    backgroundColor: 'white',
+    marginTop: 8,
+  },
+});

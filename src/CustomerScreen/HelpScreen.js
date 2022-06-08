@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput,Button ,ImageBackground} from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, Image, StatusBar,SafeAreaView, TouchableOpacity, TextInput,Button ,ImageBackground} from 'react-native';
+
 import { Header, Icon, Avatar } from 'react-native-elements';
 import Colors from '../../Constants/Colors';
 
@@ -17,10 +17,11 @@ export default class MyNotificationsScreen extends React.Component {
     };
   
     render() {
+      const { navigation } = this.props;
       return (
         <View style={{flex:1}}>
                           <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                          <Header
+                          {/* <Header
                     statusBarProps={{ barStyle: 'light-content' }}
                   height={79}
                     containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
@@ -35,7 +36,7 @@ export default class MyNotificationsScreen extends React.Component {
                   centerComponent={
                     <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>HELP</Text>
                 }
-                />
+                /> */}
                                 <ImageBackground style={{width:'100%',height:'100%',flex:1, }} source={require('../../Assets/bg_img.png')}>
                                 <SafeAreaView/>
        
@@ -47,7 +48,7 @@ export default class MyNotificationsScreen extends React.Component {
           
  
               <Text style={{color:Colors.text_white,fontSize:17,fontWeight:'bold',textAlign:'center',marginTop:10}}>supports@sudeo-2-u.com</Text>
-              <Text style={{color:Colors.text_white,fontSize:17,fontWeight:'bold',textAlign:'center',marginTop:10}}>1800-234-5678</Text>
+              <Text style={{color:Colors.text_white,fontSize:17,fontWeight:'bold',textAlign:'center',marginTop:10}}>512-586-8786</Text>
               </View>
               <View style={{justifyContent:'flex-end',marginBottom:20}}> 
               <Text style={{color:Colors.text_white,fontSize:15,fontWeight:'500',textAlign:'center',marginTop:10}}>@ 2021 SUDS-2-U. All rights reserved</Text>

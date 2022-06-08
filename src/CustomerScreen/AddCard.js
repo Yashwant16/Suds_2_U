@@ -1,144 +1,66 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button, ImageBackground } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FlatList } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { Image } from 'react-native';
+import { Text } from 'react-native';
+import { View, ImageBackground, StyleSheet, Alert, ScrollView } from 'react-native';
 import Colors from '../../Constants/Colors';
+import ControllerInput from '../Components/ControllerInput';
+import CtaButton from '../Components/CtaButton';
+import CustomPicker from '../Components/CustomPicker';
+import ListEmpty from '../Components/ListEmpty';
+import LoadingView from '../Components/LoadingView';
+import { EMPTY, ERROR, LOADING } from '../Providers';
+import { AuthContext } from '../Providers/AuthProvider';
 
-export default class MyNotificationsScreen extends React.Component {
+const AddCard = () => {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      card_no: "",
-      card_name: '',
-      expire_month: '',
-      expire_year: '',
-      cvv_no: '',
-      password: "",
-    }
+  const [state, setState] = useState(LOADING)
+
+  const { getCardDetails } = useContext(AuthContext)
+
+  useEffect(() => getCardDetails(setState), [])
+
+  switch (state) {
+    case ERROR:
+      return <ListEmpty emptyMsg="Something went wrong." retry={() => getCardDetails(setState)} />
+    case LOADING:
+      return <ActivityIndicator color={Colors.background_color} size="large" style={{ justifyContent: 'flex-start', padding: 50 }} />
+    case EMPTY:
+      return <ListEmpty emptyMsg="You have not added any cards yet." retry={() => getCardDetails(setState)} />
+    default:
+      return (
+        <FlatList contentContainerStyle={{flexGrow : 1}} data={state} renderItem={Card} keyExtractor={(item, index) => index} />
+      )
   }
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-        <Header
-          statusBarProps={{ barStyle: 'light-content' }}
-          height={82}
-          containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-          backgroundColor={Colors.blue_color}
-          placement={"left"}
-          leftComponent={
-            <TouchableOpacity onPress={() => { this.props.navigation.navigate('Payments') }}>
-              <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
+};
 
-            </TouchableOpacity>
-          }
-          centerComponent={
-            <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>DEBIT/CREDIT CARD</Text>
-          }
-        />
+export default AddCard;
 
-        <ImageBackground style={{ width: '100%', height: '100%', flex: 1, }} source={require('../../Assets/bg_img.png')}>
-          <SafeAreaView />
-          <View style={{ alignItems: 'center', marginTop: 15 }}>
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(card_no) => this.setState({ card_no })}
-              value={this.state.card_no}
-              placeholder="Card Number"
+const Card = ({ item }) => (
+  <View style={{ borderRadius: 20, margin: 20, marginBottom: 0, padding: 20, backgroundColor: Colors.blue_color, elevation: 15, shadowColor: '#000', overflow: 'hidden' }}>
+    <View style={{ backgroundColor: 'black', position: 'absolute', top: 0, right: 0, height: 60, width: 100, borderBottomLeftRadius: 30, opacity: .15 }} />
+    <View style={{ backgroundColor: '#00000010', position: 'absolute', bottom: 0, right: 0, left: 0, height: 80, opacity: 1, borderTopWidth: 1, borderTopColor: '#ffffff50' }} />
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>**** **** **** {item.last4}</Text>
+      <Image resizeMode="contain" style={{ height: 20, width: 50 }} source={{ uri: 'https://pngpress.com/wp-content/uploads/2020/03/Visa-Logo-PNG-Image.png' }} />
+    </View>
 
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(card_name) => this.setState({ card_name })}
-              value={this.state.card_name}
-              placeholder="Name on Card"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '93%' }}>
-              <TextInput
-                style={[styles.short_textInput,]}
-                onChangeText={(expire_month) => this.setState({ expire_month })}
-                value={this.state.expire_month}
-                placeholder="Expire Month"
-
-                placeholderTextColor={Colors.text_color}
-                autoCapitalize='none' />
-              <TextInput
-                style={[styles.short_textInput,]}
-                onChangeText={(expire_year) => this.setState({ expire_year })}
-                value={this.state.expire_year}
-                placeholder="Expire Year"
-
-                placeholderTextColor={Colors.text_color}
-                autoCapitalize='none' />
-            </View>
-            <TextInput
-              style={[styles.auth_textInput,]}
-              onChangeText={(cvv_no) => this.setState({ cvv_no })}
-              value={this.state.cvv_no}
-              placeholder="CVV Number"
-
-              placeholderTextColor={Colors.text_color}
-              autoCapitalize='none' />
-            <TouchableOpacity
-              elevation={5}
-              onPress={() => { this.props.navigation.navigate(''); }}
-              style={styles.auth_btn}
-              underlayColor='gray'
-              activeOpacity={0.8}
-            // disabled={this.state.disableBtn}
-            >
-              <Text style={{ fontSize: 16, textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Submit </Text>
-            </TouchableOpacity>
-          </View>
-          <SafeAreaView />
-        </ImageBackground>
-
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{ paddingTop: 65 }}>
+        <Text style={{ color: 'white', fontSize: 16, opacity: .7 }}>EXPIRY MONTH</Text>
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{item.expiryMonth}</Text>
       </View>
-    );
-  }
-}
+      <View style={{ paddingTop: 65 }}>
+        <Text style={{ color: 'white', fontSize: 16, opacity: .7 }}>EXPIRY YEAR</Text>
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{item.expiryYear}</Text>
+      </View>
+      <View style={{ paddingTop: 65 }}>
+        <Text style={{ color: 'white', fontSize: 16, opacity: .7 }}>POSTAL CODE</Text>
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>{item.postalCode}</Text>
+      </View>
+    </View>
 
-const styles = StyleSheet.create({
-  auth_textInput: {
-
-    alignSelf: 'center',
-    width: '93%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 50,
-    color: '#000',
-    borderRadius: 25, paddingLeft: 15,
-    marginTop: 10,
-
-  },
-  short_textInput: {
-
-    alignSelf: 'center',
-    width: '46%',
-    borderWidth: 1,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 0,
-    height: 50,
-    color: '#000',
-    borderRadius: 25, paddingLeft: 15,
-    marginTop: 10,
-
-  },
-  auth_btn: {
-    marginTop: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.blue_color,
-    borderRadius: 5,
-    width: '90%',
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-  },
-})
-
+  </View>
+)

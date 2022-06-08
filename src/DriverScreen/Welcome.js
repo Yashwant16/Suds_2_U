@@ -1,102 +1,140 @@
-import React from 'react';
-import {Text, View, Image, StatusBar} from 'react-native';
-import CustomHeader from '../Components/CustomHeader';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { Text, View, Image } from 'react-native';
 import MapView from 'react-native-maps';
 import NewJobModal from '../Components/NewJobModal';
-import OnJob from './OnJob';
-import {createStackNavigator} from 'react-navigation-stack';
-import {createAppContainer} from 'react-navigation';
+import { AuthContext } from '../Providers/AuthProvider';
+import messaging from '@react-native-firebase/messaging';
+import LoadingView from '../Components/LoadingView';
+import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS } from '../Providers/BookingProvider';
+import { dontShow, onStartAction } from '../Navigation/NavigationService';
+import { getCurrentAddress, subscribeLocation } from '../Services/LocationServices';
+import { ImageBackground } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { partialProfileUrl } from '../Providers';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { AppState } from 'react-native';
+import { NOTIFICATION_TYPES } from '../..';
+import PushNotification from 'react-native-push-notification';
+import NotificationController from '../Services/NotificationController';
 
-export default class Home extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Home',
-    drawerIcon: ({tintColor}) => (
-      <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
-      </View>
-    ),
-  };
+export const nav = React.createRef(null);
 
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <CustomHeader title="WELCOME" onLeftButtonPress={() => this.props.navigation.openDrawer()} leftIconSource={require('../../Assets/menu.png')} />
-        <WelcomContainer />
-      </View>
-    );
+const WelcomeScreen = ({ navigation }) => {
+  const [modalVisible, setModalVisibility] = useState(false);
+  const [newJobBooking, setNewJobBooking] = useState();
+  const [loading, setLoading] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState('Getting address...');
+  const { getSingleBookingDetails, acceptJob, rejectJob, runningBooking, updateLocation } = useContext(BookingContext);
+  const {
+    userData: { latitude, longitude },
+    userData,
+    updateUserLocation,
+    changeImage
+  } = useContext(AuthContext);
+
+  useEffect(() => {
+    let unsubscribe
+    if (runningBooking?.status === WASHR_ON_THE_WAY) {
+      unsubscribe = subscribeLocation(updateLocation)
+    } else unsubscribe ? unsubscribe() : null
+
+    return () => unsubscribe ? unsubscribe() : null
+
+  }, [runningBooking])
+
+  useEffect(() => {
+    setTimeout(() => getCurrentAddress().then(setCurrentAddress), 2000)
+    console.log(runningBooking, "RUNNING BOOKING STATUS")
+    switch (runningBooking?.status) {
+      case WASHR_ON_THE_WAY: return navigation.navigate('ON JOB', { booking_id : runningBooking.booking_id, onTheWay: true })
+      case WASH_IN_PROGRESS:
+        getBookingWithId(runningBooking.booking_id).then(booking => {
+          if (booking) navigation.navigate('WORK IN PROGRESS', { booking });
+        })
+        break;
+      default:
+        break;
+    }
+  }, [])
+
+  const getBookingWithId = async (id) => {
+    setLoading(true);
+    let json = await getSingleBookingDetails(id);
+    setLoading(false);
+    if (json?.data) return json.data
+    else Alert.alert('Error', 'Something went wrong')
   }
-}
 
-class WelcomeScreen extends React.Component {
+  useEffect(() => {
+    nav.current = navigation;
+    updateUserLocation()
+  }, []);
 
-  constructor(props) {
-    super(props);
-    this.state = {modalVisible: true};
+  const imageCallBack = async (res) => {
+    console.log(res)
+    if (res.didCancel) return
+    setLoading(true)
+    await changeImage(res.assets[0])
+    setLoading(false)
   }
 
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <MapView
-          style={{width: '100%', flex: 1}}
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        />
-
-        <View style={{backgroundColor: '#efefef', padding: 10}}>
-          <Text style={{fontSize: 18, paddingBottom: 5}}>TODAY'S TRIP</Text>
-          <View style={{flexDirection: 'row', backgroundColor: '#fff', borderRadius: 4, padding: 10, marginBottom: 10}}>
-            <Image style={{height: 48, width: 48, marginRight: 10, padding: 10, borderRadius: 35}} source={require('../../Assets/car-steering-wheel.png')} />
-            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
-              <View style={{}}>
-                <Text style={{marginHorizontal: 5, fontSize: 16}}>8 Jobs Done</Text>
-                <View style={{flex: 1, flexDirection: 'row', marginTop: 5}}>
-                  <Image style={{width: 16, height: 16, tintColor: '#777'}} source={require('../../Assets/coupon.png')} />
-                  <Text style={{marginHorizontal: 3, color: '#999'}}>8 hours online</Text>
-                </View>
-              </View>
-              <View style={{}}>
-                <Text style={{marginHorizontal: 5, fontWeight: 'bold', textAlign: 'right'}}>$8.5</Text>
-                <Text style={{marginHorizontal: 5, color: '#aaa', textAlign: 'right', marginTop: 5}}>Earned</Text>
-              </View>
-            </View>
-          </View>
+  return (
+    <View style={{ flex: 1 }}>
+       <NotificationController />
+      <ImageBackground style={{ width: '100%', height: '100%', flex: 1 }} source={{ uri: userData.image ? partialProfileUrl + userData.image : 'https://cdn2.vectorstock.com/i/1000x1000/34/76/default-placeholder-fitness-trainer-in-a-t-shirt-vector-20773476.jpg' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 21 }}>
+          <TouchableOpacity onPress={() => launchImageLibrary({}, imageCallBack)} style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e23a53', alignItems: 'center', justifyContent: 'center' }}>
+            <Image style={{ width: 25, height: 25, tintColor: '#fff', marginTop: 5, margin: 2 }} source={require('../../Assets/pencil.png')} />
+          </TouchableOpacity>
         </View>
-        <NewJobModal
-          accept={() => {
-            this.props.navigation.navigate('OnJob');
-            this.setState({modalVisible: false});
-          }}
-          modalVisible={this.state.modalVisible}
-          hide={() => this.setState({modalVisible: false})}
-        />
-      </View>
-    );
-  }
-}
-const Welcome = createStackNavigator({
-  Welcome: {
-    screen: WelcomeScreen,
-    navigationOptions: () => ({
-      header: null,
-    }),
-  },
-  OnJob: {
-    screen: OnJob,
-    navigationOptions: () => ({
-      header: null,
-    }),
-  },
-});
+        <View style={{ flex: 1, justifyContent: 'flex-end', }}>
+          <ImageBackground style={{ width: '100%', height: 170, alignItems: 'center', marginBottom: -1 }} source={require('../../Assets/shape.png')} >
 
-const WelcomContainer = createAppContainer(Welcome);
-// const styles = StyleSheet.create({
-//   icon: {
-//     width: 24,
-//     height: 24,
-//   },
-// });
+            <Text style={{ color: '#fff', marginTop: 20, fontWeight: '900' }}> <Text style={{ textAlign: 'center', color: '#fff', marginTop: 10, fontSize: 16 }}>Welcome, </Text><Text style={{ fontSize: 20, fontWeight: 'bold' }}>{userData.name}</Text></Text>
+
+            <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center' }}>
+            <Text numberOfLines={1} style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center', flex: 1, paddingHorizontal: 20 }}><Image style={{ width: 17, height: 17, tintColor: '#fff', }} source={require('../../Assets/location.png')} />{currentAddress}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'center', width: '100%', }}>
+              <TouchableOpacity
+                elevation={5}
+                onPress={() => navigation.navigate('BOOKING HISTORY')}
+                style={styles.auth_btn}
+                underlayColor='gray'
+                activeOpacity={0.8}>
+                <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>Bookings</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                elevation={5}
+                onPress={() => navigation.navigate('EARNING')}
+                style={styles.auth_btn}
+                underlayColor='gray'
+                activeOpacity={0.8} >
+                <Text style={{ fontSize: 17, textAlign: 'center', color: '#000', fontWeight: 'bold' }}>Earnings</Text>
+              </TouchableOpacity>
+
+            </View>
+          </ImageBackground>
+        </View>
+      </ImageBackground>
+    </View>
+  );
+};
+
+export default WelcomeScreen;
+
+const styles = StyleSheet.create({
+  auth_btn: {
+    marginTop: 16,
+    padding: 10,
+    paddingBottom: 10,
+    backgroundColor: '#f5c946',
+    borderRadius: 10,
+    width: '35%',
+    height: 50,
+    justifyContent: 'center',
+    margin: 5
+  },
+})

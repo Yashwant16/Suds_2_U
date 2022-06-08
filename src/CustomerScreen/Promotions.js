@@ -1,51 +1,119 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput,Button } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNetInfo } from '@react-native-community/netinfo';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList, useWindowDimensions } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { Alert } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
+
 import Colors from '../../Constants/Colors';
+import ListEmpty from '../Components/ListEmpty';
+import { ERROR, LOADING } from '../Providers';
+import { AuthContext } from '../Providers/AuthProvider';
+import { BookingContext } from '../Providers/BookingProvider';
 
-export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
-      
-      drawerLabel: 'Promotions',
-      drawerIcon: ({ tintColor }) => (
-        <View>
-        
-    <Image  style={{width:25,height:25,tintColor:'#FFF'}} source={require('../../Assets/coupon.png')}/> 
+export default Promotions = () => {
+
+  const [promotions, setPromotions] = useState(LOADING)
+  const netInfo = useNetInfo()
+  const windowsDimensions = useWindowDimensions()
+
+  const { getPromotions } = useContext(AuthContext)
+  const { getRewards } = useContext(BookingContext)
+
+  const [pendingCoupon, setPendingCoupon] = useState()
+
+  const [rewards, setRewards] = useState(LOADING)
+
+  useEffect(() => {
+    getRewards(setRewards)
+    getPromotions(setPromotions)
+    AsyncStorage.getItem('pending_coupon').then(result=>setPendingCoupon(JSON.parse(result)))
+  }, [])
+
+  const onApply = async (item) => {
+    console.log(pendingCoupon)
+    if (pendingCoupon) return Alert.alert("Apply coupon", "You already have a pending coupon on your next wash. You can't have morethan one.")
+    Alert.alert('Apply coupon', 'This coupon will be applied on your next wash.', [{ text: 'Ok', onPress: async () => {await AsyncStorage.setItem('pending_coupon', JSON.stringify(item));setPendingCoupon(item) } }, { text: 'Cancel' }])
+  }
+
+  const Item = ({ item }) => ( 
+    <View style={{
+      backgroundColor: '#fff', alignItems: 'center', marginHorizontal: 5, height: 60, padding: 5, justifyContent: 'center', marginTop: 10, marginBottom: 10, elevation: 5,
+      borderRadius: 10, shadowOpacity: 0.3, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
+    }}>
+      <TouchableOpacity onPress={()=>pendingCoupon?.id==item.id ? null : onApply(item)} style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', }}>
+        <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{item.name}</Text>
+        <Text style={{ color: pendingCoupon?.id==item.id ? 'orange' : Colors.blue_color }}>{pendingCoupon?.id==item.id ? 'Pending' : 'Apply'}</Text>
+      </TouchableOpacity>
     </View>
-      ),
-    };
-  
-    render() {
-      return (
-        <View style={{flex:1}}>
-                          <StatusBar translucent backgroundColor='transparent' barStyle='dark-content' />
-                          <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                  height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                      <TouchableOpacity  onPress={() => {this.props.navigation.openDrawer();}}>
-                      <Image style={{width:25,height:25,tintColor:'#fff',marginTop:5}} source={require('../../Assets/menu.png')}/>
+  )
 
-                 </TouchableOpacity>  
-                    }
-                  centerComponent={
-                    <Text style={{ width: '100%', color: '#fff', fontWeight:'bold', fontSize:18,textAlign:'center',marginTop:5,marginLeft:0,height:30}}>PROMOTIONS</Text>
-                }
-                />
-                <SafeAreaView/>
-                <Text style={{textAlign:'center',margin:10}}>Working....</Text>
-        </View>
-      );
+  const List = () => {
+    switch (promotions) {
+      case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={Colors.blue_color} size="large" />
+      case ERROR: return <ListEmpty opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="No promotions at this time." />
+
+      default: return (
+        <FlatList
+          ListHeaderComponent={() => <View style={{ height: 5 }} />}
+          ListFooterComponent={() => <View style={{ height: 200 }} />}
+          keyExtractor={item => item.id}
+          data={promotions}
+          style={{ width: '100%' }}
+          renderItem={({ item }) => <Item item={item} />}
+        />
+
+      )
     }
   }
-  
-  // const styles = StyleSheet.create({
-  //   icon: {
-  //     width: 24,
-  //     height: 24,
-  //   },
-  // });
+
+  const Rewards = () => {
+    switch (rewards) {
+      case LOADING: return <ActivityIndicator style={{ padding: 50 }} color={Colors.blue_color} size="large" />
+      case ERROR: return (
+        <>
+          <View style={{ flexDirection: 'row', padding: 8 }}>
+            {[...Array(0)].map((v, i) => <Image key={i} style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />)}
+
+          </View>
+          <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>You are ten wash away from your free car wash</Text>
+        </>
+
+      )
+      default: return (
+        <>
+          <View style={{ flexDirection: 'row', padding: 8 }}>
+            {[...Array(rewards)].map((v, i) => <Image key={i} style={{ width: 25, height: 25, tintColor: Colors.blue_color, marginRight: 5, marginBottom: 8 }} source={require('../../Assets/star.png')} />)}
+
+          </View>
+          <Text style={{ fontSize: 22, color: '#aaa', textAlign: 'center' }}>{10 - rewards <= 3 ? 'Congrats! ' : ''}You are {10 - rewards} {10 - rewards == 1 ? 'wash' : 'washes'} away from your free car wash</Text>
+        </>
+
+      )
+    }
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
+      <View style={{ flex: 1 }}>
+
+
+        <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
+        <View style={{ padding: 21, alignItems: 'center', width: '100%' }}>
+          <View style={{
+            backgroundColor: '#fff', alignItems: 'center', width: '100%', height: 130, padding: 18, elevation: 5,
+            borderRadius: 10, shadowOpacity: 0.3, shadowColor: '#000', shadowOffset: { width: 1, height: 1 },
+          }}>
+            <Rewards />
+          </View>
+          <Text style={{ color: '#aaa', fontSize: 20, marginBottom: 15, marginTop: 20, marginVertical: 15, textAlign: 'center', width: '100%' }}>Promo codes cannot be used together</Text>
+          <View style={{ width: windowsDimensions.width, height: 1, backgroundColor: '#999', opacity: .5, zIndex: 20 }} />
+          <List />
+
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+

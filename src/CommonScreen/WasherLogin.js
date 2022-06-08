@@ -1,84 +1,88 @@
-import React from 'react';
-import {StyleSheet, Button, Text, View, Image, StatusBar, TouchableOpacity, TextInput, SafeAreaView, ImageBackground} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ImageBackground} from 'react-native';
 
-import {Header, Icon, Avatar} from 'react-native-elements';
-import Colors from '../../Constants/Colors';
-import {MoreHeader} from '../../Components/CustomeHeader';
 import {ScrollView} from 'react-native';
-import CustomInput from '../Components/CustomInput';
 import CtaButton from '../Components/CtaButton';
 import LinkButton from '../Components/LinkButton';
-import CustomHeader from '../Components/CustomHeader';
-export default class SignUpUser extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-    };
-  }
-  render() {
-    return (
-      <View
-        style={{
-          flex: 1,
-        }}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+import InputsContainer from '../Components/InputsContainer';
+import ControllerInput from '../Components/ControllerInput';
+import { AuthContext } from '../Providers/AuthProvider';
+import { useForm } from 'react-hook-form';
+import LoadingView from '../Components/LoadingView';
+import { changeStack } from '../Navigation/NavigationService';
+const LoginScreen = ({navigation}) => {
+  const {login} = useContext(AuthContext);
+  const [loading, setLoading] = useState(loading)
 
-        <CustomHeader title="LOGIN" onLeftButtonPress={() => this.props.navigation.goBack()} />
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm();
 
-        <View style={{flex: 1, backgroundColor: '#FFF'}}>
-          <ImageBackground style={{width: '100%', flex: 1, height: '100%'}} source={require('../../Assets/imageBG.png')}>
-            <SafeAreaView />
-            <ScrollView>
-              <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}} source={require('../../Assets/logo_icon.png')}></Image>
-              <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}} source={require('../../Assets/logo2.png')}></Image>
-              <View style={{padding: 21, justifyContent: 'flex-end', flex: 1}}>
-                <View style={styles.inputs_container}>
-                  <Text style={{fontWeight: 'bold', marginTop: 10}}>Hello</Text>
-                  <Text style={{padding: 5}}>Sign into your ccount</Text>
+  const onSubmit = async data => {
+    setLoading(true)
+    await login(data);
+    setLoading(false)
+  };
 
-                  <CustomInput label="EMAIL ADDRESS" iconSource={require(`../../Assets/icon/email.png`)} setState={({text}) => this.setState({email: text})} state={this.state.email} />
-                  <CustomInput label="PASSWORD" iconSource={require(`../../Assets/icon/password.png`)} setState={({text}) => this.setState({password: text})} state={this.state.password} />
+  return (
+    <View
+      style={{
+        flex: 1,
+      }}>
+      <View style={{flex: 1, backgroundColor: '#FFF'}}>
+        <ImageBackground style={{width: '100%', flex: 1, height: '100%'}} fadeDuration={0} source={require('../../Assets/imageBG.png')}>
+          <SafeAreaView />
+          <LoadingView loading={loading}>
+          <ScrollView keyboardShouldPersistTaps='handled'>
+            <Image style={{width: '100%', height: 95, resizeMode: 'contain', marginTop: 30}}  fadeDuration={0} source={require('../../Assets/logo_icon.png')}></Image>
+            <Image style={{width: '100%', height: 65, resizeMode: 'contain', marginTop: 5}}  fadeDuration={0} source={require('../../Assets/logo2.png')}></Image>
+            <View style={{alignItems: 'center', flex: 1}}>
+              <InputsContainer>
+                <Text style={{fontWeight: 'bold', marginTop: 10}}>Hello</Text>
+                <Text style={{padding: 5}}>Sign into your ccount</Text>
 
-                  <CtaButton title="Sign In" primary onPress={() => this.props.navigation.navigate('DriverApp')} />
+                <ControllerInput
+                  label="EMAIL ADDRESS"
+                  iconSource={require(`../../Assets/icon/email.png`)}
+                  control={control}
+                  errors={errors}
+                  rules={{required: true, pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/}}
+                  fieldName="email"
+                  keyboardType="email-address"
+                />
 
-                  <LinkButton title="Forgot Your Password" onPress={() => this.props.navigation.navigate('ForgotPassword')} />
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.props.navigation.navigate('SignUp');
-                  }}
-                  style={{marginTop: 10, marginBottom: 5}}
-                  underlayColor="gray"
-                  activeOpacity={0.8}
-                  // disabled={this.state.disableBtn}
-                >
-                  <Text style={{fontSize: 14, textAlign: 'center', color: '#000', fontWeight: 'bold'}}>
-                    Don't have an account <Text style={{color: '#4193F7', fontWeight: 'bold', fontSize: 16}}>Sign Up</Text>
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
-          </ImageBackground>
-        </View>
+                <ControllerInput
+                  label="PASSWORD"
+                  iconSource={require(`../../Assets/icon/password.png`)}
+                  control={control}
+                  errors={errors}
+                  rules={{required: true}}
+                  fieldName="password"
+                  secure
+                />
+
+                <CtaButton title="Sign In" primary onPress={handleSubmit(onSubmit)} />
+                {/* <CtaButton title="Sign In" primary onPress={()=>changeStack('CustomerHomeStack')} /> */}
+                <LinkButton title="Forgot Your Password" onPress={() => navigation.navigate('FORGOT PASSWORD')} />
+              </InputsContainer>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('REGISTER')}
+                style={{marginTop: 10, marginBottom: 5}}
+                underlayColor="gray"
+                activeOpacity={0.8}>
+                <Text style={{fontSize: 14, textAlign: 'center', color: '#000', fontWeight: 'bold'}}>
+                  Don't have an account <Text style={{color: '#4193F7', fontWeight: 'bold', fontSize: 16}}>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+          </LoadingView>
+        </ImageBackground>
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
-const styles = StyleSheet.create({
-  inputs_container: {
-    width: '96%',
-    // height: 270,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    shadowColor: '#000',
-    justifyContent: 'flex-end',
-    shadowOffset: {width: 1, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 3.5,
-    borderRadius: 15,
-    elevation: 5,
-  },
-});
+export default LoginScreen;

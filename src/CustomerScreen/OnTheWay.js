@@ -1,131 +1,175 @@
-import React from 'react';
-import {Text, View, Image, StyleSheet,TouchableOpacity,TextInput} from 'react-native';
-import CustomHeader from '../Components/CustomHeader';
-import MapView from 'react-native-maps';
-import CtaButton from '../Components/CtaButton';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Text, View, Image, StyleSheet, TouchableOpacity, TextInput, Linking } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import Colors from '../../Constants/Colors';
-import { Header, Icon, Avatar } from 'react-native-elements';
 import { SafeAreaView } from 'react-native';
-export default class OnJob extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Home',
-    drawerIcon: ({tintColor}) => (
-      <View>
-        <Image style={{width: 25, height: 25, tintColor: '#FFF'}} source={require('../../Assets/home.png')} />
-      </View>
-    ),
-  };
+import MapViewDirections from 'react-native-maps-directions';
+import LoadingView from '../Components/LoadingView';
+import { BookingContext, WASHR_ON_THE_WAY, WASH_IN_PROGRESS, WASH_PENDING } from '../Providers/BookingProvider'
+import { AuthContext } from '../Providers/AuthProvider'
+import { ERROR, LOADING, partialProfileUrl } from '../Providers';
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native';
+import { changeStack } from '../Navigation/NavigationService';
+import { Avatar } from 'react-native-elements';
+import { GOOGLE_MAPS_APIKEY } from '../Providers/AppProvider';
+import ListEmpty from '../Components/ListEmpty';
+import { useNetInfo } from '@react-native-community/netinfo';
 
-  constructor(props) {
-    super(props);
-    this.state = {arrived: false};
+
+export default OnTheWay = ({ route }) => {
+  const navigation = useNavigation()
+  const netInfo = useNetInfo()
+  const [loading, setLoading] = useState(true)
+  const { getWasherLocation, getSingleBookingDetails, sendSMS, cancelRequest } = useContext(BookingContext)
+  const { userData } = useContext(AuthContext)
+  const [booking, setBooking] = useState(LOADING)
+  const { booking_id } = useMemo(() => route?.params, [route])
+  const [origin, setOrigin] = useState()
+  const [washerLocation, setWasherLocation] = useState()
+  const [message, setMessage] = useState('')
+
+  useEffect(() => getSingleBookingDetails(booking_id, setBooking), [])
+
+  useEffect(() => {
+    if (booking == LOADING || booking_id == ERROR) return
+    let interval = setInterval(function x() {
+      if (booking?.booking_status === WASHR_ON_THE_WAY || !washerLocation) {
+        getWasherLocation(booking.washer_id).then(json => {
+          if (json?.data[0]) {
+            if (!origin) setOrigin({ latitude: parseFloat(json?.data[0]?.latitude), longitude: parseFloat(json?.data[0]?.longitude) })
+            setWasherLocation(json?.data[0])
+          }
+        })
+      }
+      return x;
+    }(), 60000);
+    return () => clearInterval(interval)
+  }, [booking])
+
+  const onCancelRequest = () => {
+    return Alert.alert('Cancel Request', 'Are you sure you want to cancel?',
+      [
+        {
+          text: 'Ok',
+          onPress: () => cancelRequest({ amount: 0, booking_id }, () => changeStack('CustomerHomeStack'))
+        }
+      ]
+    )
   }
 
-  render() {
-    return (
-      <View style={{flex: 1, position: 'relative'}}>
-        {/* <CustomHeader title="ON JOB" onLeftButtonPress={() => this.props.navigation.goBack()} /> */}
-        <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={79}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('SelectAddOns') }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff', marginLeft: 10 }} source={require('../../Assets/back_arrow.png')} />
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>CAR WHASHER IS ON THE WAY</Text>
-                    }
-                />
+  switch (booking) {
+    case LOADING: return <ActivityIndicator size="large" color={Colors.blue_color} style={{ alignSelf: 'center', height: '100%' }} />
+    case ERROR: return <ListEmpty retry={() => getSingleBookingDetails(booking_id, setBooking)} opacity={0.5} color={Colors.blue_color} netInfo={netInfo} emptyMsg="Error loading request details." />
+
+    default: return (
+      <View style={{ flex: 1, position: 'relative' }}>
+        <LoadingView loading={loading} />
         <MapView
-          style={{width: '100%', flex: 1}}
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-       >
+          style={{ width: '100%', flex: 1 }}
+          initialRegion={{
+            ...(origin ? origin : getWashCoordinates(booking)),
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }} >
+
+          {origin && <MapViewDirections
+            onReady={() => setLoading(false)}
+            onError={() => setLoading(false)}
+            strokeWidth={5}
+            strokeColor={Colors.blue_color}
+            origin={getWashCoordinates(booking)}
+            destination={origin}
+            apikey={GOOGLE_MAPS_APIKEY}
+          />}
+
+          {washerLocation != undefined &&
+            <Marker
+              title="Washer"
+              coordinate={{ latitude: parseFloat(washerLocation.latitude), longitude: parseFloat(washerLocation.longitude) }}>
+              <CustomAvatar userData={booking?.userdetails[0]} />
+            </Marker>}
+
+          {origin != undefined &&
+            <Marker
+              title="You"
+              coordinate={getWashCoordinates(booking)}>
+              <CustomAvatar userData={userData} />
+            </Marker>
+          }
+        </MapView>
 
         <View style={styles.jobDestination}>
-        <View style={{flex: 1, flexDirection: 'row', }}>
-          <Image style={{height: 25, width: 25, marginRight: 15, padding: 0, alignSelf: 'center', tintColor: '#999',marginLeft:10}} source={require('../../Assets/search.png')} />
-        
-            <View style={{alignItems: 'center', paddingTop:15,}}>
-              <Text style={{marginHorizontal: 5, fontSize: 14, color: Colors.dark_orange,fontWeight:'bold',marginLeft:20}}>PLEASE ENTER YOUR SERVICE ADDRESS</Text>
-              <Text style={{marginHorizontal: 5, fontSize: 14, color: '#444'}}>994 Colin Gateway Suite 981</Text>
-            </View>
-            {/* <Image style={{height: 25, width: 25, marginRight: 10, padding: 10, alignSelf: 'center', tintColor: '#444'}} source={require('../../Assets/location.png')} /> */}
-          </View>
+          <Text style={{ fontWeight: 'bold', color: 'orange', fontSize: 18 }} >JOB DESTINATION</Text>
+          <Text>{booking.wash_location}</Text>
         </View>
-        </MapView>
-        <View style={{backgroundColor: '#efefef', padding: 10,paddingBottom:0}}>
-        <View style={{flexDirection:'row',marginBottom:10,alignSelf:'center'}}>
-<Image style={{ width: 25, height: 25, tintColor: '#24AE88',  }} source={require('../../Assets/checkdark.png')} />
-<Text style={{fontSize:16,marginVertical:1,fontWeight:'bold',textAlign:'center',marginLeft:5}}>Booking Confirm</Text>
-</View>
-        <View style={{width:'90%',height:240,backgroundColor:'#fff',alignSelf:'center',
-        marginBottom:30,shadowOpacity:0.8,shadowColor:'#aaa',justifyContent:'center',borderRadius:15}}>
-    <View style={{flexDirection:'row',justifyContent:'space-between',padding:10}}>
-        <Text>NY16FT 8206 (White Swift) </Text>
-        <Text style={{color:'yellow',backgroundColor:'#000',padding:4,fontWeight:'bold'}}> 0.5 min </Text>
-    </View>
-    <View style={{width:'100%',height:1,backgroundColor:'#aaa'}}/>
-    <View style={{flexDirection:'row',padding:10}}>
-    <Image style={{ width: 40, height: 40, borderRadius:20 }} source={require('../../Assets/images.jpeg')} />
-        <Text style={{padding:4,marginLeft:5,fontWeight:'bold',fontSize:18,alignSelf:'center'}}>Donnie McC.</Text>
-        <Image style={{ width: 20, height: 20, tintColor:Colors.dark_orange,alignSelf:'center' ,marginLeft:15 }} source={require('../../Assets/star.png')} />
-        <Image style={{ width: 20, height: 20, tintColor:Colors.dark_orange,alignSelf:'center' ,marginLeft:3 }} source={require('../../Assets/star.png')} />
-        <Image style={{ width: 20, height: 20, tintColor:Colors.dark_orange,alignSelf:'center' ,marginLeft:3 }} source={require('../../Assets/star.png')} />
-        <Image style={{ width: 20, height: 20, tintColor:'gray',alignSelf:'center' ,marginLeft:3 }} source={require('../../Assets/star.png')} />
-       <Text style={{padding:4,marginLeft:5,fontWeight:'bold',fontSize:14,alignSelf:'center'}}>4.5</Text>
-   
-    </View>
- 
-    <View style={{width:'100%',height:1,backgroundColor:'#aaa'}}/>
-    <View style={{flexDirection:'row',justifyContent:'center',}}>
-    <View style={{flexDirection:'row',padding:10,width:'50%'}}>
-    <Image style={{ width: 20, height: 20, tintColor: '#0EFF74',  }} source={require('../../Assets/call.png')} />
-        <Text style={{padding:4,marginLeft:5,fontSize:12}}>CALL DRIVER </Text>
-    </View>
-    <View style={{width:1,height:45,backgroundColor:'#aaa'}}/>
-    <View style={{flexDirection:'row',padding:10,width:'50%'}}>
-    <Image style={{ width: 20, height: 20, tintColor: 'red',  }} source={require('../../Assets/error.png')} />
-        <Text style={{padding:4,marginLeft:5,fontSize:12}}>CANCEL RIDE </Text>
-    </View>
-    </View>
-    <View style={{width:'100%',height:1,backgroundColor:'#aaa'}}/>
-    <View style={{flexDirection:'row',padding:5,marginLeft:10,alignItems:'center'}}>
-      <View style={{backgroundColor:'#445F98',width:45,height:50,borderRadius:5,justifyContent:'center',alignItems:'center',margin:5}}>
-    <Image style={{ width: 40, height: 40, tintColor: '#FFF',  }} source={require('../../Assets/smartphone.png')} />
-    </View>
-    
-    <TextInput
-                                        style={[styles.auth_textInput,]}
-                                        onChangeText={(email) => this.setState({ email })}
-                                        value={this.state.email}
-                                        placeholder="Type your message"
-                                        placeholderTextColor={Colors.text_color}
-                                        autoCapitalize='none' />
 
-                                        <Text style={{color:'#445F98',fontSize:16,fontWeight:'bold',textAlign:'center'}}>SEND</Text>
+        <View style={{ backgroundColor: '#efefef', padding: 10, paddingBottom: 0 }}>
+          <View style={{ flexDirection: 'row', marginBottom: 10, alignSelf: 'center' }}>
+            <Image style={{ width: 25, height: 25, tintColor: '#24AE88', }} source={require('../../Assets/checkdark.png')} />
+            <Text style={{ fontSize: 16, marginVertical: 1, fontWeight: 'bold', textAlign: 'center', marginLeft: 5 }}>Booking Confirm</Text>
+          </View>
+          <View style={{
+            borderWidth: 1, borderColor: '#ccc',
+            width: '95%', backgroundColor: '#fff', alignSelf: 'center',
+            marginBottom: 22, shadowOpacity: 0.8, shadowColor: '#aaa', justifyContent: 'center', borderRadius: 15
+          }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, alignItems: 'center' }}>
+              <Text numberOfLines={1} style={{ flex: 1 }} >{booking?.wash_location}</Text>
+              <Text style={{ color: 'yellow', backgroundColor: '#000', padding: 4, fontWeight: 'bold', borderRadius: 5 }}> 0.5 min </Text>
+            </View>
+            <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
+            <View style={{ flexDirection: 'row', padding: 10 }}>
+              <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={booking?.userdetails[0]?.image ? { uri: partialProfileUrl + booking.userdetails[0].image } : require('../../Assets/icon/user.png')} />
+              <Text style={{ padding: 4, marginLeft: 5, fontWeight: 'bold', fontSize: 18, alignSelf: 'center' }}>{booking.userdetails[0]?.name}</Text>
+            </View>
 
-    </View>
-</View>
+            <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
+            <View style={{ flexDirection: 'row', justifyContent: 'center', }}>
+              <TouchableOpacity onPress={() => Linking.openURL(`tel:${booking.userdetails.mobile}`)} style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
+                <Image style={{ width: 20, height: 20, tintColor: '#0EFF74', }} source={require('../../Assets/call.png')} />
+                <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CALL WASHER</Text>
+              </TouchableOpacity>
+              <View style={{ width: 1, height: 45, backgroundColor: '#aaa' }} />
+              <TouchableOpacity onPress={onCancelRequest} style={{ flexDirection: 'row', padding: 10, width: '50%' }}>
+                <Image style={{ width: 20, height: 20, tintColor: 'red', }} source={require('../../Assets/error.png')} />
+                <Text style={{ padding: 4, marginLeft: 5, fontSize: 12 }}>CANCEL REQUEST </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: '100%', height: 1, backgroundColor: '#aaa' }} />
+            <View style={{ flexDirection: 'row', padding: 5, marginLeft: 10, alignItems: 'center' }}>
+              <View style={{ backgroundColor: '#445F98', width: 45, height: 50, borderRadius: 5, justifyContent: 'center', alignItems: 'center', marginLeft: 0, margin: 7 }}>
+                <Image style={{ width: 40, height: 40, tintColor: '#FFF', }} source={require('../../Assets/smartphone.png')} />
+              </View>
 
- </View>
-        <SafeAreaView/>
+              <TextInput
+                style={[styles.auth_textInput,]}
+                placeholder="Type your message"
+                placeholderTextColor={Colors.text_color}
+                value={message}
+                onChangeText={setMessage}
+                autoCapitalize='none' />
+              <TouchableOpacity
+                onPress={() => sendSMS(setLoading, () => setMessage(''), booking.washer_id, message)}>
+
+                <Text style={{ color: '#445F98', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>SEND</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+        </View>
+        <SafeAreaView />
       </View>
     );
   }
 }
 
+const getWashCoordinates = booking => ({ latitude: parseFloat(booking.wash_lat_lng.latitude), longitude: parseFloat(booking.wash_lat_lng.longitude) })
+
 const styles = StyleSheet.create({
   customerDetails: {
-    shadowOffset: {width: 1, height: 1},
+    shadowOffset: { width: 1, height: 1 },
     shadowColor: '#777',
     shadowOpacity: 0.2,
     shadowRadius: 2,
@@ -138,15 +182,16 @@ const styles = StyleSheet.create({
   },
 
   jobDestination: {
-    shadowOffset: {width: 1, height: 1},
-    shadowColor: '#333',padding:5,
+    shadowOffset: { width: 1, height: 1 },
+    shadowColor: '#333',
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 5,
-    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 4,
-    padding: 10,
+    padding: 5,
+    paddingHorizontal: 15,
     position: 'absolute',
     top: 10,
     left: 10,
@@ -157,12 +202,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '55%',
     // borderWidth: 1,
-    marginLeft:5,
-    marginRight:15,
+    marginLeft: 5,
+    marginRight: 15,
     borderBottomWidth: 0,
     height: 40,
     color: Colors.text_color,
     marginTop: 5,
 
-},
+  },
 });
+
+const CustomAvatar = ({ userData }) => (
+  <Avatar
+    size="medium"
+    rounded
+    title={userData?.name ? userData.name.split(' ').slice(0, 2).map(n => n[0].toUpperCase()).join('') : null}
+    source={userData?.image ? { uri: partialProfileUrl + userData.image } : null}
+    containerStyle={{ marginRight: 16, backgroundColor: Colors.blue_color }}
+    activeOpacity={0.7}
+  />
+)

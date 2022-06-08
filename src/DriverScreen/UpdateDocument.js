@@ -1,50 +1,70 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Header, Icon, Avatar } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { Text, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 import Colors from '../../Constants/Colors';
+import ListEmpty from '../Components/ListEmpty';
+import { ERROR, LOADING } from '../Providers';
+import { AuthContext } from '../Providers/AuthProvider';
 
-export default class MyNotificationsScreen extends React.Component {
-    static navigationOptions = {
+const UpdateDocument = ({ route }) => {
 
-        drawerLabel: 'Update Document',
-        drawerIcon: ({ tintColor }) => (
-            <View>
+  const navigation = useNavigation()
 
-                <Image style={{ width: 25, height: 25, tintColor: '#FFF' }} source={require('../../Assets/uploaddocument.png')} />
-            </View>
-        ),
-    };
+  const [state, setState] = useState(LOADING)
 
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <StatusBar translucent backgroundColor='transparent' barStyle='light-content' />
+  const { checkDocuments, documentVerified } = useContext(AuthContext)
 
-                <Header
-                    statusBarProps={{ barStyle: 'light-content' }}
-                    height={82}
-                    containerStyle={{ elevation: 0, justifyContent: 'center', borderBottomWidth: 0 }}
-                    backgroundColor={Colors.blue_color}
-                    placement={"left"}
-                    leftComponent={
-                        <TouchableOpacity onPress={() => { this.props.navigation.openDrawer(); }}>
-                            <Image style={{ width: 25, height: 25, tintColor: '#fff' }} source={require('../../Assets/menu.png')} />
+  useEffect(() => navigation.addListener("focus", () => checkDocuments(setState)), [])
 
-                        </TouchableOpacity>
-                    }
-                    centerComponent={
-                        <Text style={{ width: '100%', color: '#fff', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginTop: 5, marginLeft: 0, height: 30 }}>Home</Text>
-                    }
-                />
-                <SafeAreaView />
-                <Button
-                    onPress={() => this.props.navigation.goBack()}
-                    title="Go back home"
-                />
-                <Text>DBDFGBFDGB</Text>
-            </View>
-        );
-    }
-}
+  switch (state) {
+    case ERROR:
+      return <ListEmpty emptyMsg="Something went wrong." retry={() => checkDocuments(setState)} />
+    case LOADING:
+      return <ActivityIndicator color={Colors.background_color} size="large" style={{ justifyContent: 'flex-start', padding: 50 }} />
+    default: return (
+      <View style={{ flex: 1, padding: 16 }}>
+        <CardHead checked={state.drivinglicense} onPress={() => navigation.navigate('UPLOAD DRIVING LICENSE', { authStack: route.params?.authStack })} title="Step 1 : Driver License" />
+        <CardHead checked={state.background} onPress={() => navigation.navigate('BACKGROUND CHECK', { authStack: !state.background })} title="Step 2 : Background Check" />
+        <CardHead checked={state.vehicle_insurance} onPress={() => navigation.navigate('VEHICLE INSURANCE', { authStack: !state.vehicle_insurance })} title="Step 3 : Vehicle Insurance" />
+        <CardHead checked={state.vehicle_registration} onPress={() => navigation.navigate('VEHICLE REGISTRATION', { authStack: !state.vehicle_registration })} title="Step 4 : Vehicle Registration" />
+        {route.params?.authStack &&
+          <TouchableOpacity onPress={() => documentVerified(() => navigation.navigate('TERMS & CONDITIONS'))} disabled={!Object.values(state).reduce((p, c) => p && c)} style={{ backgroundColor: Colors.blue_color, padding: 18, alignItems: 'center', justifyContent: 'center', marginTop: 'auto', borderRadius: 5, opacity: Object.values(state).reduce((p, c) => p && c) ? 1 : .5 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }} >CONTINUE</Text>
+          </TouchableOpacity>
+        }
+      </View>
+    )
+  }
+};
 
+export default UpdateDocument;
+
+
+const CardHead = ({ title, onPress, checked }) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{ flexDirection: 'row', padding: 16, alignItems: 'center', justifyContent: 'space-between', width: '100%', ...styles.card }}>
+      <Text style={{ color: '#777', fontSize: 22 }}>{title}</Text>
+      <Image style={{ tintColor: checked ? Colors.dark_orange : '#ddd', width: 16, height: 16 }} source={require('../../Assets/icon/checked.png')} />
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    shadowColor: '#999',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.5,
+    borderRadius: 3,
+    elevation: 5,
+    marginBottom: 12,
+  },
+});
